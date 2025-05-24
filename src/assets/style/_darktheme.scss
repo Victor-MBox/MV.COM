@@ -1,0 +1,39 @@
+body::before {
+	content: '';
+	display: block;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -2;
+}
+/* Светлая тема */
+
+body.light {
+	h1 {
+		color: #0a0a0a;
+	}
+}
+
+body.light::before {
+	background-color: #fff;
+	color: #0a0a0a;
+}
+
+/* Темная тема  (по умолчанию) */
+body.dark::before {
+	background-color: #1a1a1a;
+	color: #fff;
+}
+
+body.dark {
+	h1 {
+		color: #fff;
+	}
+}
+/* Плавный переход между темами */
+body::before,
+.smooth {
+	transition: background-color 0.3s, color 0.3s;
+}

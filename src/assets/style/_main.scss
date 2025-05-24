@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap');
+
+* {
+	box-sizing: border-box;
+	font-family: 'Golos Text', sans-serif;
+	scroll-behavior: smooth;
+}
+
+button,
+a {
+	background: none;
+	border: none;
+	text-decoration: none;
+}
+
+.container {
+	max-width: 1080px;
+	margin: 0 auto;
+	/* 	padding-right: 15px;
+	padding-left: 15px; */
+}
+
+.desktop {
+	display: block;
+}
+.mobile {
+	display: none;
+}
+
+body::after {
+	content: '';
+	background: url(../../resources/bg_01.gif);
+	opacity: 0.02;
+	width: 100vw;
+	height: 100vh;
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
