@@ -13,6 +13,11 @@ a {
 	text-decoration: none;
 }
 
+img {
+	max-width: 100%;
+	height: auto;
+}
+
 .container {
 	max-width: 1080px;
 	margin: 0 auto;
@@ -30,7 +35,7 @@ a {
 body::after {
 	content: '';
 	background: url(../../resources/bg_01.gif);
-	opacity: 0.02;
+	opacity: 0.05;
 	width: 100vw;
 	height: 100vh;
 	display: block;
