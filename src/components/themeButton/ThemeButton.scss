@@ -1,5 +1,75 @@
-.btnToggleTheme {
-	position: absolute;
-	right: 20px;
-	top: 20px;
+.theme-button {
+	// размеры — подгоняйте под макет
+	$height: 48px;
+	$thumb-bg: var(--bg-main); // берём из ваших CSS-переменных
+	$border: #3d3d3d;
+
+	position: relative;
+	display: flex;
+	width: 220px;
+	height: $height;
+	padding: 0;
+	border: 2px solid $border;
+	border-radius: 9999px;
+	background: transparent;
+	cursor: pointer;
+	overflow: hidden;
+	user-select: none;
+
+	// текстовые подписи
+	.option {
+		flex: 1 1 50%;
+		display: flex;
+		align-content: center;
+		gap: 6px;
+		font-weight: 600;
+		transition: color 0.3s;
+		position: relative;
+		z-index: 1; // текст выше бегунка
+	}
+
+	// сам «бегунок»
+	.thumb {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 50%; // ровно половина ширины свичера
+		height: 100%;
+		background: $thumb-bg;
+		border-radius: inherit;
+		transition: transform 0.3s, background 0.3s;
+		z-index: 0;
+	}
+
+	/* ------ Состояния ------ */
+	&.light {
+		.thumb {
+			transform: translateX(0%);
+		}
+		.option.light {
+			color: var(--text-main);
+		}
+		.option.dark {
+			color: #666;
+		}
+	}
+
+	&.dark {
+		.thumb {
+			transform: translateX(100%);
+		}
+		.option.dark {
+			color: var(--text-main);
+		}
+		.option.light {
+			color: #666;
+		}
+	}
+}
+
+/* Вспомогательный миксин (если нужен) */
+@mixin flex-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

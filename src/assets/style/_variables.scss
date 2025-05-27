@@ -1,0 +1,60 @@
+// Определяем CSS-переменные для тем
+:root {
+	// Темная тема  (по умолчанию)
+	--bg-primary: #0d0d0d; // цвет фона объектов
+	--bg-secondary: #0a0a0a; // цвет фона сайта
+	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
+	--text-menu-active: #fff; // цвет меню актив
+	--text-primary: #fff; // цвет осн текста
+	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
+	--border-color: linear-gradient(
+		90deg,
+		#2e2e2e 0%,
+		rgba(30, 30, 30, 0.2) 50%,
+		#2e2e2e 100%
+	); // бордеры пункта главного меню
+
+	--bg-menu-a: #1a1a1a; // цвет фона ссылки
+
+	/* 	--shadow: rgba(0, 0, 0, 0.3); */
+}
+
+// Светлая тема
+body.light {
+	--bg-primary: #fff; // цвет фона объектов
+	--bg-secondary: #fff; // цвет фона сайта
+	--text-menu: #8c8c8c; // цвет меню не актив
+	--text-menu-active: #262626; // цвет меню актив
+	--text-primary: #262626; // цвет осн текста
+	--text-secondary: rgba(0, 0, 0, 0.3); // цвет полупрозрачного текста
+	--border-color: linear-gradient(
+		90deg,
+		#dedede 0%,
+		rgb(255 255 255 / 20%) 50%,
+		#dedede 100%
+	); // бордеры пункта главного меню
+
+	--bg-menu-a: #f0f0f0; // цвет фона ссылки
+
+	/* 	--shadow: rgba(0, 0, 0, 0.3); */
+}
+
+// Темная тема (явно)
+body.dark {
+	--bg-primary: #0d0d0d; // цвет фона объектов
+	--bg-secondary: #0a0a0a; // цвет фона сайта
+	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
+	--text-menu-active: #fff; // цвет меню актив
+	--text-primary: #fff; // цвет осн текста
+	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
+	--border-color: linear-gradient(
+		90deg,
+		#2e2e2e 0%,
+		rgba(30, 30, 30, 0.2) 50%,
+		#2e2e2e 100%
+	); // бордеры пункта главного меню
+
+	--bg-menu-a: #1a1a1a; // цвет фона ссылки
+
+	/* 	--shadow: rgba(0, 0, 0, 0.3); */
+}

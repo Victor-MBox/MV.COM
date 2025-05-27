@@ -1,10 +1,13 @@
 // img
 import avatar from '../../resources/avatar.png'
 
+// components
+import ThemeButton from '../themeButton/ThemeButton'
+
 // scss
 import './LeftMenu.scss'
 
-function LeftMenu() {
+export default function LeftMenu() {
 	return (
 		<div className='leftMenu'>
 			<div className='leftMenu__wrapper smooth'>
@@ -183,7 +186,7 @@ function LeftMenu() {
 					</ul>
 				</div>
 				<div>
-					<div className='themeButton'></div>
+					<ThemeButton />
 					<button className='btn'></button>
 					<div className='socBtn'></div>
 				</div>
@@ -191,5 +194,3 @@ function LeftMenu() {
 		</div>
 	)
 }
-
-export default LeftMenu

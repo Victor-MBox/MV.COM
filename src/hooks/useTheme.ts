@@ -4,8 +4,23 @@ import { useState, useEffect } from 'react'
 type Theme = 'dark' | 'light'
 
 export function useTheme() {
-	// Состояние темы: 'dark' или 'light'
-	const [theme, setTheme] = useState<Theme>('dark')
+	// Получаем сохраненную тему из localStorage или используем системную
+	const getInitialTheme = (): Theme => {
+		if (typeof window !== 'undefined') {
+			// Проверяем localStorage
+			const savedTheme = localStorage.getItem('theme') as Theme
+			if (savedTheme) return savedTheme
+
+			// Проверяем системную тему
+			const systemPrefersDark = window.matchMedia(
+				'(prefers-color-scheme: dark)'
+			).matches
+			return systemPrefersDark ? 'dark' : 'light'
+		}
+		return 'dark' // fallback для SSR
+	}
+
+	const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
 	// Функция для переключения темы
 	const toggleTheme = () => {
@@ -13,10 +28,37 @@ export function useTheme() {
 		setTheme(newTheme)
 	}
 
-	// Когда тема меняется, добавляем класс к body
+	// Функция для установки конкретной темы
+	const setSpecificTheme = (newTheme: Theme) => {
+		setTheme(newTheme)
+	}
+
+	// Применяем тему к body и сохраняем в localStorage
 	useEffect(() => {
-		document.body.className = theme // добавляет класс 'dark' или 'light'
+		document.body.className = theme
+		localStorage.setItem('theme', theme)
 	}, [theme])
 
-	return { theme, toggleTheme }
+	// Слушаем изменения системной темы
+	useEffect(() => {
+		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+		const handleChange = (e: MediaQueryListEvent) => {
+			// Обновляем только если нет сохраненной темы
+			if (!localStorage.getItem('theme')) {
+				setTheme(e.matches ? 'dark' : 'light')
+			}
+		}
+
+		mediaQuery.addEventListener('change', handleChange)
+		return () => mediaQuery.removeEventListener('change', handleChange)
+	}, [])
+
+	return {
+		theme,
+		toggleTheme,
+		setTheme: setSpecificTheme,
+		isDark: theme === 'dark',
+		isLight: theme === 'light',
+	}
 }
