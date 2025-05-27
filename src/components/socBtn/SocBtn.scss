@@ -1,0 +1,12 @@
+.socBtn {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+
+	a {
+		padding: 10px;
+		border: 1px solid var(--btn-border-color);
+		border-radius: 10px;
+	}
+}

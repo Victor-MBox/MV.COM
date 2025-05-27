@@ -3,6 +3,7 @@ import avatar from '../../resources/avatar.png'
 
 // components
 import ThemeButton from '../themeButton/ThemeButton'
+import SocBtn from '../socBtn/SocBtn'
 
 // scss
 import './LeftMenu.scss'
@@ -185,10 +186,12 @@ export default function LeftMenu() {
 						</li>
 					</ul>
 				</div>
-				<div>
+				<div className='leftMenu__btns'>
 					<ThemeButton />
-					<button className='btn'></button>
-					<div className='socBtn'></div>
+					<button className='btn'>
+						<span>Связаться</span>
+					</button>
+					<SocBtn />
 				</div>
 			</div>
 		</div>

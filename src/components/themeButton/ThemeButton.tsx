@@ -6,17 +6,17 @@ export default function ThemeButton() {
 
 	return (
 		<button
-			className={`theme-button ${theme}`} // <— добавляется класс light | dark
+			className={`theme-button ${theme}`}
 			onClick={toggleTheme}
 			aria-label='Переключить тему'
 		>
 			<span className='option light'>
-				<i className='icon'>☀️</i>
+				<i className='icon'></i>
 				<span className='label'>Светлая</span>
 			</span>
 
 			<span className='option dark'>
-				<i className='icon'>🌙</i>
+				<i className='icon'></i>
 				<span className='label'>Тёмная</span>
 			</span>
 

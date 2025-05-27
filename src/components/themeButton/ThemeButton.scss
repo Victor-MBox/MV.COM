@@ -1,16 +1,11 @@
 .theme-button {
-	// размеры — подгоняйте под макет
-	$height: 48px;
-	$thumb-bg: var(--bg-main); // берём из ваших CSS-переменных
-	$border: #3d3d3d;
-
 	position: relative;
 	display: flex;
-	width: 220px;
-	height: $height;
+	width: 100%;
 	padding: 0;
-	border: 2px solid $border;
-	border-radius: 9999px;
+	outline: 1px solid var(--btn-border-color);
+	outline-offset: -1px;
+	border-radius: 120px;
 	background: transparent;
 	cursor: pointer;
 	overflow: hidden;
@@ -20,12 +15,37 @@
 	.option {
 		flex: 1 1 50%;
 		display: flex;
-		align-content: center;
+		align-items: center;
+		justify-content: center;
 		gap: 6px;
 		font-weight: 600;
 		transition: color 0.3s;
 		position: relative;
-		z-index: 1; // текст выше бегунка
+		z-index: 1;
+		.label {
+			font-weight: 500;
+			font-size: 14px;
+			line-height: 100%;
+			letter-spacing: -0.03em;
+			color: var(--text-menu);
+			padding: 14px 0;
+		}
+	}
+
+	.light {
+		.icon {
+			background: url(../../resources/svg/theme-icon_light.svg) no-repeat center;
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	.dark {
+		.icon {
+			background: url(../../resources/svg/theme-icon_dark.svg) no-repeat center;
+			width: 20px;
+			height: 20px;
+		}
 	}
 
 	// сам «бегунок»
@@ -33,36 +53,47 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: 50%; // ровно половина ширины свичера
+		width: 50%;
 		height: 100%;
-		background: $thumb-bg;
+		background: var(--bg-btn-theme);
 		border-radius: inherit;
 		transition: transform 0.3s, background 0.3s;
 		z-index: 0;
+		border: 1px solid var(--btn-border-color);
 	}
 
 	/* ------ Состояния ------ */
 	&.light {
+		background: #f0f0f0;
 		.thumb {
 			transform: translateX(0%);
 		}
 		.option.light {
-			color: var(--text-main);
+			opacity: 1;
+			.icon {
+				background: url(../../resources/svg/theme-icon_light-2.svg) no-repeat
+					center;
+			}
 		}
 		.option.dark {
-			color: #666;
+			opacity: 0.5;
+			.icon {
+				background: url(../../resources/svg/theme-icon_dark-2.svg) no-repeat
+					center;
+			}
 		}
 	}
 
 	&.dark {
+		background: #0a0a0a;
 		.thumb {
 			transform: translateX(100%);
 		}
 		.option.dark {
-			color: var(--text-main);
+			opacity: 1;
 		}
 		.option.light {
-			color: #666;
+			opacity: 0.5;
 		}
 	}
 }
