@@ -19,13 +19,6 @@ img {
 	height: auto;
 }
 
-.container {
-	max-width: 1080px;
-	margin: 0 auto;
-	/* 	padding-right: 15px;
-	padding-left: 15px; */
-}
-
 .desktop {
 	display: block;
 }
@@ -44,4 +37,13 @@ body::after {
 	top: 0;
 	left: 0;
 	z-index: -1;
+}
+
+.main {
+	display: flex;
+	gap: 20px;
+	padding: 10px;
+	.container {
+		width: 100%;
+	}
 }

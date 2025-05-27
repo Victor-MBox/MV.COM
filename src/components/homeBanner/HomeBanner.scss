@@ -1,0 +1,44 @@
+.homeBanner {
+	background: var(--bg-banner);
+	border: 1px solid var(--border-cards);
+	height: 405px;
+	border-radius: 18px;
+	padding: 60px;
+	position: relative;
+	margin-bottom: 10px;
+
+	&__title {
+		font-weight: 700;
+		font-size: 60px;
+		line-height: 100%;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+		width: 600px;
+		margin-bottom: 40px;
+	}
+
+	&__subtitle {
+		font-weight: 400;
+		font-size: 20px;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+		margin-bottom: 60px;
+		p {
+			display: inline;
+			span {
+				display: inline-block;
+				font-weight: 500;
+				font-size: 20px;
+				letter-spacing: -0.04em;
+				color: #9f9f9f;
+			}
+		}
+	}
+
+	img {
+		position: absolute;
+		right: 10%;
+		bottom: 0px;
+		height: 100%;
+	}
+}

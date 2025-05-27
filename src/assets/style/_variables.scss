@@ -1,9 +1,10 @@
 // Определяем CSS-переменные для тем
 :root {
-	// Темная тема  (по умолчанию)
+	//! Темная тема  (по умолчанию)
 	--bg-primary: #0d0d0d; // цвет фона объектов
 	--bg-secondary: #0a0a0a; // цвет фона сайта
 	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
+	--text-title: #fff // цвет заголовков
 	--text-menu-active: #fff; // цвет меню актив
 	--text-primary: #fff; // цвет осн текста
 	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
@@ -23,13 +24,24 @@
 	// btn меню Связаться
 	--bg-btn-menu: linear-gradient(180deg, #131313 0%, #212121 100%);
 	--btn-menu-text: rgba(255, 255, 255, 0.25); // цвет текста кнопки
+
+	//* Главная
+	--bg-banner: radial-gradient(
+		circle,
+		rgba(40, 40, 40, 1) 0%,
+		rgba(17, 17, 17, 1) 58%
+	); // фон главного баннера
+
+	--border-cards: #1e1e1e; // бордер карточек осн
+	--text-decor: #9f9f9f; // code на главной
 }
 
-// Светлая тема
+//! Светлая тема
 body.light {
 	--bg-primary: #fff; // цвет фона объектов
 	--bg-secondary: #fff; // цвет фона сайта
 	--text-menu: #8c8c8c; // цвет меню не актив
+	--text-title: #262626 // цвет заголовков
 	--text-menu-active: #262626; // цвет меню актив
 	--text-primary: #262626; // цвет осн текста
 	--text-secondary: rgba(0, 0, 0, 0.3); // цвет полупрозрачного текста
@@ -49,13 +61,24 @@ body.light {
 	// btn меню Связаться
 	--bg-btn-menu: linear-gradient(180deg, #fff 0%, #e3e3e3 100%);
 	--btn-menu-text: rgba(0, 0, 0, 0.5); // цвет текста кнопки
+
+	//* Главная
+	--bg-banner: radial-gradient(
+		circle,
+		rgb(230, 230, 230) 0%,
+		rgba(247, 247, 247, 1) 58%
+	); // фон главного баннера
+
+	--border-cards: #ddd; // бордер карточек осн
+	--text-decor: #9f9f9f; // code на главной
 }
 
-// Темная тема (явно)
+//! Темная тема (явно)
 body.dark {
 	--bg-primary: #0d0d0d; // цвет фона объектов
 	--bg-secondary: #0a0a0a; // цвет фона сайта
 	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
+	--text-title: #fff // цвет заголовков
 	--text-menu-active: #fff; // цвет меню актив
 	--text-primary: #fff; // цвет осн текста
 	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
@@ -75,4 +98,14 @@ body.dark {
 	// btn меню Связаться
 	--bg-btn-menu: linear-gradient(180deg, #131313 0%, #212121 100%);
 	--btn-menu-text: rgba(255, 255, 255, 0.25); // цвет текста кнопки
+
+	//* Главная
+	--bg-banner: radial-gradient(
+		circle,
+		rgba(40, 40, 40, 1) 0%,
+		rgba(17, 17, 17, 1) 58%
+	); // фон главного баннера
+
+	--border-cards: #1e1e1e; // бордер карточек осн
+	--text-decor: #9f9f9f; // code на главной
 }

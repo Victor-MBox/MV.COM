@@ -1,5 +1,4 @@
 .leftMenu {
-	margin: 10px;
 	&__wrapper {
 		border: 1px solid var(--border-color);
 		border-radius: 18px;
@@ -11,7 +10,10 @@
 		flex-direction: column;
 		justify-content: space-between;
 		gap: 20px;
-		min-height: 800px;
+		height: 98dvh;
+
+		position: sticky;
+		top: 10px;
 	}
 	.avatar {
 		margin: 10px 20px;
