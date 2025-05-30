@@ -2,7 +2,7 @@
 	border: 1px solid var(--btn-border-color);
 	border-radius: 10px;
 	padding: 0px 40px;
-	width: 250px;
+	width: auto;
 	height: 44px;
 	position: relative;
 	overflow: hidden;
@@ -31,6 +31,16 @@
 	&:hover {
 		&::after {
 			top: -100%;
+		}
+	}
+
+	&_light {
+		border: 1px solid var(--btn-border-color);
+		span {
+			color: var(--bg-menu-a);
+		}
+		&::after {
+			background: var(--bg-btn-menu_light);
 		}
 	}
 }

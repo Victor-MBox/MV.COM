@@ -17,7 +17,7 @@ export default function HomeBanner() {
 					&lt;/ <span>code</span> &gt;
 				</p>
 			</p>
-			<button className='btn'>
+			<button className='btn btn_light'>
 				<span>Скачать CV</span>
 			</button>
 			<img src={banner} alt='victor' />

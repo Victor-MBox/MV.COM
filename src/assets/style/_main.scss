@@ -47,3 +47,10 @@ body::after {
 		width: 100%;
 	}
 }
+
+// HOME PAGE
+.infoBlok {
+	display: grid;
+	grid-template-columns: 7fr 3fr;
+	gap: 20px;
+}

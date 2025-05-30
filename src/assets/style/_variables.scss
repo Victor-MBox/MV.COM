@@ -25,6 +25,10 @@
 	--bg-btn-menu: linear-gradient(180deg, #131313 0%, #212121 100%);
 	--btn-menu-text: rgba(255, 255, 255, 0.25); // цвет текста кнопки
 
+	// btn HOME
+	--bg-btn-menu_light: linear-gradient(180deg, #fff 0%, #a6a6a6 100%);
+
+
 	//* Главная
 	--bg-banner: radial-gradient(
 		circle,
@@ -62,6 +66,9 @@ body.light {
 	--bg-btn-menu: linear-gradient(180deg, #fff 0%, #e3e3e3 100%);
 	--btn-menu-text: rgba(0, 0, 0, 0.5); // цвет текста кнопки
 
+	// btn HOME
+	--bg-btn-menu_light: linear-gradient(180deg, #3d3d3d 0%, #000 100%);
+
 	//* Главная
 	--bg-banner: radial-gradient(
 		circle,
@@ -98,6 +105,9 @@ body.dark {
 	// btn меню Связаться
 	--bg-btn-menu: linear-gradient(180deg, #131313 0%, #212121 100%);
 	--btn-menu-text: rgba(255, 255, 255, 0.25); // цвет текста кнопки
+
+	// btn HOME
+	--bg-btn-menu_light: linear-gradient(180deg, #fff 0%, #a6a6a6 100%);
 
 	//* Главная
 	--bg-banner: radial-gradient(

@@ -1,0 +1,17 @@
+.card {
+	border-radius: 18px;
+	padding: 30px;
+
+	background: linear-gradient(
+		151deg,
+		rgb(120, 120, 120) -52%,
+		rgb(17, 17, 17) 19%,
+		rgb(10, 10, 10) 100%
+	);
+
+	box-shadow: rgba(184, 180, 180, 0.08) 0px 2px 0px 0px inset;
+
+	.title {
+		margin-bottom: 30px;
+	}
+}
