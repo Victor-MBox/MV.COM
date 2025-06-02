@@ -9,7 +9,10 @@
 		rgb(10, 10, 10) 100%
 	);
 
-	box-shadow: rgba(184, 180, 180, 0.08) 0px 2px 0px 0px inset;
+	box-shadow: rgba(184, 180, 180, 0.08) 0 2px 0 inset;
+
+	/* height: fit-content;
+	min-height: 220px; */
 
 	.title {
 		margin-bottom: 30px;
