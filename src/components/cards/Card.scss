@@ -2,17 +2,12 @@
 	border-radius: 18px;
 	padding: 30px;
 
-	background: linear-gradient(
-		151deg,
-		rgb(120, 120, 120) -52%,
-		rgb(17, 17, 17) 19%,
-		rgb(10, 10, 10) 100%
-	);
+	background: var(--bg-cards);
 
 	box-shadow: rgba(184, 180, 180, 0.08) 0 2px 0 inset;
 
-	/* height: fit-content;
-	min-height: 220px; */
+	/* height: fit-content; */
+	min-height: 200px;
 
 	.title {
 		margin-bottom: 30px;

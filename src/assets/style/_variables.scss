@@ -38,6 +38,18 @@
 
 	--border-cards: #1e1e1e; // бордер карточек осн
 	--text-decor: #9f9f9f; // code на главной
+
+	// Cards 
+	--bg-cards: linear-gradient(
+		151deg,
+		rgb(120, 120, 120) -52%,
+		rgb(17, 17, 17) 19%,
+		rgb(10, 10, 10) 100%
+	); // bg cards
+
+	// scale
+	--scale__bg: rgba(255, 255, 255, 0.25);
+	--scale__active: #d9d9d9;
 }
 
 //! Светлая тема
@@ -78,6 +90,13 @@ body.light {
 
 	--border-cards: #ddd; // бордер карточек осн
 	--text-decor: #9f9f9f; // code на главной
+
+	// Cards 
+	--bg-cards: linear-gradient(151deg, rgb(234, 234, 234) -52%, #f0f0f0 19%, #fff 100%); // bg cards
+
+	// scale
+	--scale__bg: rgba(0, 0, 0, 0.15);;
+	--scale__active: rgba(0, 0, 0, 0.5);
 }
 
 //! Темная тема (явно)
@@ -118,4 +137,16 @@ body.dark {
 
 	--border-cards: #1e1e1e; // бордер карточек осн
 	--text-decor: #9f9f9f; // code на главной
+
+	// Cards 
+	--bg-cards: linear-gradient(
+		151deg,
+		rgb(120, 120, 120) -52%,
+		rgb(17, 17, 17) 19%,
+		rgb(10, 10, 10) 100%
+	); // bg cards
+
+	// scale
+	--scale__bg: rgba(255, 255, 255, 0.25);
+	--scale__active: #d9d9d9;
 }

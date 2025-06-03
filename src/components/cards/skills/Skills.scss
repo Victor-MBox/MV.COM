@@ -1,0 +1,48 @@
+.skills {
+	display: grid;
+	grid-template-columns: 5fr 5fr;
+	gap: 30px 90px;
+	&__item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		.skill,
+		.percent {
+			width: 50%;
+		}
+		.skill {
+			color: var(--text-title);
+		}
+		.percent {
+			color: var(--text-secondary);
+		}
+		.scale {
+			margin-top: 12px;
+			width: 100%;
+			position: relative;
+			&__bg,
+			&__active {
+				height: 4px;
+				display: block;
+				position: absolute;
+				left: 0;
+				top: 0;
+				border-radius: 100px;
+			}
+
+			&__bg {
+				background: var(--scale__bg);
+				width: 100%;
+			}
+
+			&__active {
+				background: var(--scale__active);
+			}
+		}
+	}
+}
+
+.percent {
+	text-align: end;
+}

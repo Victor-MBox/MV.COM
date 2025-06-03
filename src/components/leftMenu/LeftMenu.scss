@@ -1,6 +1,6 @@
 .leftMenu {
 	&__wrapper {
-		border: 1px solid var(--border-color);
+		border: 1px solid var(--border-cards);
 		border-radius: 18px;
 		width: 270px;
 		background-color: var(--bg-primary);
@@ -28,7 +28,7 @@
 				position: absolute;
 				right: -4px;
 				bottom: -4px;
-				box-shadow: 0 0 44px 0 #77ea31;
+				box-shadow: 0 0 34px 0 #77ea31;
 			}
 		}
 		.name,

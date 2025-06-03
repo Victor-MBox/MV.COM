@@ -6,7 +6,8 @@
 	height: 44px;
 	position: relative;
 	overflow: hidden;
-	span {
+	span,
+	p {
 		font-weight: 500;
 		font-size: 16px;
 		line-height: 100%;
@@ -15,6 +16,16 @@
 		position: relative;
 		z-index: 2;
 	}
+
+	p {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		svg {
+			width: 20px;
+		}
+	}
+
 	&::after {
 		content: '';
 		display: block;
@@ -36,8 +47,13 @@
 
 	&_light {
 		border: 1px solid var(--btn-border-color);
-		span {
+		span,
+		p {
 			color: var(--bg-menu-a);
+		}
+
+		svg path {
+			stroke: var(--bg-menu-a);
 		}
 		&::after {
 			background: var(--bg-btn-menu_light);
