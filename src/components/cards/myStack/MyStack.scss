@@ -1,0 +1,15 @@
+.mystack {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+
+	svg {
+		padding: 8px;
+		height: 40px;
+		width: 40px;
+		background: #282828;
+		border-radius: 8px;
+		max-width: 38px;
+	}
+}

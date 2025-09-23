@@ -5,6 +5,8 @@ import avatar from '../../resources/avatar.png'
 import ThemeButton from '../themeButton/ThemeButton'
 import SocBtn from '../socBtn/SocBtn'
 
+import ShinyText from '../shinyText/ShinyText'
+
 // scss
 import './LeftMenu.scss'
 
@@ -189,7 +191,12 @@ export default function LeftMenu() {
 				<div className='leftMenu__btns'>
 					<ThemeButton />
 					<button className='btn'>
-						<span>Связаться</span>
+						<ShinyText
+							text='Связатьсяㅤ💬'
+							disabled={false}
+							speed={3}
+							className='custom-class'
+						/>
 					</button>
 					<SocBtn />
 				</div>

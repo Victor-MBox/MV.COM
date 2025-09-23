@@ -7,6 +7,7 @@ import TitleSubtitle from '../components/cards/titleSubtitle/TitleSubtitle'
 import Card from '../components/cards/Cards'
 import InfoBlock from '../components/cards/infoBloсk/InfoBlock'
 import Skills from '../components/cards/skills/skills'
+import MyStack from '../components/cards/myStack/MyStack'
 
 function App() {
 	return (
@@ -33,10 +34,7 @@ function App() {
 					</Card>
 
 					<Card>
-						<TitleSubtitle
-							title='Обо мне 2'
-							subtitle='Lorem ipsum dolor sit amet consectetur. Imperdiet mi tellus amet 2adipiscing donec sed. Ipsum pulvinar vulputate suspendisse accumsan. '
-						/>
+						<MyStack />
 					</Card>
 				</div>
 			</div>

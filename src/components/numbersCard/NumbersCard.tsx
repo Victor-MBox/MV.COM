@@ -1,26 +1,56 @@
 // scss
 import './NumbersCard.scss'
 
+import CountUp from '../countUp/CountUp'
+
 export default function NumbersCard() {
 	return (
 		<div className='numbersCard'>
 			<div>
-				<p>10+</p>
+				<CountUp
+					from={0}
+					to={10}
+					separator=','
+					direction='up'
+					duration={4}
+					className='count-up-text'
+				/>
 				<span>Лет опыта</span>
 			</div>
 
 			<div>
-				<p>143</p>
+				<CountUp
+					from={0}
+					to={143}
+					separator=','
+					direction='up'
+					duration={2}
+					className='count-up-text'
+				/>
 				<span>Выполненных проектов</span>
 			</div>
 
 			<div>
-				<p>114</p>
+				<CountUp
+					from={0}
+					to={114}
+					separator=','
+					direction='up'
+					duration={3}
+					className='count-up-text'
+				/>
 				<span>Счастливых клиентов</span>
 			</div>
 
 			<div>
-				<p>20+</p>
+				<CountUp
+					from={0}
+					to={20}
+					separator=','
+					direction='up'
+					duration={4}
+					className='count-up-text'
+				/>
 				<span>Почестей и наград</span>
 			</div>
 		</div>
