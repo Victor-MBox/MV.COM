@@ -4,7 +4,7 @@
 	--bg-primary: #0d0d0d; // цвет фона объектов
 	--bg-secondary: #0a0a0a; // цвет фона сайта
 	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
-	--text-title: #fff // цвет заголовков
+	--text-title: #fff; // цвет заголовков
 	--text-menu-active: #fff; // цвет меню актив
 	--text-primary: #fff; // цвет осн текста
 	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
@@ -28,7 +28,6 @@
 	// btn HOME
 	--bg-btn-menu_light: linear-gradient(180deg, #fff 0%, #a6a6a6 100%);
 
-
 	//* Главная
 	--bg-banner: radial-gradient(
 		circle,
@@ -39,7 +38,7 @@
 	--border-cards: #1e1e1e; // бордер карточек осн
 	--text-decor: #9f9f9f; // code на главной
 
-	// Cards 
+	// Cards
 	--bg-cards: linear-gradient(
 		151deg,
 		rgb(120, 120, 120) -52%,
@@ -50,6 +49,9 @@
 	// scale
 	--scale__bg: rgba(255, 255, 255, 0.25);
 	--scale__active: #d9d9d9;
+
+	// other
+	--bg-svg-steck: #282828;
 }
 
 //! Светлая тема
@@ -57,7 +59,7 @@ body.light {
 	--bg-primary: #fff; // цвет фона объектов
 	--bg-secondary: #fff; // цвет фона сайта
 	--text-menu: #8c8c8c; // цвет меню не актив
-	--text-title: #262626 // цвет заголовков
+	--text-title: #262626; // цвет заголовков
 	--text-menu-active: #262626; // цвет меню актив
 	--text-primary: #262626; // цвет осн текста
 	--text-secondary: rgba(0, 0, 0, 0.3); // цвет полупрозрачного текста
@@ -91,12 +93,20 @@ body.light {
 	--border-cards: #ddd; // бордер карточек осн
 	--text-decor: #9f9f9f; // code на главной
 
-	// Cards 
-	--bg-cards: linear-gradient(151deg, rgb(234, 234, 234) -52%, #f0f0f0 19%, #fff 100%); // bg cards
+	// Cards
+	--bg-cards: linear-gradient(
+		151deg,
+		rgb(234, 234, 234) -52%,
+		#f0f0f0 19%,
+		#fff 100%
+	); // bg cards
 
 	// scale
-	--scale__bg: rgba(0, 0, 0, 0.15);;
+	--scale__bg: rgba(0, 0, 0, 0.15);
 	--scale__active: rgba(0, 0, 0, 0.5);
+
+	// other
+	--bg-svg-steck: #e5e5e5;
 }
 
 //! Темная тема (явно)
@@ -104,7 +114,7 @@ body.dark {
 	--bg-primary: #0d0d0d; // цвет фона объектов
 	--bg-secondary: #0a0a0a; // цвет фона сайта
 	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
-	--text-title: #fff // цвет заголовков
+	--text-title: #fff; // цвет заголовков
 	--text-menu-active: #fff; // цвет меню актив
 	--text-primary: #fff; // цвет осн текста
 	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
@@ -138,7 +148,7 @@ body.dark {
 	--border-cards: #1e1e1e; // бордер карточек осн
 	--text-decor: #9f9f9f; // code на главной
 
-	// Cards 
+	// Cards
 	--bg-cards: linear-gradient(
 		151deg,
 		rgb(120, 120, 120) -52%,
@@ -149,4 +159,7 @@ body.dark {
 	// scale
 	--scale__bg: rgba(255, 255, 255, 0.25);
 	--scale__active: #d9d9d9;
+
+	// other
+	--bg-svg-steck: #282828;
 }

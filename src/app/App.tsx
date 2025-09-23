@@ -8,6 +8,8 @@ import Card from '../components/cards/Cards'
 import InfoBlock from '../components/cards/infoBloсk/InfoBlock'
 import Skills from '../components/cards/skills/skills'
 import MyStack from '../components/cards/myStack/MyStack'
+import TitleRow from '../components/titleRow/TitleRow'
+import ServiceCards from '../components/cards/setviceCards/ServiceCards'
 
 function App() {
 	return (
@@ -35,6 +37,34 @@ function App() {
 
 					<Card>
 						<MyStack />
+					</Card>
+				</div>
+
+				<TitleRow title='Мои услуги' btn='Все услуги' />
+
+				<div className='services'>
+					<Card>
+						<ServiceCards
+							title='Веб-разработка'
+							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi!'
+							btn='Подробнее'
+						/>
+					</Card>
+
+					<Card>
+						<ServiceCards
+							title='Веб-разработка'
+							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi!'
+							btn='Подробнее'
+						/>
+					</Card>
+
+					<Card>
+						<ServiceCards
+							title='Веб-разработка'
+							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi!'
+							btn='Подробнее'
+						/>
 					</Card>
 				</div>
 			</div>

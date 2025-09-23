@@ -4,12 +4,89 @@
 	align-items: center;
 	gap: 8px;
 
-	svg {
+	align-items: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+
+	&__item {
+		width: 38px;
+		height: 38px;
 		padding: 8px;
-		height: 40px;
-		width: 40px;
-		background: #282828;
 		border-radius: 8px;
-		max-width: 38px;
+		background: var(--bg-svg-steck) var(--icon) center/24px no-repeat;
+	}
+}
+/* ——— ТЁМНАЯ ТЕМА (иконки white) ——— */
+.mystack__item--html {
+	--icon: url('../../../../src/assets/icons/html_wt.svg');
+}
+.mystack__item--css {
+	--icon: url('../../../../src/assets/icons/css_wt.svg');
+}
+.mystack__item--sass {
+	--icon: url('../../../../src/assets/icons/sass_wt.svg');
+}
+.mystack__item--scss {
+	--icon: url('../../../../src/assets/icons/scss_wt.svg');
+}
+.mystack__item--js {
+	--icon: url('../../../../src/assets/icons/js_wt.svg');
+}
+.mystack__item--ts {
+	--icon: url('../../../../src/assets/icons/ts_wt.svg');
+}
+.mystack__item--react {
+	--icon: url('../../../../src/assets/icons/react_wt.svg');
+}
+.mystack__item--redux {
+	--icon: url('../../../../src/assets/icons/redux_wt.svg');
+}
+.mystack__item--api {
+	--icon: url('../../../../src/assets/icons/api_wt.svg');
+}
+.mystack__item--galp {
+	--icon: url('../../../../src/assets/icons/galp_wt.svg');
+	background-size: 12px;
+}
+.mystack__item--linux {
+	--icon: url('../../../../src/assets/icons/linux.svg');
+}
+.mystack__item--vite {
+	--icon: url('../../../../src/assets/icons/vite.svg');
+}
+
+/* ——— СВЕТЛАЯ ТЕМА: переопределяем ТОЛЬКО url ——— */
+.light {
+	.mystack__item--html {
+		--icon: url('../../../../src/assets/icons/html_dr.svg');
+	}
+	.mystack__item--css {
+		--icon: url('../../../../src/assets/icons/css_dr.svg');
+	}
+	.mystack__item--sass {
+		--icon: url('../../../../src/assets/icons/sass_dr.svg');
+	}
+	.mystack__item--scss {
+		--icon: url('../../../../src/assets/icons/scss_dr.svg');
+	}
+	.mystack__item--js {
+		--icon: url('../../../../src/assets/icons/js_dr.svg');
+	}
+	.mystack__item--ts {
+		--icon: url('../../../../src/assets/icons/ts_dr.svg');
+	}
+	.mystack__item--react {
+		--icon: url('../../../../src/assets/icons/react_dr.svg');
+	}
+	.mystack__item--redux {
+		--icon: url('../../../../src/assets/icons/redux_dr.svg');
+	}
+	.mystack__item--api {
+		--icon: url('../../../../src/assets/icons/api_dr.svg');
+	}
+	.mystack__item--galp {
+		--icon: url('../../../../src/assets/icons/galp_dr.svg');
+		background-size: 12px;
 	}
 }
