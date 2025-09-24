@@ -6,7 +6,7 @@ import banner from '../../resources/victor.png'
 
 export default function HomeBanner() {
 	return (
-		<div className='homeBanner'>
+		<section className='homeBanner'>
 			<h1 className='homeBanner__title'>Разработка без лишнего шума</h1>
 			<p className='homeBanner__subtitle'>
 				<p>
@@ -43,6 +43,6 @@ export default function HomeBanner() {
 				</p>
 			</button>
 			<img src={banner} alt='victor' />
-		</div>
+		</section>
 	)
 }

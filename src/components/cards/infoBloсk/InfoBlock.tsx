@@ -3,7 +3,7 @@ import './InfoBlock.scss'
 
 export default function InfoBlock() {
 	return (
-		<div className='infoBlock'>
+		<section className='infoBlock'>
 			<span>Гражданство</span>
 			<span>РФ</span>
 			<span>Страна</span>
@@ -14,6 +14,6 @@ export default function InfoBlock() {
 			<span>8</span>
 			<span>Язык</span>
 			<span>Русский</span>
-		</div>
+		</section>
 	)
 }

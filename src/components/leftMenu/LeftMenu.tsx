@@ -12,7 +12,7 @@ import './LeftMenu.scss'
 
 export default function LeftMenu() {
 	return (
-		<div className='leftMenu'>
+		<header className='leftMenu'>
 			<div className='leftMenu__wrapper smooth'>
 				<div className='avatar'>
 					<div className='avatar__wrapper'>
@@ -22,7 +22,7 @@ export default function LeftMenu() {
 					<div className='name'>Виктор Мацаков</div>
 					<div className='stack'>Full-stack developer </div>
 				</div>
-				<div className='menu'>
+				<nav className='menu'>
 					<ul>
 						<li className='active'>
 							<a href='##'>
@@ -187,7 +187,7 @@ export default function LeftMenu() {
 							</a>
 						</li>
 					</ul>
-				</div>
+				</nav>
 				<div className='leftMenu__btns'>
 					<ThemeButton />
 					<button className='btn'>
@@ -201,6 +201,6 @@ export default function LeftMenu() {
 					<SocBtn />
 				</div>
 			</div>
-		</div>
+		</header>
 	)
 }

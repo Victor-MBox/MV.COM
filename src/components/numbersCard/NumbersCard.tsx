@@ -5,7 +5,7 @@ import CountUp from '../countUp/CountUp'
 
 export default function NumbersCard() {
 	return (
-		<div className='numbersCard'>
+		<section className='numbersCard'>
 			<div>
 				<CountUp
 					from={0}
@@ -53,6 +53,6 @@ export default function NumbersCard() {
 				/>
 				<span>Почестей и наград</span>
 			</div>
-		</div>
+		</section>
 	)
 }

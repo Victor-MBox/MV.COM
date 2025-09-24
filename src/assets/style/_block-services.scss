@@ -1,5 +1,16 @@
 .services {
-	display: flex;
-	align-items: center;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 20px;
+	align-items: start;
+
+	.card {
+		&:nth-child(3) {
+			grid-column: 1 / -1;
+		}
+		.sub-title {
+			max-width: 480px;
+			margin: 0 auto 28px;
+		}
+	}
 }

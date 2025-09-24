@@ -42,8 +42,8 @@ function App() {
 
 				<TitleRow title='Мои услуги' btn='Все услуги' />
 
-				<div className='services'>
-					<Card>
+				<section className='services'>
+					<Card className='card_color-1'>
 						<ServiceCards
 							title='Веб-разработка'
 							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi!'
@@ -51,7 +51,7 @@ function App() {
 						/>
 					</Card>
 
-					<Card>
+					<Card className='card_color-2'>
 						<ServiceCards
 							title='Веб-разработка'
 							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi!'
@@ -59,14 +59,14 @@ function App() {
 						/>
 					</Card>
 
-					<Card>
+					<Card className='card_color-3'>
 						<ServiceCards
 							title='Веб-разработка'
-							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi!'
+							subtitle='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus esse commodi deserunt vitae, vero quasi! '
 							btn='Подробнее'
 						/>
 					</Card>
-				</div>
+				</section>
 			</div>
 		</div>
 	)

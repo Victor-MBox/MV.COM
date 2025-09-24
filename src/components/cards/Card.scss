@@ -1,15 +1,123 @@
 .card {
 	border-radius: 18px;
 	padding: 30px;
-
+	overflow: hidden;
+	position: relative;
 	background: var(--bg-cards);
 
 	box-shadow: rgba(184, 180, 180, 0.08) 0 2px 0 inset;
 	border: 0.5px solid var(--border-cards);
-	/* height: fit-content; */
 	min-height: 200px;
 
 	.title {
 		margin-bottom: 30px;
+		position: relative;
+		z-index: 1;
+	}
+	button {
+		position: relative;
+		z-index: 1;
+	}
+
+	&_color-1 {
+		background: none;
+		text-align: center;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: -140px;
+			left: -210px;
+			width: 380px;
+			height: 190px;
+			border-radius: 50%;
+			pointer-events: none;
+
+			background: radial-gradient(
+				50% 50% at 50% 50%,
+				#2462ff 18.75%,
+				#3795ff 79.8%,
+				#b4d7ff 100%
+			);
+
+			filter: blur(50px);
+			opacity: 0.9;
+			z-index: 0;
+		}
+	}
+
+	&_color-2 {
+		background: none;
+		text-align: center;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: -140px;
+			right: -210px;
+			width: 380px;
+			height: 190px;
+			border-radius: 50%;
+			pointer-events: none;
+
+			background: radial-gradient(
+				50% 50% at 50% 50%,
+				#ffffff 19.23%,
+				#ff6514 34.13%,
+				#ff4f24 100%
+			);
+
+			filter: blur(50px);
+			opacity: 0.9;
+			z-index: 0;
+		}
+	}
+
+	&_color-3 {
+		background: none;
+		text-align: center;
+		&::before {
+			content: '';
+			position: absolute;
+			top: -140px;
+			right: -210px;
+			width: 380px;
+			height: 190px;
+			border-radius: 50%;
+			pointer-events: none;
+
+			background: radial-gradient(
+				50% 50% at 50% 50%,
+				#2462ff 18.75%,
+				#3795ff 79.8%,
+				#b4d7ff 100%
+			);
+
+			filter: blur(50px);
+			opacity: 0.9;
+			z-index: 0;
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: -140px;
+			left: -210px;
+			width: 380px;
+			height: 190px;
+			border-radius: 50%;
+			pointer-events: none;
+
+			background: radial-gradient(
+				50% 50% at 50% 50%,
+				#ffffff 19.23%,
+				#ff6514 34.13%,
+				#ff4f24 100%
+			);
+
+			filter: blur(50px);
+			opacity: 0.9;
+			z-index: 0;
+		}
 	}
 }
