@@ -9,7 +9,7 @@ export default function NumbersCard() {
 			<div>
 				<CountUp
 					from={0}
-					to={10}
+					to={8}
 					separator=','
 					direction='up'
 					duration={4}
@@ -21,19 +21,19 @@ export default function NumbersCard() {
 			<div>
 				<CountUp
 					from={0}
-					to={143}
+					to={83}
 					separator=','
 					direction='up'
 					duration={2}
 					className='count-up-text'
 				/>
-				<span>Выполненных проектов</span>
+				<span>Выполненных проекта</span>
 			</div>
 
 			<div>
 				<CountUp
 					from={0}
-					to={114}
+					to={60}
 					separator=','
 					direction='up'
 					duration={3}
@@ -51,7 +51,7 @@ export default function NumbersCard() {
 					duration={4}
 					className='count-up-text'
 				/>
-				<span>Почестей и наград</span>
+				<span>Хз что тут</span>
 			</div>
 		</section>
 	)

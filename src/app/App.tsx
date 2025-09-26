@@ -6,7 +6,7 @@ import NumbersCard from '../components/numbersCard/NumbersCard'
 import TitleSubtitle from '../components/cards/titleSubtitle/TitleSubtitle'
 import Card from '../components/cards/Cards'
 import InfoBlock from '../components/cards/infoBloсk/InfoBlock'
-import Skills from '../components/cards/skills/skills'
+import Skills from '../components/cards/skills/Skills'
 import MyStack from '../components/cards/myStack/MyStack'
 import TitleRow from '../components/titleRow/TitleRow'
 import ServiceCards from '../components/cards/setviceCards/ServiceCards'
@@ -19,7 +19,7 @@ function App() {
 				<HomeBanner />
 				<NumbersCard />
 
-				<div className='infoBlok'>
+				<section className='infoBlok'>
 					<Card>
 						<TitleSubtitle
 							title='Обо мне'
@@ -38,7 +38,7 @@ function App() {
 					<Card>
 						<MyStack />
 					</Card>
-				</div>
+				</section>
 
 				<TitleRow title='Мои услуги' btn='Все услуги' />
 
@@ -67,6 +67,9 @@ function App() {
 						/>
 					</Card>
 				</section>
+
+				<TitleRow title='Портфолио' btn='Все работы' />
+				<section className='portfolio'></section>
 			</div>
 		</div>
 	)

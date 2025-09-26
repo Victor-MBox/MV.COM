@@ -12,6 +12,7 @@
 		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@studio-freight/lenis": "^1.0.42",
 		"clsx": "^2.1.1",
 		"framer-motion": "^12.12.1",
 		"gsap": "^3.12.5",
