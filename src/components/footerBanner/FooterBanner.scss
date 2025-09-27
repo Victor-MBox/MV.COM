@@ -1,0 +1,27 @@
+.footerBanner {
+	background: var(--bg-banner);
+	border: 1px solid var(--border-cards);
+	border-radius: 18px;
+	padding: 40px;
+	position: relative;
+	text-align: center;
+
+	&__title {
+		font-weight: 700;
+		font-size: 40px;
+		line-height: 100%;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+		max-width: 670px;
+		margin: 0 auto 20px;
+	}
+
+	&__subtitle {
+		font-weight: 400;
+		font-size: 16px;
+		letter-spacing: -0.04em;
+		color: var(--text-secondary);
+		max-width: 300px;
+		margin: 0 auto 30px;
+	}
+}

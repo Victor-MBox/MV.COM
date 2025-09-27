@@ -10,6 +10,11 @@ import Skills from '../components/cards/skills/Skills'
 import MyStack from '../components/cards/myStack/MyStack'
 import TitleRow from '../components/titleRow/TitleRow'
 import ServiceCards from '../components/cards/setviceCards/ServiceCards'
+import Portfolio from '../components/cards/portfolio/Portfolio'
+import FooterBanner from '../components/footerBanner/FooterBanner'
+import Footer from '../components/footer/footer'
+// img
+import portfolio from '../../src/resources/portfolio.jpeg'
 
 function App() {
 	return (
@@ -19,7 +24,7 @@ function App() {
 				<HomeBanner />
 				<NumbersCard />
 
-				<section className='infoBlok'>
+				<section className='about'>
 					<Card>
 						<TitleSubtitle
 							title='Обо мне'
@@ -69,7 +74,36 @@ function App() {
 				</section>
 
 				<TitleRow title='Портфолио' btn='Все работы' />
-				<section className='portfolio'></section>
+				<section className='portfolio__wrapper'>
+					<Card className='card__portfolio'>
+						<Portfolio
+							tags={['2025', 'Веб-разработка', 'Интернет-магазин']}
+							title='AtomAI'
+							subtitle='AtomAI - это SaaS-шаблон премиум-класса на базе искусственного интеллекта, разработанный как современный веб-сайт мирового класса, подходящий для стартапов, SaaS и предприятий, связанных с искусственным интеллектом.'
+							link={{ href: '#', external: false }}
+							image={{
+								src: portfolio,
+								alt: 'Скриншот AtomAI',
+							}}
+						/>
+					</Card>
+
+					<Card className='card__portfolio'>
+						<Portfolio
+							tags={['2025', 'Веб-разработка', 'Интернет-магазин']}
+							title='Fade'
+							subtitle='Fade - это SaaS-шаблон премиум-класса на базе искусственного интеллекта, разработанный как современный веб-сайт мирового класса, подходящий для стартапов, SaaS и предприятий, связанных с искусственным интеллектом.'
+							link={{ href: '#', external: false }}
+							image={{
+								src: portfolio,
+								alt: 'Скриншот Fade',
+							}}
+						/>
+					</Card>
+				</section>
+
+				<FooterBanner />
+				<Footer />
 			</div>
 		</div>
 	)
