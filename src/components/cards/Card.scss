@@ -8,6 +8,7 @@
 	box-shadow: rgba(184, 180, 180, 0.08) 0 2px 0 inset;
 	border: 0.5px solid var(--border-cards);
 	min-height: 200px;
+	max-height: 350px;
 
 	.title {
 		margin-bottom: 30px;
@@ -119,5 +120,10 @@
 			opacity: 0.9;
 			z-index: 0;
 		}
+	}
+
+	&__footer {
+		min-height: auto;
+		background: none;
 	}
 }

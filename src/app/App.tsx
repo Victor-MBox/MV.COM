@@ -12,7 +12,7 @@ import TitleRow from '../components/titleRow/TitleRow'
 import ServiceCards from '../components/cards/setviceCards/ServiceCards'
 import Portfolio from '../components/cards/portfolio/Portfolio'
 import FooterBanner from '../components/footerBanner/FooterBanner'
-import Footer from '../components/footer/footer'
+import Footer from '../components/footer/Footer'
 // img
 import portfolio from '../../src/resources/portfolio.jpeg'
 
@@ -103,7 +103,10 @@ function App() {
 				</section>
 
 				<FooterBanner />
-				<Footer />
+
+				<Card className='card__footer'>
+					<Footer />
+				</Card>
 			</div>
 		</div>
 	)
