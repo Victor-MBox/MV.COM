@@ -17,23 +17,34 @@
 		margin-bottom: 40px;
 	}
 
-	&__subtitle {
-		font-weight: 400;
-		font-size: 20px;
-		letter-spacing: -0.04em;
-		color: var(--text-title);
-		margin-bottom: 60px;
-		p {
-			display: inline;
-			span {
-				display: inline-block;
-				font-weight: 500;
-				font-size: 20px;
-				letter-spacing: -0.04em;
-				color: #9f9f9f;
-			}
-		}
-	}
+        &__subtitle {
+                font-weight: 400;
+                font-size: 20px;
+                letter-spacing: -0.04em;
+                color: var(--text-title);
+                margin-bottom: 60px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                &-code {
+                        display: inline-flex;
+                        align-items: center;
+                        font-weight: 500;
+                        font-size: 20px;
+                        letter-spacing: -0.04em;
+                        color: #9f9f9f;
+
+                        span {
+                                color: inherit;
+                        }
+                }
+
+                &-text {
+                        font-weight: 400;
+                        color: var(--text-title);
+                }
+        }
 
 	img {
 		position: absolute;

@@ -34,10 +34,12 @@ export function useTheme() {
 	}
 
 	// Применяем тему к body и сохраняем в localStorage
-	useEffect(() => {
-		document.body.className = theme
-		localStorage.setItem('theme', theme)
-	}, [theme])
+        useEffect(() => {
+                const body = document.body
+                body.classList.remove('light', 'dark')
+                body.classList.add(theme)
+                localStorage.setItem('theme', theme)
+        }, [theme])
 
 	// Слушаем изменения системной темы
 	useEffect(() => {
