@@ -10,9 +10,9 @@ export default function FooterBanner() {
 			<p className='footerBanner__subtitle'>
 				Оставьте заявку на сайте или напишите в удобный для вас мессенджер
 			</p>
-			<button className='btn btn_light'>
-				<p>Оставить заявку</p>
-			</button>
-		</section>
-	)
+                        <button className='btn btn_light' type='button'>
+                                <span className='btn__label'>Оставить заявку</span>
+                        </button>
+                </section>
+        )
 }

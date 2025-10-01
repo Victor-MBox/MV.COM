@@ -10,11 +10,11 @@ export default function TitleRow({ title, btn }: TitleRowProps) {
 		<div className='titlerow'>
 			{title && <div className='title'>{title}</div>}
 
-			{btn && (
-				<button className='btn btn_dark'>
-					<span>{btn}</span>{' '}
-				</button>
-			)}
+                        {btn && (
+                                <button className='btn btn_dark' type='button'>
+                                        <span>{btn}</span>
+                                </button>
+                        )}
 		</div>
 	)
 }

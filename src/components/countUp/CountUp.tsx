@@ -4,9 +4,9 @@ import { gsap } from 'gsap'
 type Direction = 'up' | 'down'
 
 interface CountUpProps {
-	to: number
-	from?: number
-	direction?: Direction
+        to: number
+        from?: number
+        direction?: Direction
 	delay?: number // в секундах
 	duration?: number // в секундах
 	className?: string
@@ -20,9 +20,9 @@ interface CountUpProps {
 }
 
 export default function CountUpGSAP({
-	to,
-	from = 0,
-	direction = 'up',
+        to,
+        from: fromProp,
+        direction = 'up',
 	delay = 0,
 	duration = 2,
 	className = '',
@@ -34,27 +34,33 @@ export default function CountUpGSAP({
 	inViewAmount = 0,
 	ease = 'power2.out',
 }: CountUpProps) {
-	const ref = useRef<HTMLSpanElement>(null)
-	const tweenRef = useRef<gsap.core.Tween | null>(null)
-	const startedRef = useRef(false) // чтобы не запускать повторно
-	const ioRef = useRef<IntersectionObserver | null>(null)
+        const ref = useRef<HTMLSpanElement>(null)
+        const tweenRef = useRef<gsap.core.Tween | null>(null)
+        const startedRef = useRef(false) // чтобы не запускать повторно
+        const ioRef = useRef<IntersectionObserver | null>(null)
 
-	// Сколько знаков после запятой у числа
+        const resolvedFrom =
+                fromProp ?? (direction === 'down' ? to : 0)
+        const resolvedTo = to
+
+        // Сколько знаков после запятой у числа
 	const getDecimalPlaces = (num: number): number => {
 		const s = String(num)
 		if (!s.includes('.')) return 0
 		const d = s.split('.')[1]
 		return Number(d) !== 0 ? d.length : 0
 	}
-	const maxDecimals = Math.max(getDecimalPlaces(from), getDecimalPlaces(to))
+        const maxDecimals = Math.max(
+                getDecimalPlaces(resolvedFrom),
+                getDecimalPlaces(resolvedTo)
+        )
 
 	// Инициализируем стартовое значение в DOM
 	useEffect(() => {
 		if (!ref.current) return
-		const initial = direction === 'down' ? to : from
-		ref.current.textContent = formatNumber(initial, separator, maxDecimals)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [from, to, direction, separator, maxDecimals])
+                ref.current.textContent = formatNumber(resolvedFrom, separator, maxDecimals)
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [resolvedFrom, separator, maxDecimals])
 
 	// Основная логика: ждём in-view И startWhen, затем один раз запускаем tween
 	useEffect(() => {
@@ -78,43 +84,31 @@ export default function CountUpGSAP({
 				ioRef.current?.disconnect()
 
 				// Готовим объект-счётчик
-				const valueObj = {
-					value: direction === 'down' ? from : from, // реальное from (ниже переставим)
-				}
+                                const valueObj = {
+                                        value: resolvedFrom,
+                                }
 
-				const fromVal = direction === 'down' ? to : from
-				const toVal = direction === 'down' ? from : to
-				valueObj.value = fromVal
-
-				// Коллбэки
-				if (typeof onStart === 'function') onStart()
+                                // Коллбэки
+                                if (typeof onStart === 'function') onStart()
 
 				// Убиваем предыдущий твина, если были (на всякий)
 				tweenRef.current?.kill()
 
 				// Анимация числа
-				tweenRef.current = gsap.to(valueObj, {
-					value: toVal,
+                                tweenRef.current = gsap.to(valueObj, {
+                                        value: resolvedTo,
 					duration,
 					delay,
 					ease,
 					onUpdate: () => {
 						if (!ref.current) return
-						const formatted = formatNumber(
-							valueObj.value,
-							separator,
-							maxDecimals
-						)
+                                                const formatted = formatNumber(valueObj.value, separator, maxDecimals)
 						ref.current.textContent = formatted
 					},
 					onComplete: () => {
 						if (!ref.current) return
 						// Финальный «щелчок» на целевой value, чтобы исключить артефакты округления
-						ref.current.textContent = formatNumber(
-							toVal,
-							separator,
-							maxDecimals
-						)
+                                                ref.current.textContent = formatNumber(resolvedTo, separator, maxDecimals)
 						if (typeof onEnd === 'function') onEnd()
 					},
 				})
@@ -133,15 +127,15 @@ export default function CountUpGSAP({
 		}
 		// Важно: включаем в зависимости только флаги, которые реально меняют старт
 	}, [
-		startWhen,
-		direction,
-		from,
-		to,
-		delay,
-		duration,
-		ease,
-		separator,
-		maxDecimals,
+                startWhen,
+                direction,
+                resolvedFrom,
+                resolvedTo,
+                delay,
+                duration,
+                ease,
+                separator,
+                maxDecimals,
 		inViewMargin,
 		inViewAmount,
 		onStart,

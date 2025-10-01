@@ -17,14 +17,24 @@
 		z-index: 2;
 	}
 
-	p {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		svg {
-			width: 20px;
-		}
-	}
+        p {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                svg {
+                        width: 20px;
+                }
+        }
+
+        &__label {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                svg {
+                        width: 20px;
+                }
+        }
 
 	&::after {
 		content: '';
