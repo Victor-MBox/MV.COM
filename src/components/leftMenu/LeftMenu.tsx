@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 // img
 import avatar from '../../resources/avatar.png'
 
@@ -11,9 +13,30 @@ import ShinyText from '../shinyText/ShinyText'
 import './LeftMenu.scss'
 
 export default function LeftMenu() {
+	const [isCollapsed, setIsCollapsed] = useState(false)
+
 	return (
-		<header className='leftMenu'>
-			<div className='leftMenu__wrapper smooth'>
+		<header className={`leftMenu${isCollapsed ? ' leftMenu--collapsed' : ''}`}>
+			<div className='leftMenu__wrapper '>
+				<button
+					type='button'
+					className='leftMenu__toggle'
+					onClick={() => setIsCollapsed(prev => !prev)}
+					aria-expanded={!isCollapsed}
+					aria-label={isCollapsed ? 'Развернуть меню' : 'Свернуть меню'}
+				>
+					<svg viewBox='0 0 24 24' aria-hidden='false'>
+						<path
+							d='M9 5l7 7-7 7'
+							fill='none'
+							stroke='currentColor'
+							strokeWidth='2'
+							strokeLinecap='round'
+							strokeLinejoin='round'
+						/>
+					</svg>
+				</button>
+
 				<div className='avatar'>
 					<div className='avatar__wrapper'>
 						<img src={avatar} alt='avatar' />
@@ -22,6 +45,7 @@ export default function LeftMenu() {
 					<div className='name'>Виктор Мацаков</div>
 					<div className='stack'>Full-stack developer </div>
 				</div>
+
 				<nav className='menu'>
 					<ul>
 						<li className='active'>
@@ -188,16 +212,19 @@ export default function LeftMenu() {
 						</li>
 					</ul>
 				</nav>
+
 				<div className='leftMenu__btns'>
 					<ThemeButton />
-					<button className='btn'>
+					<button className='btn' type='button'>
 						<ShinyText
-							text='Связатьсяㅤ💬'
+							text='Связаться'
+							icon='💬'
 							disabled={false}
 							speed={3}
 							className='custom-class'
 						/>
 					</button>
+
 					<SocBtn />
 				</div>
 			</div>

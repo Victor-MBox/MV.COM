@@ -1,4 +1,6 @@
 .leftMenu {
+	position: relative;
+	/* transition: width 0.35s ease; */
 	&__wrapper {
 		border: 1px solid var(--border-cards);
 		border-radius: 18px;
@@ -15,6 +17,26 @@
 		position: sticky;
 		top: 10px;
 	}
+
+	&__toggle {
+		position: absolute;
+		top: 16px;
+		right: -20px;
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		border: 1px solid var(--border-cards);
+		background: var(--bg-primary);
+		color: var(--text-primary);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+		cursor: pointer;
+		/* transition: transform 0.35s ease, background-color 0.3s ease; */
+		transform: rotate(180deg);
+	}
+
 	.avatar {
 		margin: 10px 20px;
 		&__wrapper {
@@ -39,7 +61,7 @@
 			text-align: center;
 			color: var(--text-primary);
 			margin-bottom: 8px;
-			transition: all 0.3s;
+			/* transition: all 0.3s; */
 		}
 		.stack {
 			font-size: 18px;
@@ -71,7 +93,7 @@
 					pointer-events: none;
 					z-index: -1;
 					opacity: 0;
-					transition: 0.3s;
+					/* transition: 0.3s; */
 					transform: translateX(-10px);
 				}
 
@@ -85,7 +107,7 @@
 					color: var(--text-primary);
 					padding: 10px;
 					opacity: 0.3;
-					transition: 0.3s;
+					/* transition: 0.3s; */
 
 					svg * {
 						stroke: var(--text-primary);
@@ -142,5 +164,82 @@
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
+	}
+
+	&--collapsed {
+		.leftMenu__wrapper {
+			width: 80px;
+			padding: 14px 12px;
+		}
+
+		.leftMenu__toggle {
+			transform: rotate(0deg);
+		}
+
+		.avatar__wrapper .decor {
+			width: 10px;
+			height: 10px;
+		}
+
+		.avatar {
+			margin: 0px;
+			text-align: center;
+			transform: translateY(50px);
+
+			.name,
+			.stack {
+				opacity: 0;
+				transform: translateY(-6px);
+				pointer-events: none;
+			}
+		}
+
+		.menu ul li a {
+			justify-content: center;
+
+			p {
+				display: none;
+			}
+		}
+
+		.leftMenu__btns {
+			align-items: center;
+			gap: 12px;
+
+			.btn {
+				width: 48px;
+				height: 48px;
+				padding: 0;
+			}
+
+			.shiny-text {
+				&__label {
+					display: none;
+				}
+			}
+		}
+
+		.theme-button {
+			width: 48px;
+			height: 48px;
+			min-width: 48px;
+			padding: 0;
+
+			.dark {
+				display: none;
+			}
+
+			.label,
+			.thumb {
+				display: none;
+			}
+		}
+
+		.tooltip-container {
+			display: block;
+		}
+		.socBtn {
+			display: none;
+		}
 	}
 }

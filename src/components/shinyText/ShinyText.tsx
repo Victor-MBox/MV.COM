@@ -1,7 +1,9 @@
+import { ReactNode } from 'react'
 import './ShinyText.scss'
 
 interface ShinyTextProps {
 	text: string
+	icon?: ReactNode
 	disabled?: boolean
 	speed?: number
 	className?: string
@@ -9,6 +11,7 @@ interface ShinyTextProps {
 
 const ShinyText: React.FC<ShinyTextProps> = ({
 	text,
+	icon,
 	disabled = false,
 	speed = 5,
 	className = '',
@@ -16,11 +19,11 @@ const ShinyText: React.FC<ShinyTextProps> = ({
 	const animationDuration = `${speed}s`
 
 	return (
-		<div
-			className={`shiny-text ${disabled ? 'disabled' : ''} ${className}`}
-			style={{ animationDuration }}
-		>
-			{text}
+		<div className={`shiny-text ${disabled ? 'disabled' : ''} ${className}`}>
+			{icon && <span className='shiny-text__icon'>{icon}</span>}
+			<span className='shiny-text__label' style={{ animationDuration }}>
+				{text}
+			</span>
 		</div>
 	)
 }
