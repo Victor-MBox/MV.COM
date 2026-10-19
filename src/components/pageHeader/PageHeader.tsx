@@ -9,10 +9,14 @@ type Props = {
 	subtitle?: string
 	crumbs?: Crumb[]
 	aside?: ReactNode
+	/** Иллюстрация над заголовком (страницы офферов) */
+	icon?: ReactNode
+	/** Кнопки под подзаголовком */
+	actions?: ReactNode
 	className?: string
 }
 
-export default function PageHeader({ title, subtitle, crumbs, aside, className = '' }: Props) {
+export default function PageHeader({ title, subtitle, crumbs, aside, icon, actions, className = '' }: Props) {
 	return (
 		<section className={`pageHeader ${className}`.trim()}>
 			<div className='pageHeader__content'>
@@ -26,8 +30,10 @@ export default function PageHeader({ title, subtitle, crumbs, aside, className =
 						))}
 					</nav>
 				)}
+				{icon && <div className='pageHeader__icon'>{icon}</div>}
 				<h1 className='pageHeader__title'>{title}</h1>
 				{subtitle && <p className='pageHeader__subtitle'>{subtitle}</p>}
+				{actions && <div className='pageHeader__actions'>{actions}</div>}
 			</div>
 			{aside && <div className='pageHeader__aside'>{aside}</div>}
 		</section>

@@ -1,0 +1,112 @@
+// Обзор услуг: офферы, «Сколько стоит», процесс, FAQ
+
+.servicesPage {
+	&__offers {
+		margin-bottom: 90px;
+	}
+
+	&__section {
+		margin-bottom: 90px;
+		scroll-margin-top: 20px;
+	}
+}
+
+// Таблица условий: подпись слева, содержимое справа, строки с разделителями
+.priceSheet {
+	border-top: 1px solid var(--border-cards);
+
+	> div {
+		display: grid;
+		grid-template-columns: 260px minmax(0, 1fr);
+		gap: 16px 40px;
+		padding: 26px 0;
+		border-bottom: 1px solid var(--border-cards);
+	}
+
+	dt {
+		font-weight: 600;
+		font-size: 18px;
+		line-height: 125%;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+	}
+
+	dd {
+		font-size: 16px;
+		line-height: 150%;
+		letter-spacing: -0.02em;
+		color: var(--text-body);
+		max-width: 760px;
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+		}
+	}
+
+	&__cols {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px 32px;
+	}
+
+	&__check {
+		flex: 0 0 20px;
+		width: 20px;
+		height: 20px;
+		margin-top: 2px;
+		color: #77ea31;
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	&__inline li {
+		display: inline;
+
+		&:not(:last-child)::after {
+			content: ' · ';
+			color: var(--text-decor);
+		}
+	}
+
+	&__models {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 24px;
+
+		strong {
+			display: block;
+			font-weight: 600;
+			font-size: 22px;
+			line-height: 100%;
+			letter-spacing: -0.04em;
+			color: var(--text-title);
+			margin-bottom: 6px;
+		}
+
+		span {
+			display: block;
+			font-size: 13px;
+			letter-spacing: -0.02em;
+			color: var(--text-decor);
+			margin-bottom: 10px;
+		}
+
+		p {
+			font-size: 14px;
+			line-height: 150%;
+			letter-spacing: -0.02em;
+			color: var(--text-body);
+		}
+	}
+}

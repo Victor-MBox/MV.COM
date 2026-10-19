@@ -3,24 +3,26 @@ import './TitleRow.scss'
 
 type TitleRowProps = {
 	title?: string
+	/** Подпись текстовой ссылки справа, стрелка добавляется сама: «Все услуги» → «Все услуги →» */
 	btn?: string
 	to?: string
 	onClick?: () => void
 }
 
+/** Строка секции: заголовок H2 слева, текстовая ссылка в акцентном цвете справа */
 export default function TitleRow({ title, btn, to, onClick }: TitleRowProps) {
 	return (
 		<div className='titlerow'>
-			{title && <div className='title'>{title}</div>}
+			{title && <h2 className='title'>{title}</h2>}
 
 			{btn && to && (
-				<Link to={to} className='btn btn_dark'>
-					<span>{btn}</span>
+				<Link to={to} className='textLink'>
+					{btn} →
 				</Link>
 			)}
 			{btn && !to && (
-				<button className='btn btn_dark' type='button' onClick={onClick}>
-					<span>{btn}</span>
+				<button className='textLink' type='button' onClick={onClick}>
+					{btn} →
 				</button>
 			)}
 		</div>

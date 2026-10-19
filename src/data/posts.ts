@@ -12,11 +12,10 @@ export type Post = {
 	date: string // ISO
 	readingTime: number // минут
 	tags: string[]
-	cover: string
+	cover?: string
 	content: PostBlock[]
 }
 
-const pic = (seed: string) => `https://picsum.photos/seed/${seed}/1200/700`
 
 export const POSTS: Post[] = [
 	{
@@ -27,7 +26,6 @@ export const POSTS: Post[] = [
 		date: '2025-09-14',
 		readingTime: 7,
 		tags: ['GSAP', 'Производительность'],
-		cover: pic('post-gsap'),
 		content: [
 			{
 				type: 'p',
@@ -65,7 +63,6 @@ export const POSTS: Post[] = [
 		date: '2025-07-02',
 		readingTime: 9,
 		tags: ['React', 'Дизайн-система'],
-		cover: pic('post-ds'),
 		content: [
 			{
 				type: 'p',
@@ -95,7 +92,6 @@ export const POSTS: Post[] = [
 		date: '2025-04-18',
 		readingTime: 6,
 		tags: ['CRM', 'Интеграции'],
-		cover: pic('post-crm'),
 		content: [
 			{
 				type: 'p',
@@ -121,7 +117,6 @@ export const POSTS: Post[] = [
 		date: '2025-02-09',
 		readingTime: 8,
 		tags: ['WordPress', 'Производительность'],
-		cover: pic('post-wp'),
 		content: [
 			{
 				type: 'p',

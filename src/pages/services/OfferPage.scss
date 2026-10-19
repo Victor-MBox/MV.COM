@@ -1,0 +1,219 @@
+@use '../../assets/style/glow';
+
+// Страница оффера
+
+// Шапка продолжает карточку: та же иллюстрация и то же свечение
+.offerHeader {
+	&--glow-1,
+	&--glow-3 {
+		--offer-accent: var(--accent-blue);
+
+		&::before {
+			@include glow.spot(0.5);
+			@include glow.spot-blue;
+			top: -120px;
+			left: -160px;
+		}
+	}
+
+	&--glow-2 {
+		--offer-accent: var(--accent-orange);
+
+		&::before {
+			@include glow.spot(0.5);
+			@include glow.spot-orange;
+			top: -120px;
+			left: -160px;
+		}
+	}
+}
+
+
+.offerPage {
+	&__section {
+		margin-bottom: 90px;
+	}
+
+	&__h2 {
+		font-weight: 600;
+		font-size: 32px;
+		line-height: 100%;
+		letter-spacing: -0.05em;
+		color: var(--text-title);
+		margin-bottom: 28px;
+	}
+
+	&__check {
+		flex: 0 0 22px;
+		width: 22px;
+		height: 22px;
+		margin-top: 1px;
+		color: #77ea31;
+
+		svg {
+			width: 22px;
+			height: 22px;
+		}
+	}
+
+	&__outcomes {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 40px;
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			padding: 16px 0;
+			border-top: 1px solid var(--border-cards);
+			font-size: 16px;
+			line-height: 150%;
+			letter-spacing: -0.02em;
+			color: var(--text-title);
+		}
+	}
+
+	&__projects {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	// Внутри аккордеона
+	&__tech {
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+		padding-top: 6px;
+
+		h3 {
+			font-weight: 600;
+			font-size: 18px;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+			margin-bottom: 14px;
+		}
+
+		.stackChips {
+			padding-left: 0;
+			list-style: none;
+		}
+	}
+
+	&__tech &__subservices {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px 32px;
+		padding-left: 0;
+		list-style: none;
+
+		li {
+			padding-top: 12px;
+			border-top: 1px solid var(--border-cards);
+		}
+
+		strong {
+			display: block;
+			font-weight: 600;
+			font-size: 15px;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+			margin-bottom: 4px;
+		}
+
+		span {
+			font-size: 14px;
+			line-height: 145%;
+			letter-spacing: -0.02em;
+			color: var(--text-body);
+		}
+	}
+
+	&__tech &__notes {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding-left: 0;
+		list-style: none;
+
+		li {
+			font-size: 15px;
+			line-height: 150%;
+			letter-spacing: -0.02em;
+			color: var(--text-body);
+		}
+	}
+}
+
+// Цена в шапке
+.offerPrice {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 250px;
+	max-width: 320px;
+	padding: 24px 26px;
+	border-radius: 18px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-primary);
+
+	strong {
+		font-weight: 600;
+		font-size: 28px;
+		line-height: 110%;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+	}
+
+	&__term {
+		font-size: 15px;
+		letter-spacing: -0.02em;
+		color: var(--text-title);
+	}
+
+	&__detail {
+		font-size: 13px;
+		line-height: 140%;
+		letter-spacing: -0.02em;
+		color: var(--text-body);
+	}
+
+	.btn {
+		margin-top: 12px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 24px;
+	}
+}
+
+// Кому подходит / не подходит — две колонки строк
+.offerFit {
+	display: grid;
+	grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+	gap: 40px;
+	align-items: start;
+
+	&__list li {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 14px 0;
+		border-top: 1px solid var(--border-cards);
+		font-size: 16px;
+		line-height: 145%;
+		letter-spacing: -0.02em;
+		color: var(--text-title);
+	}
+
+	&__list--no li {
+		color: var(--text-body);
+	}
+
+	&__dash {
+		flex: 0 0 22px;
+		text-align: center;
+		color: var(--text-decor);
+	}
+}

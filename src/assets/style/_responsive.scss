@@ -2,23 +2,25 @@
 
 @media (max-width: 1200px) {
 	body {
-	.homeBanner {
-		&__title {
-			font-size: 48px;
-			width: 480px;
+	.homeBanner__title {
+		font-size: 64px;
+	}
+
+	.offerTiles {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+
+		> :last-child {
+			grid-column: span 2;
 		}
-		img {
-			right: 0;
-		}
+	}
+
+	.whyMe__grid,
+	.homePosts {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.pageHeader__title {
 		font-size: 44px;
-	}
-
-	.aboutPage__services,
-	.project__stages {
-		grid-template-columns: 1fr;
 	}
 
 	.aboutPage__process,
@@ -34,15 +36,22 @@
 
 @media (max-width: 992px) {
 	body {
-	.about,
 	.services,
 	.portfolioPage__grid,
-	.project__intro,
 	.project__nav,
 	.contactsPage__grid,
 	.post__layout,
 	.blogFeatured {
 		grid-template-columns: 1fr;
+	}
+
+	.processList {
+		--gap: 24px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+
+		li:nth-child(2n)::before {
+			right: 0;
+		}
 	}
 
 	.services .card:nth-child(3) {
@@ -54,16 +63,45 @@
 	}
 
 	.homeBanner {
-		height: auto;
-		padding: 40px;
+		padding: 40px 0 36px;
 
 		&__title {
-			width: 100%;
+			font-size: 52px;
 		}
 
-		img {
+		&__row {
+			grid-template-columns: 1fr;
+			gap: 28px;
+		}
+	}
+
+	.projectSpotlight {
+		grid-template-columns: 1fr;
+
+		&__media {
+			min-height: 0;
+			aspect-ratio: 16 / 11;
+		}
+	}
+
+	.processList--rows li {
+		grid-template-columns: 72px minmax(0, 1fr);
+
+		p {
+			grid-column: 2;
+		}
+	}
+
+	.hrBlock {
+		grid-template-columns: 1fr;
+
+		&__photo {
 			display: none;
 		}
+	}
+
+	.homeFaq {
+		grid-template-columns: 1fr;
 	}
 
 	.pageHeader {
@@ -76,26 +114,10 @@
 		}
 	}
 
-	.project__tags {
-		justify-content: flex-start;
-		max-width: none;
-	}
-
 	.post__sidebar {
 		position: static;
 	}
 
-	.numbersCard {
-		flex-wrap: wrap;
-
-		div {
-			width: calc(50% - 5px);
-		}
-	}
-
-	.skills {
-		gap: 24px 40px;
-	}
 	}
 }
 
@@ -195,8 +217,8 @@
 				padding: 0 20px !important;
 			}
 
-			.shiny-text__label {
-				display: inline-block !important;
+			.leftMenu__contactText {
+				display: inline !important;
 			}
 
 			.socBtn {
@@ -208,11 +230,63 @@
 	}
 
 	.homeBanner {
-		padding: 30px;
+		padding: 24px 0 28px;
 
 		&__title {
-			font-size: 36px;
+			font-size: 40px;
+			margin-bottom: 28px;
 		}
+
+		&__subtitle {
+			font-size: 17px;
+		}
+	}
+
+	.homeProof {
+		grid-template-columns: 1fr;
+		gap: 0;
+
+		> div {
+			padding: 18px 0;
+		}
+
+		> div + div {
+			border-top: 1px solid var(--border-cards);
+		}
+
+		strong {
+			font-size: 32px;
+		}
+	}
+
+	.offerTiles {
+		grid-template-columns: 1fr;
+
+		.offerTile--wide,
+		> :last-child {
+			grid-column: auto;
+		}
+	}
+
+	.homePosts {
+		grid-template-columns: 1fr;
+	}
+
+	.projectSpotlight {
+		padding: 24px;
+
+		&__title {
+			font-size: 32px;
+		}
+
+		&__facts {
+			grid-template-columns: 1fr;
+			gap: 14px;
+		}
+	}
+
+	.hrBlock {
+		padding: 24px;
 	}
 
 	.pageHeader {
@@ -236,10 +310,10 @@
 	}
 
 	.footerBanner {
-		padding: 30px 20px;
+		padding: 36px 24px;
 
 		&__title {
-			font-size: 28px;
+			font-size: 32px;
 		}
 	}
 
@@ -263,19 +337,10 @@
 		}
 	}
 
-	.skills {
-		grid-template-columns: 1fr;
-	}
-
 	.aboutPage__process,
 	.project__metrics,
-	.blogGrid,
-	.numbersCard div {
+	.blogGrid {
 		grid-template-columns: 1fr;
-	}
-
-	.numbersCard div {
-		width: 100%;
 	}
 
 	.contactForm__row {
@@ -335,13 +400,26 @@
 @media (max-width: 560px) {
 	body {
 	.homeBanner__title {
-		font-size: 30px;
+		font-size: 34px;
 	}
 
 	.homeBanner__subtitle {
-		flex-wrap: wrap;
 		font-size: 16px;
-		margin-bottom: 30px;
+	}
+
+	.processList--rows li {
+		grid-template-columns: 1fr;
+		gap: 8px;
+
+		p {
+			grid-column: auto;
+		}
+	}
+
+	.homeBanner__actions .btn,
+	.footerBanner__actions .btn {
+		width: 100%;
+		justify-content: center;
 	}
 
 	.pageHeader__title {
@@ -359,197 +437,105 @@
 	}
 }
 
-// Услуги, страница проекта, бренд-блок
+// Услуги: офферы, таблица условий, страница оффера
 @media (max-width: 1200px) {
 	body {
-		.servicesGroup__grid,
-		.servicesPage__models {
+		.project__facts dl {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		.project__facts {
-			flex-direction: column;
-			align-items: stretch;
-
-			dl {
-				grid-template-columns: repeat(2, minmax(0, 1fr));
-				gap: 24px;
-			}
+			gap: 24px;
 		}
 	}
 }
 
 @media (max-width: 992px) {
 	body {
-		.servicesGroup__head {
+		.offerGrid,
+		.offerFit,
+		.offerPage__outcomes,
+		.offerPage__tech .offerPage__subservices,
+		.priceSheet__cols,
+		.priceSheet__models,
+		.whyMe__grid,
+		.aboutStack {
 			grid-template-columns: 1fr;
-			gap: 14px;
 		}
 
-		.project__about {
+		.priceSheet > div {
 			grid-template-columns: 1fr;
-			gap: 36px;
+			gap: 12px;
 		}
 
-		.project__stages li {
-			grid-template-columns: 50px minmax(0, 1fr);
-			gap: 12px 20px;
+		.offerPrice {
+			max-width: none;
+			width: 100%;
+		}
 
-			p {
-				grid-column: 2;
-			}
+		.project__aside {
+			align-items: flex-start;
+		}
+
+		.project__brief li {
+			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+
+		.project__techBody .project__featureList {
+			grid-template-columns: 1fr;
+		}
+
+		.homeProjects__grid {
+			grid-template-columns: 1fr;
 		}
 	}
 }
 
 @media (max-width: 768px) {
 	body {
-		.servicesGroup__grid,
-		.servicesPage__models {
+		.offerGrid {
 			grid-template-columns: 1fr;
-		}
 
-		.servicesPage__nav {
-			position: static;
-			overflow-x: auto;
+			> :last-child {
+				display: flex;
 
-			.chips {
-				flex-wrap: nowrap;
-			}
-
-			.chip {
-				white-space: nowrap;
+				.offerCard__art {
+					width: 56px;
+					height: 56px;
+					margin-bottom: 8px;
+				}
 			}
 		}
 
-		.servicesGroup__head h2 {
+		.offerPage__h2,
+		.project__h2 {
 			font-size: 28px;
+		}
+
+		.offerPage__section,
+		.servicesPage__section,
+		.servicesPage__offers,
+		.homeSection {
+			margin-bottom: 70px;
 		}
 
 		.project__facts dl {
 			grid-template-columns: 1fr;
 		}
 
-		.project__lead p,
-		.project__stages p {
+		.project__brief p {
 			font-size: 16px;
 		}
 
-		.project__gallery .titlerow .project__hint {
-			text-align: left;
+		.project__live {
+			white-space: normal;
 		}
 
 		.leftMenu--compact .brand {
 			padding: 0;
 		}
-	}
-}
-
-// Услуги: обзор, направление, услуга
-@media (max-width: 1200px) {
-	body {
-		.serviceGrid,
-		.pricing__grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		.direction__head {
-			grid-template-columns: minmax(0, 1fr) 300px;
-		}
-
-		.steps {
-			grid-template-columns: 1fr;
-
-			&__list {
-				flex-direction: row;
-				flex-wrap: wrap;
-			}
-
-			&__item {
-				width: auto;
-				flex: 1 1 200px;
-			}
-		}
-	}
-}
-
-@media (max-width: 992px) {
-	body {
-		.direction__head,
-		.dirHero,
-		.svcHero,
-		.outcome,
-		.block--split,
-		.steps__content {
-			grid-template-columns: 1fr;
-		}
-
-		.direction__image,
-		.dirHero__image {
-			min-height: 220px;
-			max-height: 320px;
-		}
-
-		.steps__image {
-			min-height: 200px;
-			max-height: 260px;
-		}
-
-		.priceCard {
-			width: 100%;
-		}
-	}
-}
-
-@media (max-width: 768px) {
-	body {
-		.serviceGrid,
-		.pricing__grid,
-		.projectsRow {
-			grid-template-columns: 1fr;
-		}
-
-		.servicesNav {
-			position: static;
-			overflow-x: auto;
-
-			.chips {
-				flex-wrap: nowrap;
-			}
-
-			.chip {
-				white-space: nowrap;
-			}
-		}
-
-		.direction__intro {
-			padding: 26px;
-
-			h2 {
-				font-size: 28px;
-			}
-		}
-
-		.direction__actions {
-			flex-wrap: wrap;
-		}
-
-		.outcome {
-			padding: 26px;
-
-			p {
-				font-size: 20px;
-			}
-		}
-
-		.steps__text {
-			padding: 22px;
-		}
 
 		.flow {
 			flex-direction: column;
 			align-items: stretch;
-			padding: 20px;
 
 			&__node {
 				white-space: normal;
@@ -569,6 +555,43 @@
 					transform: rotate(135deg);
 				}
 			}
+		}
+
+		.portfolio__facts {
+			grid-template-columns: 1fr;
+			gap: 14px;
+
+			li {
+				flex-direction: row;
+				align-items: baseline;
+				gap: 10px;
+			}
+		}
+
+		.hrBlock__actions .btn {
+			flex: 1 1 160px;
+			justify-content: center;
+		}
+
+		.aboutPage__actions .btn {
+			flex: 1 1 160px;
+			justify-content: center;
+		}
+	}
+}
+
+@media (max-width: 560px) {
+	body {
+		.processList {
+			grid-template-columns: 1fr;
+
+			li::before {
+				display: none;
+			}
+		}
+
+		.whyMe__proof {
+			font-size: 22px;
 		}
 	}
 }

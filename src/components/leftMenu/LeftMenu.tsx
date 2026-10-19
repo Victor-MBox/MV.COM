@@ -8,7 +8,6 @@ import avatar from '../../resources/avatar.png'
 // components
 import ThemeButton from '../themeButton/ThemeButton'
 import SocBtn from '../socBtn/SocBtn'
-import ShinyText from '../shinyText/ShinyText'
 import { useContactModal } from '../contactModal/ContactModalContext'
 
 // scss
@@ -101,21 +100,6 @@ const MENU: MenuItem[] = [
 		),
 	},
 	{
-		to: '/blog',
-		label: 'Блог',
-		icon: (
-			<svg {...svgProps}>
-				<path
-					d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.5997 2.37562 15.1116 3.04346 16.4525C3.22094 16.8088 3.28001 17.2161 3.17712 17.6006L2.58151 19.8267C2.32295 20.793 3.20701 21.677 4.17335 21.4185L6.39939 20.8229C6.78393 20.72 7.19121 20.7791 7.54753 20.9565C8.88837 21.6244 10.4003 22 12 22Z'
-					stroke='white'
-					strokeWidth='2'
-				/>
-				<path d='M8 10.5H16' stroke='white' strokeWidth='2' strokeLinecap='round' />
-				<path d='M8 14H13.5' stroke='white' strokeWidth='2' strokeLinecap='round' />
-			</svg>
-		),
-	},
-	{
 		to: '/contacts',
 		label: 'Контакты',
 		icon: (
@@ -168,7 +152,7 @@ export default function LeftMenu() {
 							<div className='decor'></div>
 						</div>
 						<div className='name'>Виктор Мацаков</div>
-						<div className='stack'>Full-stack developer</div>
+						<div className='stack'>Full-stack разработчик</div>
 					</div>
 				) : (
 					<Link to='/' className='brand' aria-label='На главную'>
@@ -178,7 +162,7 @@ export default function LeftMenu() {
 						</span>
 						<span className='brand__text'>
 							<span className='brand__name'>Виктор Мацаков</span>
-							<span className='brand__role'>Full-stack developer</span>
+							<span className='brand__role'>Full-stack разработчик</span>
 						</span>
 					</Link>
 				)}
@@ -198,8 +182,19 @@ export default function LeftMenu() {
 
 				<div className='leftMenu__btns'>
 					<ThemeButton />
-					<button className='btn' type='button' onClick={() => open()} title='Связаться'>
-						<ShinyText text='Связаться' icon='💬' disabled={false} speed={3} className='custom-class' />
+					<button className='btn leftMenu__contact' type='button' onClick={() => open()} title='Обсудить проект'>
+						<span className='btn__label'>
+							<svg viewBox='0 0 24 24' fill='none' aria-hidden='true'>
+								<path
+									d='M12 21a9 9 0 1 0-8.2-5.3L3 21l4.3-.8A9 9 0 0 0 12 21Z'
+									stroke='currentColor'
+									strokeWidth='1.8'
+									strokeLinejoin='round'
+								/>
+								<path d='M8.5 10.5h7M8.5 13.5h4.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' />
+							</svg>
+							<span className='leftMenu__contactText'>Обсудить проект</span>
+						</span>
 					</button>
 
 					<SocBtn />

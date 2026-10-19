@@ -37,7 +37,31 @@
 		}
 	}
 
+	&__section {
+		margin-bottom: 90px;
+		scroll-margin-top: 20px;
+	}
+
+	// Три абзаца о себе
+	&__intro {
+		margin-top: 50px;
+		max-width: 720px;
+
+		p {
+			font-size: 18px;
+			line-height: 160%;
+			letter-spacing: -0.02em;
+			color: var(--text-body);
+
+			& + p {
+				margin-top: 20px;
+			}
+		}
+	}
+
 	&__principles {
+		min-height: auto;
+
 		ul {
 			display: flex;
 			flex-direction: column;
@@ -49,8 +73,8 @@
 		li {
 			position: relative;
 			padding-left: 22px;
-			font-size: 15px;
-			line-height: 135%;
+			font-size: 16px;
+			line-height: 140%;
 			letter-spacing: -0.03em;
 			color: var(--text-body);
 
@@ -67,57 +91,30 @@
 		}
 	}
 
-	&__section {
-		margin-bottom: 50px;
-		scroll-margin-top: 20px;
-	}
-
 	&__company {
 		font-weight: 400;
 		color: var(--text-body);
 	}
+}
 
-	&__process {
+// Стек группами: название группы слева, теги справа
+.aboutStack {
+	border-top: 1px solid var(--border-cards);
+
+	> div {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 20px;
-		counter-reset: step;
+		grid-template-columns: 220px minmax(0, 1fr);
+		gap: 14px 40px;
+		padding: 22px 0;
+		border-bottom: 1px solid var(--border-cards);
+		align-items: start;
+	}
 
-		li {
-			padding: 30px;
-			border-radius: 18px;
-			border: 1px solid var(--border-cards);
-			background: var(--bg-primary);
-			position: relative;
-			transition: border-color 0.2s, transform 0.25s;
-
-			&:hover {
-				border-color: var(--btn-border-color);
-				transform: translateY(-3px);
-			}
-		}
-
-		&-step {
-			display: block;
-			font-size: 14px;
-			letter-spacing: 0.1em;
-			color: var(--text-decor);
-			margin-bottom: 36px;
-		}
-
-		h3 {
-			font-weight: 600;
-			font-size: 20px;
-			letter-spacing: -0.04em;
-			color: var(--text-title);
-			margin-bottom: 12px;
-		}
-
-		p {
-			font-size: 14px;
-			line-height: 145%;
-			letter-spacing: -0.03em;
-			color: var(--text-body);
-		}
+	dt {
+		font-weight: 600;
+		font-size: 18px;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+		padding-top: 6px;
 	}
 }

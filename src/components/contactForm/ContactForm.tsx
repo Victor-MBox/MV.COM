@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { submitContact } from '../../api/contact'
-import { SERVICES, SERVICE_GROUPS, getServicesByGroup } from '../../data/services'
+import { OFFERS } from '../../data/offers'
+import { BUDGET_RANGES } from '../../data/pricing'
 import './ContactForm.scss'
 
 type Props = {
@@ -17,6 +18,7 @@ export default function ContactForm({ initialTopic = '', onDone, compact = false
 	const [name, setName] = useState('')
 	const [contact, setContact] = useState('')
 	const [topic, setTopic] = useState(initialTopic)
+	const [budget, setBudget] = useState('')
 	const [message, setMessage] = useState('')
 	const [consent, setConsent] = useState(false)
 	const [errors, setErrors] = useState<Errors>({})
@@ -44,7 +46,13 @@ export default function ContactForm({ initialTopic = '', onDone, compact = false
 		if (Object.keys(next).length) return
 		setStatus('sending')
 		try {
-			await submitContact({ name: name.trim(), contact: contact.trim(), topic, message: message.trim() })
+			await submitContact({
+				name: name.trim(),
+				contact: contact.trim(),
+				topic,
+				budget: budget || undefined,
+				message: message.trim(),
+			})
 			setStatus('sent')
 		} catch {
 			setStatus('error')
@@ -109,27 +117,41 @@ export default function ContactForm({ initialTopic = '', onDone, compact = false
 				</label>
 			</div>
 
-			<label className='field'>
-				<span className='field__label'>Что нужно сделать</span>
-				<div className='field__select'>
-					<select name='topic' value={topic} onChange={e => setTopic(e.target.value)}>
-						<option value=''>Выберите направление</option>
-						{initialTopic && !SERVICES.some(s => s.title === initialTopic) && (
-							<option value={initialTopic}>{initialTopic}</option>
-						)}
-						{SERVICE_GROUPS.map(g => (
-							<optgroup key={g.key} label={g.title}>
-								{getServicesByGroup(g.key).map(s => (
-									<option key={s.key} value={s.title}>
-										{s.title}
-									</option>
-								))}
-							</optgroup>
-						))}
-						<option value='Другое'>Другое</option>
-					</select>
-				</div>
-			</label>
+			<div className='contactForm__row'>
+				<label className='field'>
+					<span className='field__label'>Что нужно сделать</span>
+					<div className='field__select'>
+						<select name='topic' value={topic} onChange={e => setTopic(e.target.value)}>
+							<option value=''>Выберите направление</option>
+							{initialTopic && !OFFERS.some(o => o.title === initialTopic) && (
+								<option value={initialTopic}>{initialTopic}</option>
+							)}
+							{OFFERS.map(o => (
+								<option key={o.key} value={o.title}>
+									{o.title}
+								</option>
+							))}
+							<option value='Другое'>Другое</option>
+						</select>
+					</div>
+				</label>
+
+				<label className='field'>
+					<span className='field__label'>
+						Бюджет <span className='field__hint'>необязательно</span>
+					</span>
+					<div className='field__select'>
+						<select name='budget' value={budget} onChange={e => setBudget(e.target.value)}>
+							<option value=''>Не выбран</option>
+							{BUDGET_RANGES.map(b => (
+								<option key={b} value={b}>
+									{b}
+								</option>
+							))}
+						</select>
+					</div>
+				</label>
+			</div>
 
 			<label className='field'>
 				<span className='field__label'>Сообщение</span>

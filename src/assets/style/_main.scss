@@ -1,9 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Jura:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@300..700&family=Golos+Text:wght@400..600&display=swap');
 
 * {
 	box-sizing: border-box;
-	font-family: 'Jura', sans-serif;
+	font-family: var(--font-body);
 	scroll-behavior: smooth;
+}
+
+// Заголовки — Geologica, текст — Golos Text (концепт D «Типографика»)
+h1,
+h2,
+h3,
+.title {
+	font-family: var(--font-title);
 }
 
 button,
@@ -57,32 +65,22 @@ body::after {
 	}
 }
 
-// HOME PAGE
-.about {
-	display: grid;
-	grid-template-columns: 7fr 3fr;
-	gap: 20px;
-}
-
-.portfolio__wrapper {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-}
-
-.portfolio__more {
-	display: flex;
-	justify-content: center;
-	margin: -20px 0 50px;
-}
-
 .page {
 	min-height: 60dvh;
 }
 
-.titlerow .btn {
-	display: inline-flex;
-	align-items: center;
+// Текстовая ссылка «Все услуги →» в акцентном цвете: строки заголовков, кейс, блок HR
+.textLink {
+	font-size: 15px;
+	letter-spacing: -0.01em;
+	color: var(--accent-blue);
+	white-space: nowrap;
+	padding: 0;
+	transition: opacity 0.2s;
+
+	&:hover {
+		opacity: 0.8;
+	}
 }
 
 // 404
@@ -131,42 +129,6 @@ body::after {
 	}
 }
 
-// Маленький заголовок-ярлык над блоком
-.eyebrow {
-	display: block;
-	font-size: 13px;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--text-decor);
-	margin-bottom: 16px;
-}
-
-// Счётчик в шапке страницы
-.pageStat {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
-	padding: 24px 32px;
-	border-radius: 18px;
-	border: 1px solid var(--border-cards);
-	background: var(--bg-primary);
-
-	strong {
-		font-weight: 600;
-		font-size: 48px;
-		line-height: 100%;
-		letter-spacing: -0.04em;
-		color: var(--text-title);
-	}
-
-	span {
-		font-size: 14px;
-		color: var(--text-body);
-		white-space: nowrap;
-	}
-}
-
 // Фильтры-чипсы
 .chips {
 	display: flex;
@@ -187,14 +149,6 @@ body::after {
 	color: var(--text-body);
 	transition: color 0.2s, border-color 0.2s, background 0.2s;
 
-	&__count {
-		font-size: 12px;
-		padding: 3px 7px;
-		border-radius: 6px;
-		background: var(--bg-menu-a);
-		color: var(--text-decor);
-	}
-
 	&:hover {
 		color: var(--text-title);
 		border-color: var(--btn-border-color);
@@ -204,10 +158,21 @@ body::after {
 		color: var(--bg-menu-a);
 		background: var(--text-primary);
 		border-color: var(--text-primary);
+	}
+}
 
-		.chip__count {
-			background: rgba(128, 128, 128, 0.25);
-			color: inherit;
-		}
+// Теги технологий
+.stackChips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+
+	li {
+		padding: 9px 12px;
+		border-radius: 8px;
+		background: var(--bg-svg-steck);
+		color: var(--text-title);
+		font-size: 14px;
+		letter-spacing: -0.02em;
 	}
 }

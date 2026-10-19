@@ -1,18 +1,38 @@
-.project {
-	&__tags {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: flex-end;
-		gap: 8px;
-		max-width: 260px;
+// Страница кейса: одна читаемая колонка, факты полосой, списки с разделителями, техника в аккордеоне
 
-		.tag {
-			padding: 10px 12px;
-			border-radius: 8px;
-			background: var(--bg-primary);
-			border: 1px solid var(--border-cards);
-			color: var(--text-body);
-			font-size: 14px;
+.project {
+	&__aside {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 14px;
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+		}
+	}
+
+	&__live {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 11px 14px;
+		border-radius: 10px;
+		border: 1px solid var(--border-cards);
+		background: var(--bg-primary);
+		font-size: 14px;
+		letter-spacing: -0.02em;
+		color: var(--text-title);
+		white-space: nowrap;
+
+		i {
+			flex: 0 0 auto;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: #77ea31;
+			box-shadow: 0 0 0 4px rgba(119, 234, 49, 0.18);
 		}
 	}
 
@@ -32,21 +52,17 @@
 		}
 	}
 
-	&__label {
-		display: block;
-		font-size: 13px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--text-decor);
-		margin-bottom: 20px;
+	&__h2 {
+		font-weight: 600;
+		font-size: 32px;
+		line-height: 100%;
+		letter-spacing: -0.05em;
+		color: var(--text-title);
+		margin-bottom: 28px;
 	}
 
-	// Краткая сводка одной полосой
+	// Факты одной полосой
 	&__facts {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 30px;
 		padding: 26px 30px;
 		border-radius: 18px;
 		border: 1px solid var(--border-cards);
@@ -55,16 +71,15 @@
 
 		dl {
 			display: grid;
-			grid-template-columns: repeat(4, auto);
-			gap: 48px;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 30px;
 		}
 
 		dt {
 			font-size: 13px;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
+			letter-spacing: -0.02em;
 			color: var(--text-decor);
-			margin-bottom: 10px;
+			margin-bottom: 8px;
 		}
 
 		dd {
@@ -73,51 +88,10 @@
 			letter-spacing: -0.03em;
 			color: var(--text-title);
 		}
-
-		.btn {
-			flex: 0 0 auto;
-			display: inline-flex;
-			align-items: center;
-		}
 	}
 
-	// Описание в одну читаемую колонку
-	&__about {
-		display: grid;
-		grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
-		gap: 60px;
-		margin-bottom: 70px;
-	}
-
-	&__lead p {
-		max-width: 680px;
-		font-size: 18px;
-		line-height: 165%;
-		letter-spacing: -0.02em;
-		color: var(--text-body);
-
-		& + p {
-			margin-top: 20px;
-		}
-	}
-
-	&__stack ul {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-
-		li {
-			padding: 9px 12px;
-			border-radius: 8px;
-			background: var(--bg-svg-steck);
-			color: var(--text-title);
-			font-size: 14px;
-			letter-spacing: -0.02em;
-		}
-	}
-
-	// Задача / Решение / Результат — список, а не карточки
-	&__stages {
+	// «Коротко»: задача / что сделал / результат — список с разделителями
+	&__brief {
 		margin-bottom: 70px;
 
 		ol {
@@ -126,10 +100,10 @@
 
 		li {
 			display: grid;
-			grid-template-columns: 70px 220px minmax(0, 1fr);
+			grid-template-columns: 220px minmax(0, 1fr);
 			gap: 30px;
 			align-items: start;
-			padding: 34px 0;
+			padding: 30px 0;
 			border-bottom: 1px solid var(--border-cards);
 		}
 
@@ -149,13 +123,6 @@
 			letter-spacing: -0.02em;
 			color: var(--text-body);
 		}
-	}
-
-	&__stage-num {
-		font-size: 14px;
-		letter-spacing: 0.1em;
-		color: var(--text-decor);
-		padding-top: 8px;
 	}
 
 	&__metrics {
@@ -195,19 +162,100 @@
 
 	&__gallery {
 		margin-bottom: 70px;
+	}
 
-		.titlerow {
-			margin-bottom: 24px;
-			align-items: baseline;
-			gap: 20px;
+	// Аккордеон «Как это устроено технически»
+	&__tech {
+		margin-bottom: 70px;
+	}
+
+	&__techBody {
+		display: flex;
+		flex-direction: column;
+		gap: 36px;
+		padding-top: 6px;
+
+		.stackChips {
+			padding-left: 0;
+			list-style: none;
 		}
 	}
 
-	&__hint {
-		font-size: 14px;
-		line-height: 130%;
+	&__techBlock h3 {
+		font-weight: 600;
+		font-size: 18px;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+		margin-bottom: 16px;
+	}
+
+	&__techBody &__featureList {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 18px 32px;
+		padding-left: 0;
+		list-style: none;
+
+		li {
+			padding-top: 14px;
+			border-top: 1px solid var(--border-cards);
+		}
+
+		h4 {
+			font-weight: 600;
+			font-size: 16px;
+			line-height: 120%;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+			margin-bottom: 6px;
+		}
+
+		p {
+			font-size: 15px;
+			line-height: 150%;
+			letter-spacing: -0.02em;
+			color: var(--text-body);
+		}
+	}
+
+	&__techBody &__steps {
+		display: flex;
+		flex-direction: column;
+		padding-left: 0;
+		list-style: none;
+
+		li {
+			display: grid;
+			grid-template-columns: 44px minmax(0, 1fr);
+			gap: 6px 16px;
+			align-items: start;
+			padding: 16px 0;
+			border-top: 1px solid var(--border-cards);
+		}
+
+		h4 {
+			font-weight: 600;
+			font-size: 16px;
+			line-height: 120%;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+		}
+
+		p {
+			grid-column: 2;
+			max-width: 680px;
+			font-size: 15px;
+			line-height: 150%;
+			letter-spacing: -0.02em;
+			color: var(--text-body);
+		}
+	}
+
+	&__step-num {
+		font-size: 13px;
+		letter-spacing: 0.08em;
 		color: var(--text-decor);
-		text-align: right;
+		padding-top: 3px;
 	}
 
 	&__cta {
@@ -282,8 +330,7 @@
 
 		&-dir {
 			font-size: 13px;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
+			letter-spacing: -0.02em;
 			opacity: 0.7;
 			margin-bottom: 10px;
 		}

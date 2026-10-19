@@ -166,6 +166,14 @@
 		gap: 20px;
 	}
 
+	&__contact .btn__label {
+		justify-content: center;
+
+		svg {
+			flex: 0 0 20px;
+		}
+	}
+
 	// Компактная шапка меню на внутренних страницах
 	.brand {
 		display: flex;
@@ -298,10 +306,8 @@
 				padding: 0;
 			}
 
-			.shiny-text {
-				&__label {
-					display: none;
-				}
+			.leftMenu__contactText {
+				display: none;
 			}
 		}
 

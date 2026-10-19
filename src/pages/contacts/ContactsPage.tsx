@@ -2,7 +2,8 @@ import { useState } from 'react'
 import PageHeader from '../../components/pageHeader/PageHeader'
 import ContactForm from '../../components/contactForm/ContactForm'
 import Accordion from '../../components/accordion/Accordion'
-import { CONTACTS, CONTACT_LINKS, FAQ } from '../../data/contacts'
+import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
+import { CONTACTS_FAQ_KEYS, getFaq } from '../../data/faq'
 import './ContactsPage.scss'
 
 type Channel = {
@@ -124,8 +125,8 @@ export default function ContactsPage() {
 					<div className='title'>Частые вопросы</div>
 				</div>
 				<Accordion
-					items={FAQ.map(f => ({
-						key: f.q,
+					items={getFaq(CONTACTS_FAQ_KEYS).map(f => ({
+						key: f.key,
 						head: f.q,
 						body: <p>{f.a}</p>,
 					}))}

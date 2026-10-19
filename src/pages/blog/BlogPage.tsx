@@ -16,9 +16,11 @@ export default function BlogPage() {
 			/>
 
 			<Link to={`/blog/${featured.slug}`} className='blogFeatured'>
-				<div className='blogFeatured__media'>
-					<img src={featured.cover} alt='' />
-				</div>
+				{featured.cover && (
+					<div className='blogFeatured__media'>
+						<img src={featured.cover} alt='' />
+					</div>
+				)}
 				<div className='blogFeatured__body'>
 					<div className='post__meta'>
 						<time dateTime={featured.date}>{formatDate(featured.date)}</time>
@@ -47,9 +49,11 @@ export default function BlogPage() {
 						transition={{ duration: 0.4, delay: i * 0.06 }}
 					>
 						<Link to={`/blog/${post.slug}`}>
-							<div className='postCard__media'>
-								<img src={post.cover} alt='' loading='lazy' />
-							</div>
+							{post.cover && (
+								<div className='postCard__media'>
+									<img src={post.cover} alt='' loading='lazy' />
+								</div>
+							)}
 							<div className='postCard__body'>
 								<div className='post__meta'>
 									<time dateTime={post.date}>{formatDate(post.date)}</time>

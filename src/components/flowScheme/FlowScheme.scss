@@ -3,10 +3,6 @@
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 10px;
-	padding: 26px 30px;
-	border-radius: 18px;
-	border: 1px solid var(--border-cards);
-	background: var(--bg-banner);
 
 	&__node {
 		display: inline-flex;

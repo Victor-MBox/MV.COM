@@ -1,0 +1,23 @@
+// Размытые цветные пятна из исходного дизайна карточек главной.
+// Элемент-носитель должен иметь position: relative и overflow: hidden, содержимое — z-index выше 0.
+
+@mixin spot($opacity: 0.9) {
+	content: '';
+	position: absolute;
+	width: 380px;
+	height: 190px;
+	border-radius: 50%;
+	pointer-events: none;
+	filter: blur(50px);
+	opacity: $opacity;
+	z-index: 0;
+	transition: opacity 0.35s;
+}
+
+@mixin spot-blue {
+	background: radial-gradient(50% 50% at 50% 50%, #2462ff 18.75%, #3795ff 79.8%, #b4d7ff 100%);
+}
+
+@mixin spot-orange {
+	background: radial-gradient(50% 50% at 50% 50%, #ffffff 19.23%, #ff6514 34.13%, #ff4f24 100%);
+}

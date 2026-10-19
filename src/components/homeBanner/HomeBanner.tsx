@@ -1,48 +1,43 @@
+import { Link } from 'react-router-dom'
+import { useContactModal } from '../contactModal/ContactModalContext'
+import { AVAILABILITY } from '../../data/home'
+
 // scss
 import './HomeBanner.scss'
 
-// img
-import banner from '../../resources/victor.png'
-
+/** Hero главной (концепт D «Типографика»): статус, крупный H1 с акцентом, подзаголовок и кнопки в одной строке. Фото ушло в блок «Для HR» */
 export default function HomeBanner() {
-        return (
-                <section className='homeBanner'>
-                        <h1 className='homeBanner__title'>Разработка без лишнего шума</h1>
-                        <div className='homeBanner__subtitle' role='presentation'>
-                                <span className='homeBanner__subtitle-code' aria-hidden='true'>
-                                        &lt; <span>code</span> &gt;
-                                </span>
-                                <span className='homeBanner__subtitle-text'>Я создаю веб-интерфейсы</span>
-                                <span className='homeBanner__subtitle-code' aria-hidden='true'>
-                                        &lt;/ <span>code</span> &gt;
-                                </span>
-                        </div>
-                        <button className='btn btn_light' type='button'>
-                                <span className='btn__label'>
-                                        Скачать CV
-                                        <svg
-                                                width='24'
-                                                height='24'
-                                                viewBox='0 0 24 24'
-                                                fill='none'
-                                                xmlns='http://www.w3.org/2000/svg'
-                                        >
-                                                <path
-                                                        d='M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15'
-                                                        strokeWidth='1.5'
-                                                        strokeLinecap='round'
-                                                        strokeLinejoin='round'
-                                                />
-                                                <path
-                                                        d='M12 3V16M12 16L16 11.625M12 16L8 11.625'
-                                                        strokeWidth='1.5'
-                                                        strokeLinecap='round'
-                                                        strokeLinejoin='round'
-                                                />
-                                        </svg>
-                                </span>
-                        </button>
-                        <img src={banner} alt='victor' />
-                </section>
-        )
+	const { open } = useContactModal()
+
+	return (
+		<section className='homeBanner'>
+			{/* <p className='homeBanner__status'>
+				<span className='homeBanner__dot' aria-hidden='true' />
+				{AVAILABILITY}
+			</p> */}
+			<h1 className='homeBanner__title'>
+				Разрабатываю сайты и&nbsp;веб‑сервисы{' '}
+				<span className='homeBanner__accent'>под&nbsp;ключ</span>
+			</h1>
+			<div className='homeBanner__row'>
+				<p className='homeBanner__subtitle'>
+					Лендинги, интернет-магазины, личные кабинеты и интеграции с CRM. Один
+					разработчик на весь проект: структура, дизайн, фронтенд, бэкенд,
+					запуск и поддержка. Цена и срок — до старта.
+				</p>
+				<div className='homeBanner__actions'>
+					<button
+						className='btn btn_light'
+						type='button'
+						onClick={() => open()}
+					>
+						<span className='btn__label'>Обсудить проект</span>
+					</button>
+					<Link to='/portfolio' className='btn btn_dark'>
+						<span>Смотреть работы</span>
+					</Link>
+				</div>
+			</div>
+		</section>
+	)
 }

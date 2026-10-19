@@ -8,6 +8,7 @@ type Props = {
 	index?: number
 }
 
+/** Карточка кейса для сеток: обложка, до двух тегов, название, одна строка «что сделал → результат» */
 export default function ProjectCard({ project, index = 0 }: Props) {
 	return (
 		<motion.article
@@ -21,24 +22,19 @@ export default function ProjectCard({ project, index = 0 }: Props) {
 			<Link to={`/portfolio/${project.slug}`} className='projectCard__link'>
 				<div className='projectCard__media'>
 					<img src={project.cover} alt={`Скриншот ${project.title}`} loading='lazy' />
-					<span className='projectCard__year'>{project.year}</span>
-					<span className='projectCard__hint'>
-						Смотреть проект
-						<svg viewBox='0 0 24 24' aria-hidden='true'>
-							<path d='M7 17L17 7M9 7h8v8' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
-						</svg>
-					</span>
 				</div>
 				<div className='projectCard__body'>
-					<ul className='projectCard__tags' aria-label='Категории'>
-						{project.categories.map(c => (
-							<li key={c} className='tag'>
-								{c}
-							</li>
-						))}
-					</ul>
+					{project.categories.length > 0 && (
+						<ul className='projectCard__tags' aria-label='Категории'>
+							{project.categories.slice(0, 2).map(c => (
+								<li key={c} className='tag'>
+									{c}
+								</li>
+							))}
+						</ul>
+					)}
 					<h3 className='projectCard__title'>{project.title}</h3>
-					<p className='projectCard__subtitle'>{project.tagline}</p>
+					<p className='projectCard__subtitle'>{project.line}</p>
 				</div>
 			</Link>
 		</motion.article>

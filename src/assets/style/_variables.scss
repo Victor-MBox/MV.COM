@@ -1,6 +1,8 @@
 // Определяем CSS-переменные для тем
 :root {
-	--title-font: 'Victor Mono', monospace;
+	// Шрифты (не зависят от темы): Geologica — заголовки, Golos Text — текст
+	--font-title: 'Geologica', sans-serif;
+	--font-body: 'Golos Text', sans-serif;
 
 	//! Темная тема  (по умолчанию)# //*
 	--bg-primary: #0d0d0d; // цвет фона объектов
@@ -49,12 +51,17 @@
 		rgb(10, 10, 10) 100%
 	); // bg cards
 
-	// scale
-	--scale__bg: rgba(255, 255, 255, 0.25);
-	--scale__active: #d9d9d9;
-
 	// other
 	--bg-svg-steck: #282828;
+
+	// акценты свечения карточек и иллюстраций
+	--accent-blue: #3795ff;
+	--accent-orange: #ff6514;
+
+	// блок «Для HR»: свечение за фото справа
+	--bg-spotlight: radial-gradient(circle at 85% 50%, #262626 0%, #111 50%);
+	// тень скриншотов кейса
+	--shadow-screen: 0 30px 60px rgba(0, 0, 0, 0.5);
 }
 
 //! Светлая тема
@@ -105,12 +112,17 @@ body.light {
 		#fff 100%
 	); // bg cards
 
-	// scale
-	--scale__bg: rgba(0, 0, 0, 0.15);
-	--scale__active: rgba(0, 0, 0, 0.5);
-
 	// other
 	--bg-svg-steck: #e5e5e5;
+
+	// акценты свечения карточек и иллюстраций
+	--accent-blue: #3795ff;
+	--accent-orange: #ff6514;
+
+	// блок «Для HR»: свечение за фото справа
+	--bg-spotlight: radial-gradient(circle at 85% 50%, #e4e4e4 0%, #f7f7f7 50%);
+	// тень скриншотов кейса
+	--shadow-screen: 0 24px 48px rgba(0, 0, 0, 0.14);
 }
 
 //! Темная тема (явно)
@@ -161,10 +173,15 @@ body.dark {
 		rgb(10, 10, 10) 100%
 	); // bg cards
 
-	// scale
-	--scale__bg: rgba(255, 255, 255, 0.25);
-	--scale__active: #d9d9d9;
-
 	// other
 	--bg-svg-steck: #282828;
+
+	// акценты свечения карточек и иллюстраций
+	--accent-blue: #3795ff;
+	--accent-orange: #ff6514;
+
+	// блок «Для HR»: свечение за фото справа
+	--bg-spotlight: radial-gradient(circle at 85% 50%, #262626 0%, #111 50%);
+	// тень скриншотов кейса
+	--shadow-screen: 0 30px 60px rgba(0, 0, 0, 0.5);
 }

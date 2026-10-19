@@ -1,4 +1,14 @@
-import portfolioCover from '../resources/portfolio.jpeg'
+import norandomsCover from '../resources/norandoms/cover.webp'
+import norandomsHome from '../resources/norandoms/home-hero.webp'
+import norandomsGames from '../resources/norandoms/games.webp'
+import norandomsGame from '../resources/norandoms/game-cs2.webp'
+import norandomsTeammates from '../resources/norandoms/teammates.webp'
+import norandomsParties from '../resources/norandoms/parties.webp'
+import norandomsPartiesList from '../resources/norandoms/parties-list.webp'
+import norandomsParty from '../resources/norandoms/party-valheim.webp'
+import norandomsVoice from '../resources/norandoms/home-voice.webp'
+import norandomsSteam from '../resources/norandoms/home-steam.webp'
+import norandomsMobile from '../resources/norandoms/mobile.webp'
 
 export type ProjectMetric = {
 	label: string
@@ -8,11 +18,31 @@ export type ProjectMetric = {
 	decimals?: number
 }
 
+export type ProjectFeature = {
+	title: string
+	text: string
+}
+
+export type ProjectStep = {
+	title: string
+	text: string
+}
+
+/** Факт для широкой карточки главного кейса: срок / объём / эффект */
+export type ProjectFact = {
+	value: string
+	label: string
+}
+
 export type Project = {
 	slug: string
 	title: string
+	/** Одна строка с главным результатом — подзаголовок страницы кейса */
 	tagline: string
-	description: string[]
+	/** Одна строка для карточки: что сделал → результат. Без чисел, числа — в highlights */
+	line: string
+	/** Три факта для широкой карточки главного кейса (главная, портфолио, «Обо мне») */
+	highlights?: ProjectFact[]
 	client: string
 	year: number
 	role: string
@@ -22,201 +52,155 @@ export type Project = {
 	link?: string
 	cover: string
 	gallery: { src: string; caption: string }[]
+	/** Два скриншота для блока главного кейса на главной: большой сверху справа, малый снизу слева */
+	showcase?: { src: string; alt: string }[]
+	/** Блок «Коротко»: задача, что сделал, результат — по 2–3 предложения, без повторения цифр */
 	task: string
 	solution: string
 	result: string
+	/** Единственное место с числами на странице кейса, кроме строки в шапке */
 	metrics: ProjectMetric[]
 	featured?: boolean
+	// Необязательные блоки для больших кейсов — рендерятся в аккордеоне «Как это устроено технически»
+	status?: string // статус в шапке, например «В продакшене»
+	features?: ProjectFeature[] // «Что внутри»: модули продукта
+	scheme?: string[] // «Путь пользователя»: узлы для FlowScheme
+	process?: ProjectStep[] // этапы работы
 }
-
-const pic = (seed: string, w = 1400, h = 900) =>
-	`https://picsum.photos/seed/${seed}/${w}/${h}`
 
 export const PROJECTS: Project[] = [
 	{
-		slug: 'atomai',
-		title: 'AtomAI',
-		tagline: 'SaaS-платформа премиум-класса на базе искусственного интеллекта',
-		description: [
-			'AtomAI — SaaS-продукт для стартапов и корпоративных команд, который помогает генерировать и редактировать контент с помощью языковых моделей. Я отвечал за фронтенд от прототипа до релиза: дизайн-систему, лендинг, личный кабинет и биллинг.',
-			'Главный вызов — сделать интерфейс, который одновременно выглядит «дорого» и остаётся быстрым: тяжёлые анимации на главной не должны были мешать работе внутри кабинета.',
+		slug: 'norandoms',
+		title: 'NoRandoms',
+		tagline:
+			'Сервис подбора напарников по играм. Собственный продукт с нуля, который растёт из поиска без рекламы',
+		line: 'Платформа для геймеров с нуля: от идеи до продакшена в одиночку, аудитория из поиска без рекламы',
+		highlights: [
+			{ value: '18 000+', label: 'страниц под игры и форматы' },
+			{ value: '92%', label: 'проиндексированных страниц в топ-10 Яндекса' },
+			{ value: 'Февраль 2026', label: 'запуск, развивается' },
 		],
-		client: 'AtomAI Inc.',
-		year: 2025,
-		role: 'Frontend-разработчик, дизайн-система',
-		duration: '4 месяца',
-		stack: ['React', 'TypeScript', 'Vite', 'GSAP', 'SCSS', 'REST API'],
-		categories: ['SaaS', 'Веб-разработка'],
-		link: 'https://example.com',
-		cover: portfolioCover,
+		client: 'Собственный продукт',
+		year: 2026,
+		role: 'Основатель, дизайн и full-stack разработка',
+		duration: 'Запуск в феврале, развивается',
+		status: 'В продакшене',
+		stack: [
+			'PHP',
+			'Laravel',
+			'MySQL',
+			'Laravel Reverb',
+			'Alpine.js',
+			'React',
+			'Vite',
+			'SCSS',
+			'WebRTC',
+			'Steam OpenID',
+			'Telegram Bot API',
+			'Nginx',
+		],
+		categories: ['Веб-разработка', 'Собственный продукт', 'SEO'],
+		link: 'https://norandoms.team',
+		cover: norandomsCover,
+		showcase: [
+			{ src: norandomsHome, alt: 'Главная NoRandoms: поиск тиммейтов и пати' },
+			{ src: norandomsParties, alt: 'Сбор пати в NoRandoms' },
+		],
 		gallery: [
-			{ src: pic('atomai-1'), caption: 'Главная страница и hero-анимация' },
-			{ src: pic('atomai-2'), caption: 'Личный кабинет: генерация контента' },
-			{ src: pic('atomai-3'), caption: 'Тарифы и биллинг' },
-			{ src: pic('atomai-4'), caption: 'Мобильная версия' },
+			{ src: norandomsHome, caption: 'Главная: поиск тиммейтов и пати, живые счётчики по играм' },
+			{ src: norandomsGames, caption: 'Каталог игр: кто ищет пати, у скольких игра есть в Steam, активные пати' },
+			{ src: norandomsGame, caption: 'Страница игры: SEO-посадочная с игроками, пати и FAQ' },
+			{ src: norandomsTeammates, caption: 'Анкеты игроков: статус, Steam, устройства и фильтры подбора' },
+			{ src: norandomsParties, caption: 'Сбор пати: быстрое объявление или комната с чатом и голосом' },
+			{ src: norandomsPartiesList, caption: 'Список пати: состав, возраст, микрофон, стиль, заявка в один клик' },
+			{ src: norandomsParty, caption: 'Комната пати: чат в реальном времени и голосовой созвон' },
+			{ src: norandomsVoice, caption: 'Голосовой чат в браузере без Discord' },
+			{ src: norandomsSteam, caption: 'Интеграция со Steam и уведомления в Telegram' },
+			{ src: norandomsMobile, caption: 'Мобильная версия: нижняя навигация и те же сценарии на телефоне' },
 		],
-		task: 'Собрать лендинг и кабинет на единой дизайн-системе, запустить MVP за один квартал и не уронить скорость загрузки.',
-		solution: 'Разделил код на лёгкий публичный бандл и отдельный бандл кабинета, вынес анимации в GSAP-таймлайны с ленивой инициализацией, описал 40+ компонентов дизайн-системы.',
-		result: 'Продукт вышел в срок, LCP главной — меньше секунды, конверсия в регистрацию выросла после редизайна лендинга.',
+		task: 'Игроки ищут напарников в Discord и случайных чатах и получают случайных людей. Нужен сервис, где подбор идёт по формату игры: время, голос, стиль, отношение к ошибкам. И вывести его в поиск без бюджета на рекламу.',
+		solution:
+			'Спроектировал и собрал платформу в одиночку: профили с предпочтениями и 13 фильтров, система совместимости, пати с чатом и голосом в браузере, вход через Steam, уведомления в Telegram. Параллельно построил SEO-ядро: страницы под каждую игру и формат генерируются из данных, с перелинковкой и автоматическими sitemap.',
+		result: 'За восемь месяцев после запуска платформа набрала аудиторию и стабильный поток из органического поиска. Цифры ниже. Блог с постами и комментариями готов к релизу.',
 		metrics: [
-			{ label: 'Конверсия в регистрацию', value: 38, prefix: '+', suffix: '%' },
-			{ label: 'LCP главной', value: 0.9, suffix: ' c', decimals: 1 },
-			{ label: 'Компонентов в системе', value: 42 },
-			{ label: 'Недель до MVP', value: 14 },
+			{ label: 'Зарегистрированных пользователей', value: 6000, suffix: '+' },
+			{ label: 'Страниц на платформе', value: 18000, suffix: '+' },
+			{ label: 'Страниц в топ-10 Яндекса', value: 92, suffix: '%' },
+			{ label: 'Посетителей в день из поиска', value: 500, suffix: '+' },
+		],
+		features: [
+			{
+				title: 'Каталог игр и SEO-страницы',
+				text: 'Под каждую игру и формат поиска генерируется своя страница с игроками, пати и FAQ. Это главный источник органического трафика.',
+			},
+			{
+				title: 'Анкеты игроков и фильтры',
+				text: 'Профиль с предпочтениями и фильтры: игра, возраст, микрофон, стиль, устройства, время, длина сессии, каналы связи, отношение к токсичности и ошибкам.',
+			},
+			{
+				title: 'Система совместимости',
+				text: 'Сравнение аккаунтов по общим играм, расписанию, стилю и формату общения: сервис показывает, с кем действительно по пути, а не просто «кто онлайн».',
+			},
+			{
+				title: 'Пати и объявления',
+				text: 'Два формата сбора: быстрое объявление «зашёл и играй» и полноценная комната с заявками, составом, правилами и планированием сессии.',
+			},
+			{
+				title: 'Чат и голос в браузере',
+				text: 'Текстовый чат пати в реальном времени и голосовой созвон в один клик без Discord: ПК, телефон, Steam Deck, проверка микрофона перед входом.',
+			},
+			{
+				title: 'Steam и другие сервисы',
+				text: 'Вход через Steam без пароля, импорт библиотеки игр, привязка Telegram. Счётчики «есть в Steam у N игроков» считаются по реальным библиотекам.',
+			},
+			{
+				title: 'Уведомления в Telegram',
+				text: 'Заявки, приглашения, изменения состава и времени пати приходят в бота. Включается в один клик, без спама.',
+			},
+			{
+				title: 'Друзья, сообщения, отзывы',
+				text: 'Список друзей, личная переписка, отзывы после совместной игры и жалобы из профиля. Модерация со строгими правилами: ограничение, затем бан.',
+			},
+			{
+				title: 'Блог и админка',
+				text: 'Блог с постами, лайками и комментариями уже реализован и ждёт релиза. Административная панель для управления контентом и модерации.',
+			},
+		],
+		scheme: [
+			'Вход через Steam',
+			'Профиль и предпочтения',
+			'Фильтры и совместимость',
+			'Пати или объявление',
+			'Чат и голос',
+			'Отзывы и репутация',
+		],
+		process: [
+			{
+				title: 'Идея и исследование',
+				text: 'Разобрал, как игроки ищут напарников в Discord и чатах и почему это раздражает. Сформулировал ядро продукта: подбор по формату игры, а не случайность.',
+			},
+			{
+				title: 'Архитектура и данные',
+				text: 'Спроектировал модель: пользователи, игры, предпочтения, пати, заявки, сообщения, отзывы. Ядро на Laravel, живые обновления через WebSockets (Laravel Reverb), интерактивные модули на Alpine.js и React.',
+			},
+			{
+				title: 'Ядро платформы',
+				text: 'Регистрация по почте и через Steam, профили с предпочтениями, каталог игр с импортом из Steam, анкеты с фильтрами, друзья и личные сообщения.',
+			},
+			{
+				title: 'Пати, чат и голос',
+				text: 'Комнаты пати с заявками и составом, объявления, чат в реальном времени, голосовой созвон в браузере, Telegram-бот с уведомлениями.',
+			},
+			{
+				title: 'SEO как канал роста',
+				text: 'Шаблоны страниц под каждую игру и формат, метаданные и перелинковка, индексные sitemap, которые пересобираются автоматически. Поиск стал главным каналом роста без бюджета на рекламу.',
+			},
+			{
+				title: 'Запуск и рост',
+				text: 'Бета открыта в феврале. Дальше: аналитика, модерация и правила, обратная связь от игроков, блог и подготовка к полному релизу осенью.',
+			},
 		],
 		featured: true,
-	},
-	{
-		slug: 'fade',
-		title: 'Fade',
-		tagline: 'Гибкий шаблон для SaaS и e-commerce с генеративным дизайном',
-		description: [
-			'Fade — конструктор витрин для небольших брендов. Шаблон собирается из блоков, а генеративный фон подстраивается под палитру товаров. Я делал фронтенд, каталог и корзину, а также интеграцию с платёжным шлюзом.',
-			'Отдельная задача — сделать так, чтобы один и тот же шаблон выглядел по-разному у разных клиентов без правок кода: всё управляется через тему и переменные.',
-		],
-		client: 'Fade Studio',
-		year: 2025,
-		role: 'Full-stack разработчик',
-		duration: '3 месяца',
-		stack: ['React', 'TypeScript', 'Laravel', 'Stripe', 'SCSS'],
-		categories: ['Интернет-магазин', 'Веб-разработка'],
-		link: 'https://example.com',
-		cover: pic('fade-cover'),
-		gallery: [
-			{ src: pic('fade-1'), caption: 'Витрина с генеративным фоном' },
-			{ src: pic('fade-2'), caption: 'Карточка товара' },
-			{ src: pic('fade-3'), caption: 'Корзина и оформление заказа' },
-		],
-		task: 'Один шаблон — десятки непохожих магазинов. Нужна тематизация без разработчика и быстрый чекаут.',
-		solution: 'Все цвета, радиусы и шрифты вынесены в CSS-переменные и редактируются в админке. Чекаут собран в одну страницу с автозаполнением адреса.',
-		result: 'Запущено 12 магазинов на одном шаблоне, средняя скорость оформления заказа — меньше двух минут.',
-		metrics: [
-			{ label: 'Магазинов на шаблоне', value: 12 },
-			{ label: 'Брошенных корзин', value: 23, prefix: '−', suffix: '%' },
-			{ label: 'Lighthouse Performance', value: 96 },
-			{ label: 'Недель разработки', value: 11 },
-		],
-		featured: true,
-	},
-	{
-		slug: 'nordic-estate',
-		title: 'Nordic Estate',
-		tagline: 'Сайт агентства загородной недвижимости с интерактивным каталогом',
-		description: [
-			'Агентство продаёт дома в скандинавском стиле и хотело сайт, который «продаёт атмосферу». Сделал лендинг с большими фотографиями, фильтруемым каталогом и формой подбора объекта.',
-		],
-		client: 'Nordic Estate',
-		year: 2024,
-		role: 'Frontend-разработчик, WordPress',
-		duration: '6 недель',
-		stack: ['WordPress', 'JavaScript', 'GSAP', 'SCSS', 'amoCRM'],
-		categories: ['Лендинг', 'WordPress'],
-		cover: pic('nordic-cover'),
-		gallery: [
-			{ src: pic('nordic-1'), caption: 'Главный экран' },
-			{ src: pic('nordic-2'), caption: 'Каталог объектов с фильтрами' },
-			{ src: pic('nordic-3'), caption: 'Страница дома' },
-			{ src: pic('nordic-4'), caption: 'Форма подбора' },
-		],
-		task: 'Заменить устаревший сайт, подключить заявки к CRM и не потерять позиции в поиске.',
-		solution: 'Собрал тему WordPress с кастомными типами записей для объектов, настроил редиректы со старых URL и интеграцию форм с amoCRM.',
-		result: 'Заявки стали приходить напрямую в CRM, органический трафик за три месяца вырос.',
-		metrics: [
-			{ label: 'Заявок в месяц', value: 2.4, prefix: '×', decimals: 1 },
-			{ label: 'Органический трафик', value: 31, prefix: '+', suffix: '%' },
-			{ label: 'Объектов в каталоге', value: 120 },
-			{ label: 'Недель разработки', value: 6 },
-		],
-	},
-	{
-		slug: 'pulse-crm',
-		title: 'Pulse CRM',
-		tagline: 'Интеграция сайта клиники с CRM и онлайн-записью',
-		description: [
-			'Сеть клиник принимала записи вручную через телефон. Я связал сайт с CRM и расписанием врачей: пациент выбирает врача, видит свободные слоты и записывается без звонка.',
-			'Критичным было корректно обрабатывать гонки: два пациента не должны занять один слот.',
-		],
-		client: 'Сеть клиник «Пульс»',
-		year: 2024,
-		role: 'Full-stack разработчик, интеграции',
-		duration: '2 месяца',
-		stack: ['React', 'TypeScript', 'Laravel', 'Bitrix24 API', 'PostgreSQL'],
-		categories: ['CRM-интеграция', 'Веб-разработка'],
-		cover: pic('pulse-cover'),
-		gallery: [
-			{ src: pic('pulse-1'), caption: 'Выбор врача и слота' },
-			{ src: pic('pulse-2'), caption: 'Подтверждение записи' },
-			{ src: pic('pulse-3'), caption: 'Админ-панель расписания' },
-		],
-		task: 'Онлайн-запись с живым расписанием и синхронизацией с CRM в обе стороны.',
-		solution: 'Промежуточный сервис на Laravel держит кэш расписания, бронирует слот транзакцией и отправляет сделку в CRM через webhook.',
-		result: 'Половина записей перешла в онлайн, нагрузка на колл-центр снизилась.',
-		metrics: [
-			{ label: 'Записей онлайн', value: 52, suffix: '%' },
-			{ label: 'Звонков в колл-центр', value: 40, prefix: '−', suffix: '%' },
-			{ label: 'Врачей в системе', value: 35 },
-			{ label: 'Недель разработки', value: 9 },
-		],
-	},
-	{
-		slug: 'orbit-studio',
-		title: 'Orbit Studio',
-		tagline: 'Промо-сайт анимационной студии со скролл-анимациями',
-		description: [
-			'Студия хотела сайт-шоурил, где каждая секция «оживает» при прокрутке. Собрал сцены на GSAP ScrollTrigger с pin-секциями, параллаксом и покадровой анимацией.',
-		],
-		client: 'Orbit Studio',
-		year: 2023,
-		role: 'Frontend-разработчик, анимации',
-		duration: '5 недель',
-		stack: ['React', 'GSAP', 'ScrollTrigger', 'Lottie', 'SCSS'],
-		categories: ['Анимация', 'Лендинг'],
-		link: 'https://example.com',
-		cover: pic('orbit-cover'),
-		gallery: [
-			{ src: pic('orbit-1'), caption: 'Pin-секция с покадровой анимацией' },
-			{ src: pic('orbit-2'), caption: 'Шоурил' },
-			{ src: pic('orbit-3'), caption: 'Команда' },
-			{ src: pic('orbit-4'), caption: 'Контакты' },
-		],
-		task: 'Сделать «вау»-эффект, но удержать 60 FPS на ноутбуках без дискретной графики.',
-		solution: 'Все анимации — только transform и opacity, тяжёлые секвенции предзагружаются и рисуются в canvas, на слабых устройствах включается облегчённый режим.',
-		result: 'Сайт попал в подборки дизайн-сообществ, студия получила несколько крупных заказов через форму.',
-		metrics: [
-			{ label: 'FPS на MacBook Air', value: 60 },
-			{ label: 'Анимированных сцен', value: 9 },
-			{ label: 'Среднее время на сайте', value: 3.2, suffix: ' мин', decimals: 1 },
-			{ label: 'Недель разработки', value: 5 },
-		],
-	},
-	{
-		slug: 'greenline',
-		title: 'GreenLine',
-		tagline: 'Интернет-магазин эко-товаров на WooCommerce',
-		description: [
-			'Магазин с 800+ товарами, подписками на доставку и программой лояльности. Я переработал каталог, ускорил сайт и настроил интеграцию с системой учёта.',
-		],
-		client: 'GreenLine',
-		year: 2023,
-		role: 'WordPress-разработчик',
-		duration: '2 месяца',
-		stack: ['WordPress', 'WooCommerce', 'PHP', 'JavaScript', 'SCSS'],
-		categories: ['Интернет-магазин', 'WordPress'],
-		cover: pic('greenline-cover'),
-		gallery: [
-			{ src: pic('greenline-1'), caption: 'Каталог' },
-			{ src: pic('greenline-2'), caption: 'Подписка на доставку' },
-			{ src: pic('greenline-3'), caption: 'Личный кабинет и бонусы' },
-		],
-		task: 'Ускорить медленный магазин и добавить подписки без переезда с WooCommerce.',
-		solution: 'Вынес тяжёлые плагины, настроил кэширование и ленивую загрузку, написал модуль подписок поверх стандартных заказов.',
-		result: 'Время загрузки каталога сократилось втрое, подписки дают стабильную выручку.',
-		metrics: [
-			{ label: 'Время загрузки каталога', value: 3, prefix: '×', suffix: ' быстрее' },
-			{ label: 'Повторных покупок', value: 27, prefix: '+', suffix: '%' },
-			{ label: 'Товаров', value: 800, suffix: '+' },
-			{ label: 'Недель разработки', value: 8 },
-		],
 	},
 ]
 
@@ -228,9 +212,10 @@ export function getProject(slug: string | undefined) {
 	return PROJECTS.find(p => p.slug === slug)
 }
 
+/** Соседние кейсы по кругу. Если проект один — оба undefined, чтобы не ссылаться на себя */
 export function getAdjacentProjects(slug: string) {
 	const i = PROJECTS.findIndex(p => p.slug === slug)
-	if (i === -1) return { prev: undefined, next: undefined }
+	if (i === -1 || PROJECTS.length < 2) return { prev: undefined, next: undefined }
 	return {
 		prev: PROJECTS[(i - 1 + PROJECTS.length) % PROJECTS.length],
 		next: PROJECTS[(i + 1) % PROJECTS.length],

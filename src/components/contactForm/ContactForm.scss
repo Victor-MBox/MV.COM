@@ -73,6 +73,11 @@
 		color: var(--text-body);
 	}
 
+	&__hint {
+		margin-left: 6px;
+		color: var(--text-decor);
+	}
+
 	input,
 	textarea,
 	select {

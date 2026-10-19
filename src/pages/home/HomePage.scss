@@ -1,0 +1,215 @@
+// Главная (концепт D «Типографика»): блоки, которых нет в отдельных компонентах
+
+// Строка доказательства под hero: два крупных числа и колонка для HR между двумя линиями
+.homeProof {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 40px;
+	border-top: 1px solid var(--border-cards);
+	border-bottom: 1px solid var(--border-cards);
+	margin-bottom: 100px;
+
+	&__fact {
+		padding: 28px 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+
+		strong {
+			font-family: var(--font-title);
+			font-weight: 600;
+			font-size: 40px;
+			line-height: 100%;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+		}
+
+		span {
+			font-size: 14px;
+			line-height: 140%;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	&__hr {
+		padding: 28px 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 8px;
+		font-size: 14px;
+		letter-spacing: -0.01em;
+		color: var(--text-decor);
+
+		a {
+			color: var(--text-title);
+			transition: opacity 0.2s;
+
+			&:hover {
+				opacity: 0.7;
+			}
+		}
+	}
+}
+
+.homeSection {
+	margin-bottom: 110px;
+}
+
+.homeProjects {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px;
+	}
+}
+
+// «Почему со мной»: четыре обещания в ряд без карточек + крупная доказательная фраза
+.whyMe {
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 32px;
+
+		li {
+			padding-top: 22px;
+			border-top: 1px solid var(--btn-border-color);
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		h3 {
+			font-weight: 600;
+			font-size: 22px;
+			line-height: 118%;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+		}
+
+		p {
+			font-size: 15px;
+			line-height: 155%;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	&__proof {
+		margin-top: 56px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 28px;
+		line-height: 130%;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+		max-width: 860px;
+		text-wrap: pretty;
+	}
+}
+
+// Блог: три плитки статей
+.homePosts {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+// «Для HR и тимлидов»: карточка со свечением за фото справа
+.hrBlock {
+	position: relative;
+	overflow: hidden;
+	border-radius: 18px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-spotlight);
+	padding: 40px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 300px;
+	gap: 40px;
+	min-height: 300px;
+
+	&__body {
+		position: relative;
+		z-index: 1;
+	}
+
+	&__title {
+		font-weight: 600;
+		font-size: 28px;
+		line-height: 110%;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+		margin-bottom: 14px;
+	}
+
+	&__text {
+		font-size: 16px;
+		line-height: 155%;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+		max-width: 600px;
+		margin-bottom: 28px;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+		}
+
+		.textLink {
+			margin-left: 8px;
+		}
+	}
+
+	&__photo {
+		position: absolute;
+		right: 30px;
+		bottom: 0;
+		height: 100%;
+		width: auto;
+		max-width: none;
+		object-fit: contain;
+		object-position: bottom;
+		pointer-events: none;
+	}
+}
+
+// FAQ: четыре вопроса с открытыми ответами в две колонки
+.homeFaq {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0 48px;
+
+	&__item {
+		padding: 26px 0;
+		border-top: 1px solid var(--border-cards);
+
+		h3 {
+			font-weight: 600;
+			font-size: 22px;
+			line-height: 118%;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+			margin-bottom: 12px;
+		}
+
+		p {
+			font-size: 15px;
+			line-height: 155%;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+			max-width: 480px;
+		}
+	}
+}

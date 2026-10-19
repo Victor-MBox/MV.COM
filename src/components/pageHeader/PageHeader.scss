@@ -22,8 +22,7 @@
 		align-items: center;
 		gap: 8px;
 		font-size: 14px;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
+		letter-spacing: -0.02em;
 		color: var(--text-decor);
 		margin-bottom: 24px;
 
@@ -43,6 +42,17 @@
 		}
 	}
 
+	&__icon {
+		margin-bottom: 22px;
+
+		svg {
+			width: 72px;
+			height: 72px;
+			color: var(--text-title);
+			display: block;
+		}
+	}
+
 	&__title {
 		font-weight: 700;
 		font-size: 56px;
@@ -58,6 +68,18 @@
 		letter-spacing: -0.03em;
 		color: var(--text-body);
 		max-width: 560px;
+	}
+
+	&__actions {
+		margin-top: 30px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+		}
 	}
 
 	&__aside {

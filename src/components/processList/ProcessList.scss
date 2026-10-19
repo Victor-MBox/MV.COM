@@ -1,0 +1,104 @@
+.processList {
+	--gap: 32px;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: var(--gap);
+
+	li {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+
+		// Линия таймлайна проходит через номера шагов
+		&::before {
+			content: '';
+			position: absolute;
+			top: 18px;
+			left: 0;
+			right: calc(var(--gap) * -1);
+			height: 1px;
+			background: var(--btn-border-color);
+		}
+
+		&:last-child::before {
+			right: 0;
+		}
+	}
+
+	&__num {
+		position: relative;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		border: 1px solid var(--btn-border-color);
+		background: var(--bg-secondary);
+		font-size: 12px;
+		letter-spacing: 0.06em;
+		color: var(--text-title);
+		margin-bottom: 8px;
+	}
+
+	h3 {
+		font-weight: 600;
+		font-size: 20px;
+		line-height: 120%;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+	}
+
+	p {
+		font-size: 15px;
+		line-height: 155%;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	// Строки (главная, концепт D): крупный номер слева, заголовок и текст в колонках, разделители
+	&--rows {
+		display: block;
+		border-top: 1px solid var(--border-cards);
+
+		li {
+			display: grid;
+			grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1.3fr);
+			gap: 12px 32px;
+			align-items: baseline;
+			padding: 28px 0;
+			border-bottom: 1px solid var(--border-cards);
+
+			&::before {
+				display: none;
+			}
+		}
+
+		.processList__num {
+			width: auto;
+			height: auto;
+			display: block;
+			border: 0;
+			border-radius: 0;
+			background: none;
+			margin: 0;
+			font-family: var(--font-title);
+			font-weight: 300;
+			font-size: 44px;
+			line-height: 100%;
+			letter-spacing: -0.03em;
+			color: var(--accent-blue);
+		}
+
+		h3 {
+			font-size: 26px;
+			line-height: 115%;
+		}
+
+		p {
+			font-size: 16px;
+			max-width: 520px;
+		}
+	}
+}

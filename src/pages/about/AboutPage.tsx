@@ -1,21 +1,54 @@
-import { Link } from 'react-router-dom'
 import PageHeader from '../../components/pageHeader/PageHeader'
 import Card from '../../components/cards/Cards'
-import InfoBlock from '../../components/cards/infoBloсk/InfoBlock'
-import Skills from '../../components/cards/skills/Skills'
-import MyStack from '../../components/cards/myStack/MyStack'
 import Accordion from '../../components/accordion/Accordion'
+import TitleRow from '../../components/titleRow/TitleRow'
+import FeaturedProject from '../../components/featuredProject/FeaturedProject'
 import FooterBanner from '../../components/footerBanner/FooterBanner'
-import { EXPERIENCE, PROCESS } from '../../data/experience'
+import { useContactModal } from '../../components/contactModal/ContactModalContext'
+import { EXPERIENCE, STACK_GROUPS } from '../../data/experience'
+import { PROJECTS } from '../../data/projects'
+import { CONTACT_LINKS } from '../../data/contacts'
+import { HR_BLOCK } from '../../data/home'
 import avatar from '../../resources/avatar.png'
 import './AboutPage.scss'
 
+const ABOUT = [
+	'Восемь лет делаю сайты и веб-сервисы: от лендингов на WordPress до продуктов на Laravel и React. Беру проект целиком — структура, дизайн, фронтенд, бэкенд, запуск и поддержка — и отвечаю за результат, а не за отдельный слой.',
+	'Лучше всего получается собрать систему из многих частей и довести её до живых пользователей. Пример — NoRandoms, собственная платформа для подбора напарников по играм: спроектировал, написал и вывел в поиск в одиночку, от схемы базы и WebSockets до SEO-ядра из тысяч страниц.',
+	'Работаю удалённо, по договору, с еженедельными версиями на тестовом домене. Открыт к проектной работе, контракту и part-time. Код пишу так, чтобы следующий разработчик разобрался без меня.',
+]
+
+const PRINCIPLES = [
+	'Скорость загрузки — часть дизайна, а не оптимизация «потом».',
+	'Анимация объясняет интерфейс, а не украшает его.',
+	'Код должен быть понятен следующему разработчику без меня.',
+	'Промежуточные версии — каждую неделю, без сюрпризов в конце.',
+]
+
+const FEATURED = PROJECTS.filter(p => p.featured).slice(0, 1)
+
+/** «Обо мне» — страница для найма (content.md §4.6): шапка с резюме и GitHub → о себе → стек → опыт → принципы → главный кейс */
 export default function AboutPage() {
+	const { open } = useContactModal()
+
 	return (
 		<>
 			<PageHeader
-				title='Обо мне'
-				subtitle='Я Виктор Мацаков, full-stack разработчик. Восемь лет делаю сайты и веб-приложения: от лендингов на WordPress до SaaS-интерфейсов на React. Люблю, когда интерфейс быстрый, а анимации — к месту.'
+				title='Виктор Мацаков'
+				subtitle='Full-stack разработчик · Тбилиси · GMT+4 · удалённо'
+				actions={
+					<>
+						<a className='btn btn_light' href={HR_BLOCK.cv} download>
+							<span className='btn__label'>Резюме PDF</span>
+						</a>
+						<a className='btn btn_dark' href={CONTACT_LINKS.github} target='_blank' rel='noopener noreferrer'>
+							<span>GitHub</span>
+						</a>
+						<button type='button' className='btn btn_dark' onClick={() => open()}>
+							<span>Написать</span>
+						</button>
+					</>
+				}
 				aside={
 					<div className='aboutPage__photo'>
 						<img src={avatar} alt='Виктор Мацаков' />
@@ -27,34 +60,32 @@ export default function AboutPage() {
 				}
 			/>
 
-			<section className='about'>
-				<Card>
-					<Skills />
-				</Card>
-				<Card>
-					<InfoBlock />
-				</Card>
-				<Card className='aboutPage__principles'>
-					<div className='title'>Принципы</div>
-					<ul>
-						<li>Скорость загрузки — часть дизайна, а не оптимизация «потом».</li>
-						<li>Анимация объясняет интерфейс, а не украшает его.</li>
-						<li>Код должен быть понятен следующему разработчику без меня.</li>
-						<li>Промежуточные версии — каждую неделю, без сюрпризов в конце.</li>
-					</ul>
-				</Card>
-				<Card>
-					<MyStack />
-				</Card>
+			<section className='aboutPage__section aboutPage__intro'>
+				{ABOUT.map(p => (
+					<p key={p}>{p}</p>
+				))}
+			</section>
+
+			<section className='aboutPage__section' id='stack'>
+				<TitleRow title='Стек' />
+				<dl className='aboutStack'>
+					{STACK_GROUPS.map(g => (
+						<div key={g.title}>
+							<dt>{g.title}</dt>
+							<dd>
+								<ul className='stackChips'>
+									{g.items.map(i => (
+										<li key={i}>{i}</li>
+									))}
+								</ul>
+							</dd>
+						</div>
+					))}
+				</dl>
 			</section>
 
 			<section className='aboutPage__section' id='experience'>
-				<div className='titlerow'>
-					<div className='title'>Опыт</div>
-					<Link to='/portfolio' className='btn btn_dark'>
-						<span>Смотреть работы</span>
-					</Link>
-				</div>
+				<TitleRow title='Опыт' />
 				<Accordion
 					defaultOpen={EXPERIENCE[0].period}
 					items={EXPERIENCE.map(e => ({
@@ -80,23 +111,25 @@ export default function AboutPage() {
 				/>
 			</section>
 
-			<section className='aboutPage__section' id='process'>
-				<div className='titlerow'>
-					<div className='title'>Как я работаю</div>
-					<Link to='/services' className='btn btn_dark'>
-						<span>Все услуги</span>
-					</Link>
-				</div>
-				<ol className='aboutPage__process'>
-					{PROCESS.map(p => (
-						<li key={p.step}>
-							<span className='aboutPage__process-step'>{p.step}</span>
-							<h3>{p.title}</h3>
-							<p>{p.text}</p>
-						</li>
-					))}
-				</ol>
+			<section className='aboutPage__section'>
+				<Card className='aboutPage__principles'>
+					<div className='title'>Принципы</div>
+					<ul>
+						{PRINCIPLES.map(p => (
+							<li key={p}>{p}</li>
+						))}
+					</ul>
+				</Card>
 			</section>
+
+			{FEATURED.length > 0 && (
+				<section className='aboutPage__section'>
+					<TitleRow title='Главный кейс' btn='Все работы' to='/portfolio' />
+					{FEATURED.map(p => (
+						<FeaturedProject key={p.slug} project={p} />
+					))}
+				</section>
+			)}
 
 			<FooterBanner />
 		</>

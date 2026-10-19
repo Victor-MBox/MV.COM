@@ -1,6 +1,7 @@
 // scss
 import './Portfolio.scss'
 import { Link } from 'react-router-dom'
+import type { ProjectFact } from '../../../data/projects'
 
 type LinkProps = {
 	href: string
@@ -20,7 +21,11 @@ type PortfolioProps = {
 	tags?: string[]
 	title: string
 	subtitle?: string
-	link?: LinkProps // если есть — сделаем ссылкой ТОЛЬКО title
+	/** Три факта в ряд: срок / объём / эффект */
+	facts?: ProjectFact[]
+	link?: LinkProps // если есть — заголовок и кнопка становятся ссылками
+	/** Подпись текстовой кнопки внизу карточки, показывается только вместе с link */
+	cta?: string
 	image?: ImageProps
 	onClick?: () => void // опциональный клик по карточке (не ссылка)
 }
@@ -30,7 +35,9 @@ export default function Portfolio({
 	tags = [],
 	title,
 	subtitle,
+	facts = [],
 	link,
+	cta,
 	image,
 	onClick,
 }: PortfolioProps) {
@@ -65,6 +72,23 @@ export default function Portfolio({
 						)}
 					</h3>
 					{subtitle && <p className='portfolio__subtitle'>{subtitle}</p>}
+
+					{facts.length > 0 && (
+						<ul className='portfolio__facts'>
+							{facts.map(f => (
+								<li key={f.label}>
+									<strong>{f.value}</strong>
+									<span>{f.label}</span>
+								</li>
+							))}
+						</ul>
+					)}
+
+					{link?.href && cta && !isExternal && (
+						<Link to={link.href} className='link-btn portfolio__cta'>
+							<span>{cta}</span>
+						</Link>
+					)}
 				</div>
 			</div>
 

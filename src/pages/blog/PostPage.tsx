@@ -57,9 +57,11 @@ export default function PostPage() {
 				}
 			/>
 
-			<div className='post__cover'>
-				<img src={post.cover} alt='' />
-			</div>
+			{post.cover && (
+				<div className='post__cover'>
+					<img src={post.cover} alt='' />
+				</div>
+			)}
 
 			<div className='post__layout'>
 				<div className='post__content'>

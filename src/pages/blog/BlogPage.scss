@@ -30,6 +30,11 @@
 .blogFeatured {
 	display: grid;
 	grid-template-columns: 1.1fr 1fr;
+
+	// без обложки — одна колонка
+	&:not(:has(.blogFeatured__media)) {
+		grid-template-columns: 1fr;
+	}
 	border-radius: 18px;
 	border: 0.5px solid var(--border-cards);
 	background: var(--bg-cards);

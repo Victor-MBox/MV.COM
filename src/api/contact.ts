@@ -2,6 +2,8 @@ export type ContactPayload = {
 	name: string
 	contact: string
 	topic: string
+	/** Вилка бюджета из BUDGET_RANGES, необязательно */
+	budget?: string
 	message: string
 }
 

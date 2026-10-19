@@ -1,0 +1,94 @@
+// Плитки офферов на главной (концепт D): три колонки, две цветные плитки — синяя широкая и оранжевая
+.offerTiles {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.offerTile {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 28px;
+	border-radius: 18px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-primary);
+	color: var(--text-title);
+	min-height: 220px;
+	transition: border-color 0.2s;
+
+	&:hover {
+		border-color: var(--btn-border-color);
+	}
+
+	&--wide {
+		grid-column: span 2;
+	}
+
+	&--blue,
+	&--orange {
+		border-color: transparent;
+		color: #fff;
+
+		.offerTile__title {
+			font-size: 28px;
+			line-height: 112%;
+		}
+
+		.offerTile__line {
+			color: rgba(255, 255, 255, 0.88);
+			max-width: 460px;
+		}
+
+		&:hover {
+			border-color: transparent;
+		}
+	}
+
+	&--blue {
+		background: linear-gradient(135deg, #2462ff 0%, #3795ff 100%);
+	}
+
+	&--orange {
+		background: linear-gradient(135deg, #ff6514 0%, #ff4f24 100%);
+	}
+
+	&__title {
+		font-family: var(--font-title);
+		font-weight: 600;
+		font-size: 24px;
+		line-height: 115%;
+		letter-spacing: -0.03em;
+	}
+
+	&__line {
+		font-size: 15px;
+		line-height: 150%;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+		max-width: 420px;
+	}
+
+	&__foot {
+		margin-top: auto;
+		padding-top: 16px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 12px;
+		font-weight: 600;
+		font-size: 15px;
+		letter-spacing: -0.01em;
+
+		svg {
+			flex: 0 0 20px;
+			width: 20px;
+			height: 20px;
+			transition: transform 0.2s;
+		}
+	}
+
+	&:hover &__foot svg {
+		transform: translateX(4px);
+	}
+}
