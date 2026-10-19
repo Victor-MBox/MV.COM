@@ -10,6 +10,7 @@ const STACK = [
 	'ts',
 	'react',
 	'redux',
+	'laravel',
 	'api',
 	'galp',
 	'linux',

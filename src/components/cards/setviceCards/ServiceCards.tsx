@@ -1,15 +1,18 @@
+import { Link } from 'react-router-dom'
 import './ServiceCards.scss'
 
 type ServiceCardsProps = {
 	title?: string
 	subtitle?: string
 	btn?: string
+	to?: string
 }
 
 export default function ServiceCards({
 	title,
 	subtitle,
 	btn,
+	to = '/services',
 }: ServiceCardsProps) {
 	return (
 		<div className='service-cards'>
@@ -18,7 +21,7 @@ export default function ServiceCards({
 			{subtitle && <div className='sub-title'>{subtitle}</div>}
 
 			{btn && (
-				<button className='link-btn'>
+				<Link to={to} className='link-btn'>
 					<span>{btn}</span>
 					<svg
 						id='arrow-horizontal'
@@ -34,7 +37,7 @@ export default function ServiceCards({
 							transform='translate(30)'
 						></path>
 					</svg>
-				</button>
+				</Link>
 			)}
 		</div>
 	)

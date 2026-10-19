@@ -1,7 +1,7 @@
 import React from 'react'
 import './Card.scss'
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardProps = React.HTMLAttributes<HTMLDivElement>
 
 const Card: React.FC<CardProps> = ({ children, className, ...rest }) => {
 	const cn = ['card', className].filter(Boolean).join(' ')

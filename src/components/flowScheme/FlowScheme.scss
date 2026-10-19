@@ -1,0 +1,57 @@
+.flow {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	padding: 26px 30px;
+	border-radius: 18px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-banner);
+
+	&__node {
+		display: inline-flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 18px 14px 14px;
+		border-radius: 12px;
+		border: 1px solid var(--btn-border-color);
+		background: var(--bg-primary);
+		font-weight: 600;
+		font-size: 15px;
+		letter-spacing: -0.03em;
+		color: var(--text-title);
+		white-space: nowrap;
+
+		i {
+			font-style: normal;
+			font-weight: 500;
+			font-size: 11px;
+			letter-spacing: 0.08em;
+			padding: 5px 7px;
+			border-radius: 6px;
+			background: var(--bg-svg-steck);
+			color: var(--text-body);
+		}
+	}
+
+	&__arrow {
+		position: relative;
+		width: 34px;
+		height: 2px;
+		background: var(--btn-border-color);
+		transform-origin: left center;
+		flex: 0 0 34px;
+
+		&::after {
+			content: '';
+			position: absolute;
+			right: -1px;
+			top: -4px;
+			width: 8px;
+			height: 8px;
+			border-top: 2px solid var(--btn-border-color);
+			border-right: 2px solid var(--btn-border-color);
+			transform: rotate(45deg);
+		}
+	}
+}

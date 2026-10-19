@@ -49,3 +49,5 @@ android
 ios
 .env
 yarn-lock
+# build
+dist/

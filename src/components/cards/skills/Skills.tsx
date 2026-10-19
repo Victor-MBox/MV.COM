@@ -4,6 +4,8 @@ type Skill = { name: string; percent: number }
 
 const skills: Skill[] = [
 	{ name: 'React.js', percent: 70 },
+	{ name: 'TypeScript', percent: 75 },
+	{ name: 'Laravel', percent: 60 },
 	{ name: 'WordPress', percent: 90 },
 	{ name: 'GSAP-анимации', percent: 80 },
 	{ name: 'CRM Интеграции', percent: 70 },

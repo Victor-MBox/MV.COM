@@ -23,5 +23,5 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true
 	},
-	"include": ["src", "src/main.tsxx", "src/hooks/useTheme.ts"]
+	"include": ["src", "src/hooks/useTheme.ts"]
 }

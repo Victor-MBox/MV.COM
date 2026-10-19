@@ -1,0 +1,123 @@
+.aboutPage {
+	&__photo {
+		position: relative;
+		width: 220px;
+
+		img {
+			width: 100%;
+			border-radius: 18px;
+			display: block;
+			border: 1px solid var(--border-cards);
+		}
+	}
+
+	&__status {
+		position: absolute;
+		left: 50%;
+		bottom: -16px;
+		transform: translateX(-50%);
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 16px;
+		border-radius: 100px;
+		border: 1px solid var(--border-cards);
+		background: var(--bg-primary);
+		font-size: 13px;
+		letter-spacing: -0.02em;
+		white-space: nowrap;
+		color: var(--text-title);
+
+		i {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+			background: #77ea31;
+			box-shadow: 0 0 16px 0 #77ea31;
+		}
+	}
+
+	&__principles {
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			position: relative;
+			z-index: 1;
+		}
+
+		li {
+			position: relative;
+			padding-left: 22px;
+			font-size: 15px;
+			line-height: 135%;
+			letter-spacing: -0.03em;
+			color: var(--text-body);
+
+			&::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 8px;
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background: var(--text-decor);
+			}
+		}
+	}
+
+	&__section {
+		margin-bottom: 50px;
+		scroll-margin-top: 20px;
+	}
+
+	&__company {
+		font-weight: 400;
+		color: var(--text-body);
+	}
+
+	&__process {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 20px;
+		counter-reset: step;
+
+		li {
+			padding: 30px;
+			border-radius: 18px;
+			border: 1px solid var(--border-cards);
+			background: var(--bg-primary);
+			position: relative;
+			transition: border-color 0.2s, transform 0.25s;
+
+			&:hover {
+				border-color: var(--btn-border-color);
+				transform: translateY(-3px);
+			}
+		}
+
+		&-step {
+			display: block;
+			font-size: 14px;
+			letter-spacing: 0.1em;
+			color: var(--text-decor);
+			margin-bottom: 36px;
+		}
+
+		h3 {
+			font-weight: 600;
+			font-size: 20px;
+			letter-spacing: -0.04em;
+			color: var(--text-title);
+			margin-bottom: 12px;
+		}
+
+		p {
+			font-size: 14px;
+			line-height: 145%;
+			letter-spacing: -0.03em;
+			color: var(--text-body);
+		}
+	}
+}

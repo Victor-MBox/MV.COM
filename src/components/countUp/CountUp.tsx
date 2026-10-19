@@ -59,7 +59,6 @@ export default function CountUpGSAP({
 	useEffect(() => {
 		if (!ref.current) return
                 ref.current.textContent = formatNumber(resolvedFrom, separator, maxDecimals)
-                // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [resolvedFrom, separator, maxDecimals])
 
 	// Основная логика: ждём in-view И startWhen, затем один раз запускаем tween

@@ -69,3 +69,145 @@ body::after {
 	flex-direction: column;
 	gap: 20px;
 }
+
+.portfolio__more {
+	display: flex;
+	justify-content: center;
+	margin: -20px 0 50px;
+}
+
+.page {
+	min-height: 60dvh;
+}
+
+.titlerow .btn {
+	display: inline-flex;
+	align-items: center;
+}
+
+// 404
+.notFound {
+	min-height: 60dvh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	gap: 16px;
+	padding: 60px 20px;
+	border-radius: 18px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-banner);
+
+	&__code {
+		font-weight: 700;
+		font-size: 120px;
+		line-height: 100%;
+		letter-spacing: -0.06em;
+		color: var(--text-title);
+		opacity: 0.15;
+	}
+
+	h1 {
+		font-weight: 700;
+		font-size: 36px;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+	}
+
+	p {
+		color: var(--text-secondary);
+		margin-bottom: 16px;
+	}
+}
+
+// Доступность: меньше движения
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+// Маленький заголовок-ярлык над блоком
+.eyebrow {
+	display: block;
+	font-size: 13px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--text-decor);
+	margin-bottom: 16px;
+}
+
+// Счётчик в шапке страницы
+.pageStat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 24px 32px;
+	border-radius: 18px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-primary);
+
+	strong {
+		font-weight: 600;
+		font-size: 48px;
+		line-height: 100%;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+	}
+
+	span {
+		font-size: 14px;
+		color: var(--text-body);
+		white-space: nowrap;
+	}
+}
+
+// Фильтры-чипсы
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border-radius: 10px;
+	border: 1px solid var(--border-cards);
+	background: var(--bg-primary);
+	font-size: 15px;
+	letter-spacing: -0.03em;
+	color: var(--text-body);
+	transition: color 0.2s, border-color 0.2s, background 0.2s;
+
+	&__count {
+		font-size: 12px;
+		padding: 3px 7px;
+		border-radius: 6px;
+		background: var(--bg-menu-a);
+		color: var(--text-decor);
+	}
+
+	&:hover {
+		color: var(--text-title);
+		border-color: var(--btn-border-color);
+	}
+
+	&.is-active {
+		color: var(--bg-menu-a);
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+
+		.chip__count {
+			background: rgba(128, 128, 128, 0.25);
+			color: inherit;
+		}
+	}
+}

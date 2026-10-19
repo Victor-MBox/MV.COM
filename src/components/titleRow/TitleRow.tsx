@@ -1,20 +1,28 @@
+import { Link } from 'react-router-dom'
 import './TitleRow.scss'
 
 type TitleRowProps = {
 	title?: string
 	btn?: string
+	to?: string
+	onClick?: () => void
 }
 
-export default function TitleRow({ title, btn }: TitleRowProps) {
+export default function TitleRow({ title, btn, to, onClick }: TitleRowProps) {
 	return (
 		<div className='titlerow'>
 			{title && <div className='title'>{title}</div>}
 
-                        {btn && (
-                                <button className='btn btn_dark' type='button'>
-                                        <span>{btn}</span>
-                                </button>
-                        )}
+			{btn && to && (
+				<Link to={to} className='btn btn_dark'>
+					<span>{btn}</span>
+				</Link>
+			)}
+			{btn && !to && (
+				<button className='btn btn_dark' type='button' onClick={onClick}>
+					<span>{btn}</span>
+				</button>
+			)}
 		</div>
 	)
 }

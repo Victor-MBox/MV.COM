@@ -1,7 +1,11 @@
+import { useContactModal } from '../contactModal/ContactModalContext'
+
 // scss
 import './FooterBanner.scss'
 
 export default function FooterBanner() {
+	const { open } = useContactModal()
+
 	return (
 		<section className='footerBanner'>
 			<h2 className='footerBanner__title'>
@@ -10,9 +14,9 @@ export default function FooterBanner() {
 			<p className='footerBanner__subtitle'>
 				Оставьте заявку на сайте или напишите в удобный для вас мессенджер
 			</p>
-                        <button className='btn btn_light' type='button'>
-                                <span className='btn__label'>Оставить заявку</span>
-                        </button>
-                </section>
-        )
+			<button className='btn btn_light' type='button' onClick={() => open()}>
+				<span className='btn__label'>Оставить заявку</span>
+			</button>
+		</section>
+	)
 }

@@ -166,7 +166,93 @@
 		gap: 20px;
 	}
 
+	// Компактная шапка меню на внутренних страницах
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 10px;
+		border-radius: 14px;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background: var(--bg-menu-a);
+		}
+
+		&__mark {
+			position: relative;
+			flex: 0 0 48px;
+			width: 48px;
+			height: 48px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 14px;
+			background: var(--bg-btn-menu_light);
+			color: var(--bg-menu-a);
+			font-weight: 700;
+			font-size: 16px;
+			letter-spacing: -0.04em;
+		}
+
+		&__dot {
+			position: absolute;
+			right: -4px;
+			bottom: -4px;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: #77ea31;
+			box-shadow: 0 0 16px 0 #77ea31;
+			border: 2px solid var(--bg-primary);
+		}
+
+		&__text {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			min-width: 0;
+		}
+
+		&__name {
+			font-weight: 600;
+			font-size: 16px;
+			letter-spacing: -0.03em;
+			color: var(--text-title);
+			white-space: nowrap;
+		}
+
+		&__role {
+			font-size: 13px;
+			letter-spacing: -0.02em;
+			color: var(--text-secondary);
+		}
+	}
+
+	&--compact {
+		.leftMenu__wrapper {
+			justify-content: flex-start;
+		}
+
+		.menu {
+			margin-top: 6px;
+		}
+
+		.leftMenu__btns {
+			margin-top: auto;
+		}
+	}
+
 	&--collapsed {
+		.brand {
+			padding: 0;
+			justify-content: center;
+
+			&__text {
+				display: none;
+			}
+		}
+
 		.leftMenu__wrapper {
 			width: 80px;
 			padding: 14px 12px;

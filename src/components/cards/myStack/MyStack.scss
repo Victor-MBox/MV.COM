@@ -45,6 +45,10 @@
 .mystack__item--api {
 	--icon: url('../../../../src/assets/icons/api_wt.svg');
 }
+.mystack__item--laravel {
+	--icon: url('../../../../src/assets/icons/laravel_wt.svg');
+	background-size: 20px;
+}
 .mystack__item--galp {
 	--icon: url('../../../../src/assets/icons/galp_wt.svg');
 	background-size: 12px;
@@ -84,6 +88,9 @@
 	}
 	.mystack__item--api {
 		--icon: url('../../../../src/assets/icons/api_dr.svg');
+	}
+	.mystack__item--laravel {
+		--icon: url('../../../../src/assets/icons/laravel_dr.svg');
 	}
 	.mystack__item--galp {
 		--icon: url('../../../../src/assets/icons/galp_dr.svg');

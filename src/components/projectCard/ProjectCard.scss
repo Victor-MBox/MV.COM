@@ -1,0 +1,128 @@
+.projectCard {
+	border-radius: 18px;
+	border: 0.5px solid var(--border-cards);
+	background: var(--bg-cards);
+	box-shadow: rgba(184, 180, 180, 0.08) 0 2px 0 inset;
+	overflow: hidden;
+	transition: border-color 0.25s, transform 0.25s;
+
+	&:hover {
+		border-color: var(--btn-border-color);
+		transform: translateY(-3px);
+	}
+
+	&__link {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		color: inherit;
+	}
+
+	&__media {
+		position: relative;
+		aspect-ratio: 16 / 10;
+		overflow: hidden;
+		background: var(--bg-menu-a);
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.55) 100%);
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+	}
+
+	&:hover &__media img {
+		transform: scale(1.05);
+	}
+
+	&:hover &__media::after {
+		opacity: 1;
+	}
+
+	&__year {
+		position: absolute;
+		top: 14px;
+		left: 14px;
+		z-index: 1;
+		padding: 8px 12px;
+		border-radius: 8px;
+		font-size: 13px;
+		letter-spacing: 0.04em;
+		background: rgba(10, 10, 10, 0.7);
+		color: #fff;
+		backdrop-filter: blur(6px);
+	}
+
+	&__hint {
+		position: absolute;
+		left: 20px;
+		bottom: 18px;
+		z-index: 1;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #fff;
+		opacity: 0;
+		transform: translateY(8px);
+		transition: opacity 0.3s, transform 0.3s;
+
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+	}
+
+	&:hover &__hint {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	&__body {
+		padding: 24px 26px 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	&__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+
+		.tag {
+			padding: 7px 10px;
+			border-radius: 6px;
+			font-size: 13px;
+			background: var(--bg-menu-a);
+			color: var(--text-body);
+		}
+	}
+
+	&__title {
+		font-weight: 600;
+		font-size: 24px;
+		line-height: 100%;
+		letter-spacing: -0.04em;
+		color: var(--text-title);
+	}
+
+	&__subtitle {
+		font-size: 15px;
+		line-height: 130%;
+		letter-spacing: -0.03em;
+		color: var(--text-body);
+	}
+}

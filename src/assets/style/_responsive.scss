@@ -1,0 +1,574 @@
+// Адаптив: ключевые точки 1200 / 992 / 768 / 560
+
+@media (max-width: 1200px) {
+	body {
+	.homeBanner {
+		&__title {
+			font-size: 48px;
+			width: 480px;
+		}
+		img {
+			right: 0;
+		}
+	}
+
+	.pageHeader__title {
+		font-size: 44px;
+	}
+
+	.aboutPage__services,
+	.project__stages {
+		grid-template-columns: 1fr;
+	}
+
+	.aboutPage__process,
+	.project__metrics {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.blogGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	}
+}
+
+@media (max-width: 992px) {
+	body {
+	.about,
+	.services,
+	.portfolioPage__grid,
+	.project__intro,
+	.project__nav,
+	.contactsPage__grid,
+	.post__layout,
+	.blogFeatured {
+		grid-template-columns: 1fr;
+	}
+
+	.services .card:nth-child(3) {
+		grid-column: auto;
+	}
+
+	.card {
+		max-height: none;
+	}
+
+	.homeBanner {
+		height: auto;
+		padding: 40px;
+
+		&__title {
+			width: 100%;
+		}
+
+		img {
+			display: none;
+		}
+	}
+
+	.pageHeader {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 40px;
+
+		&__aside {
+			width: 100%;
+		}
+	}
+
+	.project__tags {
+		justify-content: flex-start;
+		max-width: none;
+	}
+
+	.post__sidebar {
+		position: static;
+	}
+
+	.numbersCard {
+		flex-wrap: wrap;
+
+		div {
+			width: calc(50% - 5px);
+		}
+	}
+
+	.skills {
+		gap: 24px 40px;
+	}
+	}
+}
+
+@media (max-width: 768px) {
+	body {
+	.main {
+		flex-direction: column;
+		padding: 10px;
+	}
+
+	.leftMenu {
+		&__wrapper {
+			width: 100% !important;
+			height: auto;
+			position: static;
+			padding: 16px !important;
+			gap: 16px;
+		}
+
+		&__toggle {
+			display: none;
+		}
+
+		.avatar {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			margin: 0;
+			transform: none !important;
+
+			&__wrapper {
+				width: 56px;
+				margin: 0;
+				flex: 0 0 56px;
+
+				img {
+					border-radius: 14px;
+				}
+
+				.decor {
+					width: 12px;
+					height: 12px;
+				}
+			}
+
+			.name,
+			.stack {
+				text-align: left;
+				margin: 0;
+				opacity: 1 !important;
+				transform: none !important;
+			}
+
+			.name {
+				font-size: 18px;
+			}
+
+			.stack {
+				font-size: 14px;
+				opacity: 0.4 !important;
+			}
+		}
+
+		.menu ul {
+			flex-direction: row;
+			overflow-x: auto;
+			gap: 6px;
+			padding-bottom: 2px;
+
+			li a {
+				padding: 10px 12px;
+				white-space: nowrap;
+				justify-content: flex-start !important;
+
+				p {
+					display: block !important;
+					font-size: 15px;
+				}
+			}
+		}
+
+		&__btns {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 10px;
+
+			.theme-button {
+				flex: 1 1 200px;
+				width: auto !important;
+				height: auto !important;
+			}
+
+			.btn {
+				width: auto !important;
+				height: 48px !important;
+				padding: 0 20px !important;
+			}
+
+			.shiny-text__label {
+				display: inline-block !important;
+			}
+
+			.socBtn {
+				display: flex !important;
+				width: 100%;
+				justify-content: flex-start;
+			}
+		}
+	}
+
+	.homeBanner {
+		padding: 30px;
+
+		&__title {
+			font-size: 36px;
+		}
+	}
+
+	.pageHeader {
+		padding: 30px;
+
+		&__title {
+			font-size: 34px;
+		}
+		&__subtitle {
+			font-size: 16px;
+		}
+	}
+
+	.titlerow {
+		flex-wrap: wrap;
+		gap: 14px;
+
+		.title {
+			font-size: 30px;
+		}
+	}
+
+	.footerBanner {
+		padding: 30px 20px;
+
+		&__title {
+			font-size: 28px;
+		}
+	}
+
+	.card {
+		padding: 22px;
+	}
+
+	.card__portfolio .portfolio {
+		flex-direction: column;
+
+		&__column {
+			width: 100%;
+
+			&:nth-child(1) {
+				padding: 22px;
+			}
+		}
+
+		&__figure {
+			min-height: 200px;
+		}
+	}
+
+	.skills {
+		grid-template-columns: 1fr;
+	}
+
+	.aboutPage__process,
+	.project__metrics,
+	.blogGrid,
+	.numbersCard div {
+		grid-template-columns: 1fr;
+	}
+
+	.numbersCard div {
+		width: 100%;
+	}
+
+	.contactForm__row {
+		grid-template-columns: 1fr;
+	}
+
+	.modal__dialog {
+		padding: 28px 22px;
+	}
+
+	.modal__title {
+		font-size: 26px;
+	}
+
+	.accordion__head {
+		flex-wrap: wrap;
+		gap: 10px 16px;
+	}
+
+	.accordion__meta {
+		flex-basis: 100%;
+	}
+
+	.channel__link {
+		grid-template-columns: 1fr;
+
+		.channel__label {
+			grid-row: auto;
+		}
+	}
+
+	.lightbox {
+		padding: 70px 16px;
+
+		&__nav {
+			top: auto;
+			bottom: 16px;
+			transform: none;
+		}
+	}
+
+	.footer {
+		flex-direction: column;
+		gap: 16px;
+
+		ul li {
+			text-align: left;
+		}
+	}
+
+	.project__nav-title {
+		font-size: 22px;
+	}
+	}
+}
+
+@media (max-width: 560px) {
+	body {
+	.homeBanner__title {
+		font-size: 30px;
+	}
+
+	.homeBanner__subtitle {
+		flex-wrap: wrap;
+		font-size: 16px;
+		margin-bottom: 30px;
+	}
+
+	.pageHeader__title {
+		font-size: 28px;
+	}
+
+	.gallery__thumbs {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.chip {
+		font-size: 14px;
+		padding: 8px 10px;
+	}
+	}
+}
+
+// Услуги, страница проекта, бренд-блок
+@media (max-width: 1200px) {
+	body {
+		.servicesGroup__grid,
+		.servicesPage__models {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.project__facts {
+			flex-direction: column;
+			align-items: stretch;
+
+			dl {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 24px;
+			}
+		}
+	}
+}
+
+@media (max-width: 992px) {
+	body {
+		.servicesGroup__head {
+			grid-template-columns: 1fr;
+			gap: 14px;
+		}
+
+		.project__about {
+			grid-template-columns: 1fr;
+			gap: 36px;
+		}
+
+		.project__stages li {
+			grid-template-columns: 50px minmax(0, 1fr);
+			gap: 12px 20px;
+
+			p {
+				grid-column: 2;
+			}
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	body {
+		.servicesGroup__grid,
+		.servicesPage__models {
+			grid-template-columns: 1fr;
+		}
+
+		.servicesPage__nav {
+			position: static;
+			overflow-x: auto;
+
+			.chips {
+				flex-wrap: nowrap;
+			}
+
+			.chip {
+				white-space: nowrap;
+			}
+		}
+
+		.servicesGroup__head h2 {
+			font-size: 28px;
+		}
+
+		.project__facts dl {
+			grid-template-columns: 1fr;
+		}
+
+		.project__lead p,
+		.project__stages p {
+			font-size: 16px;
+		}
+
+		.project__gallery .titlerow .project__hint {
+			text-align: left;
+		}
+
+		.leftMenu--compact .brand {
+			padding: 0;
+		}
+	}
+}
+
+// Услуги: обзор, направление, услуга
+@media (max-width: 1200px) {
+	body {
+		.serviceGrid,
+		.pricing__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.direction__head {
+			grid-template-columns: minmax(0, 1fr) 300px;
+		}
+
+		.steps {
+			grid-template-columns: 1fr;
+
+			&__list {
+				flex-direction: row;
+				flex-wrap: wrap;
+			}
+
+			&__item {
+				width: auto;
+				flex: 1 1 200px;
+			}
+		}
+	}
+}
+
+@media (max-width: 992px) {
+	body {
+		.direction__head,
+		.dirHero,
+		.svcHero,
+		.outcome,
+		.block--split,
+		.steps__content {
+			grid-template-columns: 1fr;
+		}
+
+		.direction__image,
+		.dirHero__image {
+			min-height: 220px;
+			max-height: 320px;
+		}
+
+		.steps__image {
+			min-height: 200px;
+			max-height: 260px;
+		}
+
+		.priceCard {
+			width: 100%;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	body {
+		.serviceGrid,
+		.pricing__grid,
+		.projectsRow {
+			grid-template-columns: 1fr;
+		}
+
+		.servicesNav {
+			position: static;
+			overflow-x: auto;
+
+			.chips {
+				flex-wrap: nowrap;
+			}
+
+			.chip {
+				white-space: nowrap;
+			}
+		}
+
+		.direction__intro {
+			padding: 26px;
+
+			h2 {
+				font-size: 28px;
+			}
+		}
+
+		.direction__actions {
+			flex-wrap: wrap;
+		}
+
+		.outcome {
+			padding: 26px;
+
+			p {
+				font-size: 20px;
+			}
+		}
+
+		.steps__text {
+			padding: 22px;
+		}
+
+		.flow {
+			flex-direction: column;
+			align-items: stretch;
+			padding: 20px;
+
+			&__node {
+				white-space: normal;
+			}
+
+			&__arrow {
+				width: 2px;
+				height: 24px;
+				flex: 0 0 24px;
+				align-self: center;
+				transform-origin: top center;
+
+				&::after {
+					right: -3px;
+					top: auto;
+					bottom: -1px;
+					transform: rotate(135deg);
+				}
+			}
+		}
+	}
+}

@@ -1,6 +1,6 @@
 // scss
 import './Portfolio.scss'
-import React from 'react'
+import { Link } from 'react-router-dom'
 
 type LinkProps = {
 	href: string
@@ -54,7 +54,9 @@ export default function Portfolio({
 
 				<div className='portfolio__body'>
 					<h3 className='portfolio__title'>
-						{link?.href ? (
+						{link?.href && !isExternal ? (
+							<Link to={link.href}>{title}</Link>
+						) : link?.href ? (
 							<a href={link.href} target={target} rel={rel}>
 								{title}
 							</a>
