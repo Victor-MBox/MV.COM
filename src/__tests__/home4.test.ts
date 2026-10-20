@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
 	CASE_FACTS,
+	FINAL_META,
 	FINAL_TITLE,
 	H2,
 	HERO_STAT,
 	NAME,
+	NAME_LINES,
 	NAV,
 	PROCESS_WHY,
 	SHOWCASE_ORDER,
@@ -12,13 +14,15 @@ import {
 	STATS,
 	STRIP,
 	WATERMARK,
+	WORK_PLACEHOLDERS,
+	WORK_SLIDES,
 } from '../data/home4'
 import { parseStat } from '../data/home3'
-import { OFFERS } from '../data/offers'
+import { OFFERS, offerPath } from '../data/offers'
 import { PROCESS } from '../data/experience'
-import { WHY_ME } from '../data/home'
+import { HR_BLOCK, HR_LINE, WHY_ME } from '../data/home'
 import { PROJECTS } from '../data/projects'
-import { CONTACT_LINKS } from '../data/contacts'
+import { CONTACTS, CONTACT_LINKS } from '../data/contacts'
 import { ROUTE_PATHS } from '../app/routes'
 
 describe('home4: Portilo, меню в шапке', () => {
@@ -49,6 +53,20 @@ describe('home4: Portilo, меню в шапке', () => {
 		})
 	})
 
+	it('слайдер работ: главный кейс первым с фактами по CASE_FACTS, затем примеры со ссылкой на оффер и векторной обложкой', () => {
+		const main = PROJECTS.find(p => p.featured) ?? PROJECTS[0]
+		expect(WORK_SLIDES.length).toBeGreaterThanOrEqual(2) // иначе слайдер не рендерится
+		expect(WORK_SLIDES[0].slug).toBe(main.slug)
+		expect(WORK_SLIDES[0].highlights?.map(h => h.value)).toEqual(CASE_FACTS.map(i => main.highlights?.[i]?.value))
+		expect(new Set(WORK_SLIDES.map(s => s.slug)).size).toBe(WORK_SLIDES.length)
+		WORK_SLIDES.forEach(s => expect(Boolean(s.cover) !== Boolean(s.art)).toBe(true)) // либо скриншот, либо иллюстрация
+		WORK_PLACEHOLDERS.forEach(p => {
+			expect(OFFERS.map(offerPath)).toContain(p.to) // ведёт на существующую страницу оффера, а не на 404 кейса
+			expect(p.art).toBeTruthy()
+			p.highlights?.forEach(h => expect(h.value).not.toMatch(/^\d/)) // без чисел — они только в 6.8 и карточке NoRandoms
+		})
+	})
+
 	it('в каждом H2 не больше одного выделения, и оно — подстрока текста', () => {
 		Object.values(H2).forEach(h => {
 			expect(h.text.length).toBeGreaterThan(5)
@@ -58,12 +76,19 @@ describe('home4: Portilo, меню в шапке', () => {
 		})
 	})
 
-	it('имя, девиз финала и водяной знак — без цифр; девиз в две строки', () => {
+	it('имя в две строки, девиз финала и водяной знак — без цифр', () => {
 		expect(FINAL_TITLE.length).toBe(2)
-		;[NAME, WATERMARK, ...FINAL_TITLE].forEach(s => {
+		expect(NAME_LINES).toEqual(['Виктор', 'Мацаков'])
+		;[NAME, WATERMARK, ...FINAL_TITLE, ...NAME_LINES].forEach(s => {
 			expect(s.length).toBeGreaterThan(2)
 			expect(s).not.toMatch(/\d/)
 		})
+	})
+
+	it('города и часового пояса на сайте нет (решение владельца от 20.10.2026)', () => {
+		const strings = [...FINAL_META, HR_LINE.place, HR_BLOCK.text, CONTACTS.location]
+		strings.forEach(s => expect(s).not.toMatch(/Тбилиси|Грузия|GMT|UTC/i))
+		expect(FINAL_META.length).toBe(2)
 	})
 
 	it('ссылки шапки ведут на существующие маршруты, соцссылки — на ключи CONTACT_LINKS', () => {

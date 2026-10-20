@@ -21,7 +21,7 @@ export const PROOF = [
 /** Третья колонка строки доказательства — для HR, мелким текстом */
 export const HR_LINE = {
 	stack: 'Laravel · React · TypeScript · WordPress',
-	place: 'Тбилиси · удалённо',
+	place: 'удалённо', // без города — решение владельца от 20.10.2026
 }
 
 export type OfferTone = 'blue' | 'orange'
@@ -68,7 +68,7 @@ export const WHY_ME_PROOF =
 /** Блок «Для HR и тимлидов». Без «8 лет»: этот факт уже есть в строке под hero */
 export const HR_BLOCK = {
 	title: 'Для HR и тимлидов',
-	text: 'Full-stack. PHP / Laravel, React / TypeScript, MySQL / PostgreSQL, WordPress, GSAP. Собственный продукт в продакшене. Открыт к проектной работе и контракту, удалённо (Тбилиси, GMT+4).',
+	text: 'Full-stack. PHP / Laravel, React / TypeScript, MySQL / PostgreSQL, WordPress, GSAP. Собственный продукт в продакшене. Открыт к проектной работе и контракту, удалённо.',
 	/** Файла пока нет — заглушка, см. code.md §11 */
 	cv: '/cv.pdf',
 }

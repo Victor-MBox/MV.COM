@@ -17,8 +17,10 @@ type Props = {
 	disabled?: boolean
 	/** На всю ширину контейнера */
 	full?: boolean
-	/** Стрелка «→» справа (по умолчанию только у варианта text) */
+	/** Стрелка справа (по умолчанию только у варианта text) */
 	arrow?: boolean
+	/** Символ стрелки: «→» (сдвиг вправо по ховеру), «↗» (по диагонали), «↓» (вниз) */
+	arrowGlyph?: '→' | '↗' | '↓'
 	onClick?: MouseEventHandler<HTMLElement>
 	'aria-label'?: string
 }
@@ -35,17 +37,19 @@ export default function Button({
 	disabled,
 	full,
 	arrow,
+	arrowGlyph = '→',
 	onClick,
 	'aria-label': ariaLabel,
 }: Props) {
 	const showArrow = arrow ?? variant === 'text'
+	const arrowDir = arrowGlyph === '↗' ? 'ne' : arrowGlyph === '↓' ? 'down' : 'right'
 	const cn = ['button', `button--${variant}`, full ? 'button--full' : '', className ?? ''].filter(Boolean).join(' ')
 	const inner = (
 		<>
 			<span className='button__label'>{children}</span>
 			{showArrow && (
-				<span className='button__arrow' aria-hidden='true'>
-					→
+				<span className='button__arrow' data-dir={arrowDir} aria-hidden='true'>
+					{arrowGlyph}
 				</span>
 			)}
 		</>

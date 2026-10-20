@@ -1,0 +1,27 @@
+// Векторная обложка примера-плейсхолдера в слайдере работ (язык MiniUi, docs/design-spec.md §6.8)
+.coverArt {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	border-radius: var(--radius-field);
+	background: var(--box-deep);
+	overflow: hidden;
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	&__plate {
+		fill: var(--ui-plate);
+	}
+
+	&__deep {
+		fill: var(--box-deep);
+	}
+
+	&__accent {
+		fill: var(--accent);
+	}
+}

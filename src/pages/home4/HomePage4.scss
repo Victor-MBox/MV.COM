@@ -34,11 +34,13 @@
 }
 
 // ---------- 6.1 Hero ----------
+// Высота фиксированная (решение владельца от 20.10.2026), а не 100svh из ТЗ: первый экран не растягивается на всё окно,
+// следующая секция видна сразу. Шапка 72px входит в эти 680
 .h4Hero {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	min-height: 100svh;
+	height: 680px;
 	padding-top: var(--header-h); // шапка прозрачная поверх
 	overflow: hidden;
 
@@ -85,11 +87,12 @@
 		border-bottom: 1px solid var(--hero-line);
 	}
 
+	// Имя в две строки «Виктор / Мацаков»: кегль меньше, чем 136px одного слова из ТЗ (решение владельца от 20.10.2026)
 	.display {
 		font-family: var(--font-title);
 		font-weight: 500;
-		font-size: clamp(64px, 10vw, 136px);
-		line-height: 0.9;
+		font-size: clamp(52px, 6.6vw, 96px);
+		line-height: 0.92;
 		letter-spacing: -0.02em;
 		text-transform: uppercase; // единственный элемент в верхнем регистре (§3.3) — вместе с водяным знаком
 		color: var(--text);
@@ -240,7 +243,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
-		padding: 0 24px;
+		padding: 0 28px;
 
 		&:first-child {
 			padding-left: 0;
@@ -249,6 +252,30 @@
 		&:last-child {
 			padding-right: 0;
 		}
+	}
+
+	// Линейная иллюстрация шага (ProcessArt): штрих --text-muted, один акцентный элемент; добавлена 20.10.2026 как «воздух»
+	// между заголовком секции и текстом колонок. На ховере колонки штрих светлеет до --text-body
+	&__art {
+		display: block;
+		width: 160px;
+		height: 96px;
+		margin-bottom: 12px;
+		color: var(--text-muted);
+		transition: color var(--d-mid) var(--ease-out);
+
+		.is-accent {
+			stroke: var(--accent);
+		}
+
+		.is-accentFill {
+			fill: var(--accent);
+			stroke: none;
+		}
+	}
+
+	&__col:hover &__art {
+		color: var(--text-body);
 	}
 
 	&__head {
@@ -576,7 +603,7 @@
 
 @media (max-width: 992px) {
 	.h4Hero {
-		min-height: 0;
+		height: auto;
 
 		&__in {
 			gap: 32px;
@@ -592,7 +619,7 @@
 		}
 
 		.display {
-			font-size: clamp(56px, 16vw, 80px);
+			font-size: clamp(40px, 11vw, 64px);
 		}
 
 		&__role {

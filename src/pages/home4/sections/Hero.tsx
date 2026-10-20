@@ -1,11 +1,10 @@
 import { motion } from 'framer-motion'
 import { HERO_OFFER } from '../../../data/home3'
-import { HERO_STAT, NAME, ROLE, STATUS } from '../../../data/home4'
+import { HERO_STAT, NAME, NAME_LINES, ROLE } from '../../../data/home4'
 import victor from '../../../resources/victor.webp'
 import { useContactModal } from '../../../components/contactModal/ContactModalContext'
 import { MQ, useMediaQuery } from '../../../hooks/useMediaQuery'
 import SplitLines from '../../../components/splitLines/SplitLines'
-import StatusPill from '../../../components/statusPill/StatusPill'
 import Stat from '../../../components/stat/Stat'
 import TabCta from '../../../components/tabCta/TabCta'
 
@@ -19,9 +18,10 @@ type From = { y?: number | string; scaleX?: number }
 const EASE = [0.2, 0.7, 0.2, 1] as const
 
 /**
- * Hero по Portilo (docs/design-spec-home4.md §6.1): статус-пилюля, имя дисплейным словом, роль, портрет справа,
- * знак кавычек и H1-абзац, одна цифра «8 лет», язычок «Обсудить проект» на нижней кромке, сетка линий на фоне.
- * Интро по таблице §6.1, при reduced-motion — один opacity за 240 мс
+ * Hero по Portilo (docs/design-spec-home4.md §6.1) с правками владельца от 20.10.2026: без статус-пилюли, имя в две
+ * строки «Виктор / Мацаков», секция фиксированной высоты (HomePage4.scss), а не 100svh. Портрет справа, знак кавычек
+ * и H1-абзац, одна цифра «8 лет», язычок «Обсудить проект» на нижней кромке, сетка линий на фоне.
+ * Интро по таблице §6.1 (шаг пилюли выпал), при reduced-motion — один opacity за 240 мс
  */
 export default function Hero({ instant }: Props) {
 	const { open } = useContactModal()
@@ -40,10 +40,7 @@ export default function Hero({ instant }: Props) {
 				<motion.div className='h4Hero__lines' aria-hidden='true' {...step(0, 0.9)} />
 
 				<div className='h4Hero__top'>
-					<motion.div {...step(0.15, 0.36, { y: 8 })}>
-						<StatusPill>{STATUS}</StatusPill>
-					</motion.div>
-					<SplitLines as='p' className='h4Hero__name display' lines={[NAME]} trigger='now' delay={0.25} instant={instant} />
+					<SplitLines as='p' className='h4Hero__name display' lines={NAME_LINES} trigger='now' delay={0.15} instant={instant} />
 					<div className='h4Hero__role'>
 						<motion.i className='h4Hero__rule' aria-hidden='true' {...step(0.5, 0.36, { scaleX: 0 })} />
 						<motion.span {...step(0.5, 0.36)}>{ROLE}</motion.span>
@@ -51,7 +48,7 @@ export default function Hero({ instant }: Props) {
 				</div>
 
 				<motion.div className='h4Hero__portrait' {...step(0.45, 0.7, { y: 24 })}>
-					<img src={victor} alt='Виктор Мацаков' width={726} height={810} fetchPriority='high' decoding='async' />
+					<img src={victor} alt={NAME} width={726} height={810} fetchPriority='high' decoding='async' />
 				</motion.div>
 
 				<div className='h4Hero__bottom'>

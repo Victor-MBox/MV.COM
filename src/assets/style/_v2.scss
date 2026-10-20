@@ -32,6 +32,36 @@ html.lenis body {
 	overflow: hidden;
 }
 
+// Пропуск к содержимому (docs/design-spec-home4.md §4.4): первый элемент в DOM у TopHeader и SiteHeader, виден только по :focus-visible
+.skipLink {
+	position: fixed;
+	top: 16px;
+	left: 16px;
+	z-index: var(--z-modal);
+	display: inline-flex;
+	align-items: center;
+	height: 52px;
+	padding: 0 28px;
+	border-radius: var(--radius-pill);
+	background: var(--accent);
+	color: var(--on-accent);
+	font-family: var(--font-title);
+	font-weight: 500;
+	font-size: 16px;
+	line-height: 1;
+	opacity: 0;
+	transform: translateY(-200%);
+	pointer-events: none;
+
+	&:focus-visible {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+}
+
 // Акцент в заголовке (§5.3) и служебный моно-слой (§5.4)
 .accent {
 	color: var(--accent);
@@ -222,10 +252,16 @@ body.v2 {
 		backdrop-filter: blur(8px);
 
 		&__dialog {
+			max-width: 760px; // 560 из ContactModal.scss выглядела узкой для двухколоночной формы (решение владельца от 20.10.2026)
+			padding: 48px;
 			border-radius: var(--radius-card);
 			border: 1px solid var(--border);
 			background: var(--box);
 			box-shadow: none;
+
+			@media (max-width: 768px) {
+				padding: 28px 22px;
+			}
 		}
 
 		&__close {
@@ -330,4 +366,74 @@ body.v2.home4.light {
 	gap: 0;
 	padding: 0;
 	max-width: none;
+}
+
+// ===== /home5 (ТЗ «Minimal editorial», 20.10.2026 §3): палитра ТЗ только для этого маршрута =====
+// Классы `v2 home5` ставит HomePage5. body.v2.home5 специфичнее body.light, поэтому светлый блок повторяет весь список.
+// Шапка SiteHeader и футер MinimalFooter рендерятся App вне страницы и читают те же токены
+body.v2.home5 {
+	--bg: #0d0f10; // основной фон
+	--bg-alt: #111416; // альтернативный фон секций (финальный CTA)
+	--box: #171a1c; // поверхности: карточка кейса
+	--box-hover: #1c2022;
+	--box-deep: #111416; // подложки внутри карточек (LeadForm, модалка)
+	--text: #f4f4f2;
+	--text-muted: #999fa1; // второстепенный текст: абзацы, лиды
+	--text-faint: #72797b; // малозаметный: подписи секций, даты, номера
+	--text-body: #999fa1; // абзацы общих компонентов (LeadForm)
+	--text-dim: #4a5052;
+	--border: #292e30;
+	--border-strong: #3b4144;
+	--accent: #ff706b;
+	--accent-hover: #ff8981;
+	--accent-text: #ff8981;
+	--accent-soft: rgba(255, 112, 107, 0.12);
+	--on-accent: #0d0f10;
+	--glass: rgba(255, 255, 255, 0.04);
+	--glass-border: #292e30;
+	--glow: rgba(255, 112, 107, 0.2); // мягкое коралловое свечение за портретом и в финале
+	--shadow-cover: 0 32px 80px rgba(0, 0, 0, 0.5);
+	--overlay: rgba(13, 15, 16, 0.72);
+	--header-h: 80px; // высота SiteHeader (64 на ≤768)
+	--container: 1280px; // ширина контента без гаттеров (ТЗ §5)
+	--gutter: 56px; // 32 на ≤1200, 20 на ≤768
+	--radius-card: 18px;
+}
+
+body.v2.home5.light {
+	--bg: #f7f6f3;
+	--bg-alt: #ffffff;
+	--box: #efeeea;
+	--box-hover: #ffffff;
+	--box-deep: #e8e7e2;
+	--text: #171a1b;
+	--text-muted: #60676a;
+	--text-faint: #6b7275;
+	--text-body: #60676a;
+	--text-dim: #c4c6c2;
+	--border: #dddeda;
+	--border-strong: #c3c5bf;
+	--accent: #d44741;
+	--accent-hover: #b93631;
+	--accent-text: #b93631;
+	--accent-soft: rgba(212, 71, 65, 0.1);
+	--on-accent: #ffffff;
+	--glass: rgba(0, 0, 0, 0.03);
+	--glass-border: #dddeda;
+	--glow: rgba(212, 71, 65, 0.13);
+	--shadow-cover: 0 32px 80px rgba(23, 26, 27, 0.16);
+	--overlay: rgba(23, 26, 27, 0.5);
+}
+
+@media (max-width: 1200px) {
+	body.v2.home5 {
+		--gutter: 32px;
+	}
+}
+
+@media (max-width: 768px) {
+	body.v2.home5 {
+		--gutter: 20px;
+		--header-h: 64px;
+	}
 }

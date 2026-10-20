@@ -35,7 +35,7 @@ export default function AboutPage() {
 		<>
 			<PageHeader
 				title='Виктор Мацаков'
-				subtitle='Full-stack разработчик · Тбилиси · GMT+4 · удалённо'
+				subtitle='Full-stack разработчик · удалённо'
 				actions={
 					<>
 						<a className='btn btn_light' href={HR_BLOCK.cv} download>

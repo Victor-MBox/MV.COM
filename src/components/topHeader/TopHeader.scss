@@ -1,34 +1,6 @@
 // Верхняя шапка /home4 (docs/design-spec-home4.md §4). Токены — _variables.scss и скоуп body.v2.home4 в _v2.scss
 
-// Пропуск к содержимому (§4.4): первый элемент в DOM, виден только по :focus-visible
-.skipLink {
-	position: fixed;
-	top: 16px;
-	left: 16px;
-	z-index: var(--z-modal);
-	display: inline-flex;
-	align-items: center;
-	height: 52px;
-	padding: 0 28px;
-	border-radius: var(--radius-pill);
-	background: var(--accent);
-	color: var(--on-accent);
-	font-family: var(--font-title);
-	font-weight: 500;
-	font-size: 16px;
-	line-height: 1;
-	opacity: 0;
-	transform: translateY(-200%);
-	pointer-events: none;
-
-	&:focus-visible {
-		opacity: 1;
-		transform: none;
-		pointer-events: auto;
-		outline: 2px solid var(--accent);
-		outline-offset: 4px;
-	}
-}
+// Ссылка «К содержанию» (.skipLink) — общая с SiteHeader, объявлена в _v2.scss
 
 .topHeader {
 	position: sticky;

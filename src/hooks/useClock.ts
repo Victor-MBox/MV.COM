@@ -6,7 +6,7 @@ function now() {
 	return formatter.format(new Date())
 }
 
-/** Время в Тбилиси «HH:MM», обновляется раз в минуту (docs/design-spec.md §6.15) */
+/** Время «HH:MM» в часовом поясе Asia/Tbilisi, обновляется раз в минуту (docs/design-spec.md §6.15); остался только в финале /home3 */
 export function useClock() {
 	const [time, setTime] = useState(now)
 	useEffect(() => {

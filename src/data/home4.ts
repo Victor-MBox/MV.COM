@@ -1,24 +1,29 @@
 import type { Headline } from '../components/sectionHead/SectionHead'
+import type { WorkCardData } from '../components/workCard/WorkCard'
+import type { CoverArtVariant } from '../components/coverArt/CoverArt'
 import { HR_BLOCK, PROOF } from './home'
 import { parseStat } from './home3'
 import type { StatItem } from './home3'
 import { EXPERIENCE } from './experience'
-import { OFFERS } from './offers'
+import { OFFERS, getOffer, offerPath } from './offers'
 import { PROJECTS } from './projects'
+import type { ProjectFact } from './projects'
 
 /**
  * Данные главной `/home4` по docs/design-spec-home4.md (композиция Portilo, навигация в верхней шапке).
  * Всё, что есть в других файлах `src/data`, берётся оттуда (HERO_OFFER, INTENTS, FORM_COPY, parseStat — из home3.ts);
  * здесь только новые строки. Пометка `TODO (владелец)` — текст-плейсхолдер из ТЗ, который владелец утверждает или меняет.
+ * Правки владельца от 20.10.2026: имя полностью в две строки, без статус-пилюли, hero фиксированной высоты,
+ * без города и часового пояса, слайдер работ с примерами-плейсхолдерами.
  */
 
-// TODO (владелец): дисплейное слово hero — «Виктор» или «Мацаков»; верхний регистр ставит CSS (§3.2)
-export const NAME = 'Виктор'
+/** Дисплейное имя hero (решение владельца от 20.10.2026: «Виктор Мацаков» вместо «Виктор»); верхний регистр ставит CSS (§3.2) */
+export const NAME = 'Виктор Мацаков'
+
+/** Имя в две строки — по слову на строку (SplitLines lines) */
+export const NAME_LINES = NAME.split(' ')
 
 export const ROLE = 'Full-stack разработчик'
-
-// TODO (владелец): статус-пилюля hero без месяца (§5.7, решение от 19.10.2026)
-export const STATUS = 'Открыт для проектов'
 
 // TODO (владелец): слово-логотип шапки, точка после него — акцентом (§4.1); вариант «Мацаков.»
 export const WORDMARK = 'Victor Matsakov'
@@ -67,8 +72,42 @@ export const SHOWCASE_ORDER = [
  */
 export const PROCESS_WHY = [1, 0, 2, 3]
 
-/** Индексы highlights главного кейса в WorkCard (§5.4): 18 000+ страниц и «Февраль 2026» */
+/** Индексы highlights главного кейса для карточки работы (§5.4): 18 000+ страниц и «Февраль 2026» */
 export const CASE_FACTS = [0, 2]
+
+/**
+ * Пример-плейсхолдер для слайдера работ: карточка собирается из оффера (строка «что это», срок, ссылка на страницу
+ * оффера вместо несуществующего кейса), обложка — векторная CoverArt. Факты без чисел (сроки уже в витрине услуг, цифры — в 6.8)
+ */
+function placeholderCase(key: string, title: string, art: CoverArtVariant, facts: ProjectFact[]): WorkCardData | null {
+	const offer = getOffer(key)
+	if (!offer) return null
+	return { slug: `example-${key}`, title, client: 'Пример', line: offer.line, art, to: offerPath(offer), highlights: facts }
+}
+
+// TODO (владелец): два примера, чтобы слайдер работал до появления второго реального кейса (решение от 20.10.2026).
+// Заменить реальными кейсами в PROJECTS (шаблон content.md §4.7, при NDA — «Не публикуем») и удалить
+export const WORK_PLACEHOLDERS: WorkCardData[] = [
+	placeholderCase('ecommerce', 'Интернет-магазин', 'shop', [
+		{ value: 'WooCommerce', label: 'каталог, корзина, оплата' },
+		{ value: 'amoCRM', label: 'заказы уходят в CRM' },
+	]),
+	placeholderCase('corporate', 'Сайт компании', 'corporate', [
+		{ value: 'WordPress', label: 'редактируете сами' },
+		{ value: 'SEO', label: 'структура под поиск' },
+	]),
+].filter((c): c is WorkCardData => !!c)
+
+/**
+ * Лента слайдера работ (§5.4, §6.4): реальные проекты PROJECTS (главный кейс первым, факты по CASE_FACTS),
+ * затем примеры-плейсхолдеры. Когда реальных кейсов станет два и больше, плейсхолдеры убрать
+ */
+export const WORK_SLIDES: WorkCardData[] = [
+	...[...PROJECTS]
+		.sort((a, b) => Number(!!b.featured) - Number(!!a.featured))
+		.map(p => ({ ...p, highlights: CASE_FACTS.map(i => p.highlights?.[i]).filter((h): h is ProjectFact => !!h) })),
+	...WORK_PLACEHOLDERS,
+]
 
 // TODO (владелец): подписи четырёх счётчиков (§6.8). Значения — из PROOF[1], highlights[1] NoRandoms и EXPERIENCE[0]
 const [usersLabel, visitorsRaw] = users.label.split(' и ')
@@ -85,6 +124,9 @@ export const STATS: StatItem[] = [
 
 // TODO (владелец): заголовок финала в две строки (§6.9), без акцента и верхнего регистра
 export const FINAL_TITLE = ['Давайте', 'работать']
+
+/** Мета-ряд финала (§6.9): слева формат работы вместо города (без Тбилиси и GMT — решение владельца от 20.10.2026), справа роль */
+export const FINAL_META = ['Работаю удалённо', ROLE]
 
 // TODO (владелец): водяной знак финала (§5.6); верхний регистр ставит CSS
 export const WATERMARK = 'Мацаков'

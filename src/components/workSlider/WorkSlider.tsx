@@ -2,16 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
 import { animate, motion, useMotionValue } from 'framer-motion'
 import type { PanInfo } from 'framer-motion'
-import type { Project } from '../../data/projects'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
 import Button from '../button/Button'
 import WorkCard from '../workCard/WorkCard'
+import type { WorkCardData } from '../workCard/WorkCard'
 import './WorkSlider.scss'
 
 type Props = {
-	projects: Project[]
-	/** Индексы highlights для фактов карточки */
-	facts?: number[]
+	/** Карточки в порядке показа (WORK_SLIDES в home4.ts: главный кейс первым) */
+	items: WorkCardData[]
 }
 
 const EASE = [0.2, 0.7, 0.2, 1] as const
@@ -20,10 +19,10 @@ const SWIPE_VELOCITY = 300
 
 /**
  * Слайдер работ (docs/design-spec-home4.md §5.4): лента карточек с drag по x и привязкой к карточке за 360 мс,
- * стрелки для клавиатуры, язычок с ромбами справа у карточки, полоса прогресса. При одном проекте — только карточка.
+ * стрелки для клавиатуры, язычок с ромбами справа у карточки, полоса прогресса. При одной карточке — только она.
  * При reduced-motion drag выключен, остаются стрелки и ромбы.
  */
-export default function WorkSlider({ projects, facts }: Props) {
+export default function WorkSlider({ items }: Props) {
 	const reduced = useMediaQuery(MQ.reduced)
 	const [index, setIndex] = useState(0)
 	const [width, setWidth] = useState(0)
@@ -32,7 +31,7 @@ export default function WorkSlider({ projects, facts }: Props) {
 	// Был ли жест перетаскивания: click по ссылке-карточке после свайпа не должен открывать кейс
 	const dragged = useRef(false)
 	const x = useMotionValue(0)
-	const n = projects.length
+	const n = items.length
 	const single = n < 2
 
 	// Шаг ленты = ширина окна слайдера; измеряется ResizeObserver, чтобы не ловить setState в эффекте
@@ -61,7 +60,7 @@ export default function WorkSlider({ projects, facts }: Props) {
 	}, [single])
 
 	if (n === 0) return null
-	if (single) return <WorkCard project={projects[0]} facts={facts} />
+	if (single) return <WorkCard item={items[0]} />
 
 	const clamp = (i: number) => Math.max(0, Math.min(n - 1, i))
 	const go = (i: number) => setIndex(clamp(i))
@@ -103,14 +102,14 @@ export default function WorkSlider({ projects, facts }: Props) {
 					onDragEnd={onDragEnd}
 					onClickCapture={onClickCapture}
 				>
-					{projects.map((p, i) => (
+					{items.map((p, i) => (
 						<div className='workSlider__slide' key={p.slug} aria-hidden={i !== index} inert={i !== index}>
-							<WorkCard project={p} facts={facts} />
+							<WorkCard item={p} />
 						</div>
 					))}
 				</motion.div>
 				<div className='workSlider__tab' role='group' aria-label='Выбор проекта'>
-					{projects.map((p, i) => (
+					{items.map((p, i) => (
 						<button
 							key={p.slug}
 							type='button'

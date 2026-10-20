@@ -48,7 +48,8 @@
 		gap: 24px;
 	}
 
-	// Номер «01/»: цифры акцентом, слэш --text; маска вверх 360 мс — overflow: hidden на обёртке
+	// Номер «01/»: цифры акцентом, слэш --text; маска вверх 360 мс — overflow: hidden на обёртке.
+	// Кегль — как у пункта списка, а не 114px из ТЗ: крупный номер перетягивал внимание (решение владельца от 20.10.2026)
 	&__num {
 		display: block;
 		overflow: hidden;
@@ -56,7 +57,7 @@
 		margin-bottom: -0.08em;
 		font-family: var(--font-title);
 		font-weight: 500;
-		font-size: clamp(72px, 8vw, 114px);
+		font-size: clamp(32px, 3.4vw, 52px);
 		line-height: 0.8;
 		letter-spacing: -0.04em;
 		font-variant-numeric: tabular-nums;
@@ -76,7 +77,7 @@
 	}
 
 	&__term {
-		padding-bottom: 6px;
+		padding-bottom: 4px;
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.4;

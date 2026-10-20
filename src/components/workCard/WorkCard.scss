@@ -17,6 +17,7 @@
 		color: var(--text-body);
 	}
 
+	// Обложка: скриншот <img> или векторная CoverArt (у примеров-плейсхолдеров) — одна геометрия и тень
 	&__cover {
 		display: block;
 		width: 100%;
@@ -35,11 +36,13 @@
 		padding-top: 8px;
 	}
 
+	// margin-top: auto — в слайдере карточки растянуты до самой высокой, название с кругом стоит у нижней кромки
 	&__foot {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 16px;
+		margin-top: auto;
 		padding-top: 8px;
 	}
 

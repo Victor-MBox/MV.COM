@@ -6,7 +6,8 @@ export const CONTACTS = {
 	github: 'Victor-MBox',
 	linkedin: 'victor-matsakov',
 	instagram: 'victor.matsakov',
-	location: 'Тбилиси, Грузия · GMT+4',
+	// Без города и часового пояса — решение владельца от 20.10.2026 (город остаётся только в резюме)
+	location: 'Работаю удалённо',
 }
 
 export const CONTACT_LINKS = {

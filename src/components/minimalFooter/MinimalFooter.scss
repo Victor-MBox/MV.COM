@@ -1,0 +1,112 @@
+// Футер /home5 (ТЗ §15)
+.miniFooter {
+	border-top: 1px solid var(--border);
+	background: var(--bg);
+
+	&__in {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) auto minmax(0, 1fr);
+		align-items: start;
+		gap: 32px 48px;
+		max-width: calc(var(--container) + var(--gutter) * 2);
+		margin: 0 auto;
+		padding: 40px var(--gutter) 44px;
+	}
+
+	&__brand {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	&__name {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 16px;
+		line-height: 1.2;
+		letter-spacing: -0.01em;
+		color: var(--text);
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	&__logo {
+		font-family: inherit;
+		font-weight: inherit;
+		letter-spacing: -0.03em;
+
+		i {
+			font-style: normal;
+			color: var(--accent);
+		}
+	}
+
+	&__desc {
+		max-width: 36ch;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--text-faint);
+	}
+
+	&__nav ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 24px;
+	}
+
+	&__nav a,
+	&__meta a {
+		font-size: 14px;
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+		transition: color var(--d-fast);
+
+		&:hover {
+			color: var(--text);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	&__meta {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 8px 24px;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--text-faint);
+		font-variant-numeric: tabular-nums;
+	}
+
+	@media (max-width: 992px) {
+		&__in {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		&__meta {
+			grid-column: 1 / -1;
+			justify-content: flex-start;
+		}
+	}
+
+	@media (max-width: 560px) {
+		&__in {
+			grid-template-columns: 1fr;
+			gap: 24px;
+			padding-block: 32px 36px;
+		}
+
+		&__nav ul {
+			flex-direction: column;
+			gap: 10px;
+		}
+	}
+}

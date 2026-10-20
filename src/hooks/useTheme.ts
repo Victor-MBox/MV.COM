@@ -1,65 +1,99 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 
-// Типы для темы
-type Theme = 'dark' | 'light'
+export type Theme = 'dark' | 'light'
+
+const KEY = 'theme'
+const QUERY = '(prefers-color-scheme: dark)'
+
+/**
+ * Тема — общее состояние модуля, а не каждого экземпляра хука: переключатель в шапке, в мобильном меню и в левом меню
+ * видят одно значение. Правила (ТЗ /home5 §3): по умолчанию prefers-color-scheme, ручной выбор сохраняется в localStorage
+ * и имеет приоритет; системная тема отслеживается, пока пользователь не выбрал сам. До первой отрисовки класс на body
+ * ставит инлайн-скрипт в index.html с теми же правилами — без вспышки неправильной темы.
+ */
+
+const listeners = new Set<() => void>()
+let current: Theme | null = null
+
+function readStored(): Theme | null {
+	try {
+		const value = localStorage.getItem(KEY)
+		return value === 'dark' || value === 'light' ? value : null
+	} catch {
+		return null
+	}
+}
+
+function systemTheme(): Theme {
+	return window.matchMedia(QUERY).matches ? 'dark' : 'light'
+}
+
+function getSnapshot(): Theme {
+	if (current === null) current = readStored() ?? systemTheme()
+	return current
+}
+
+function getServerSnapshot(): Theme {
+	return 'dark'
+}
+
+/** Класс на body (стили тем в _variables.scss) и color-scheme для нативных контролов и полос прокрутки */
+function apply(theme: Theme) {
+	document.body.classList.remove('light', 'dark')
+	document.body.classList.add(theme)
+	document.documentElement.style.colorScheme = theme
+}
+
+function commit(theme: Theme, persist: boolean) {
+	current = theme
+	apply(theme)
+	if (persist) {
+		try {
+			localStorage.setItem(KEY, theme)
+		} catch {
+			// приватный режим — выбор живёт до перезагрузки
+		}
+	}
+	listeners.forEach(listener => listener())
+}
+
+function onSystemChange(e: MediaQueryListEvent) {
+	if (!readStored()) commit(e.matches ? 'dark' : 'light', false)
+}
+
+function onStorage(e: StorageEvent) {
+	if (e.key === KEY) commit(readStored() ?? systemTheme(), false)
+}
+
+function subscribe(listener: () => void) {
+	listeners.add(listener)
+	if (listeners.size === 1) {
+		window.matchMedia(QUERY).addEventListener('change', onSystemChange)
+		window.addEventListener('storage', onStorage)
+	}
+	return () => {
+		listeners.delete(listener)
+		if (listeners.size === 0) {
+			window.matchMedia(QUERY).removeEventListener('change', onSystemChange)
+			window.removeEventListener('storage', onStorage)
+		}
+	}
+}
 
 export function useTheme() {
-	// Получаем сохраненную тему из localStorage или используем системную
-	const getInitialTheme = (): Theme => {
-		if (typeof window !== 'undefined') {
-			// Проверяем localStorage
-			const savedTheme = localStorage.getItem('theme') as Theme
-			if (savedTheme) return savedTheme
+	const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
-			// Проверяем системную тему
-			const systemPrefersDark = window.matchMedia(
-				'(prefers-color-scheme: dark)'
-			).matches
-			return systemPrefersDark ? 'dark' : 'light'
-		}
-		return 'dark' // fallback для SSR
-	}
-
-	const [theme, setTheme] = useState<Theme>(getInitialTheme)
-
-	// Функция для переключения темы
-	const toggleTheme = () => {
-		const newTheme: Theme = theme === 'dark' ? 'light' : 'dark'
-		setTheme(newTheme)
-	}
-
-	// Функция для установки конкретной темы
-	const setSpecificTheme = (newTheme: Theme) => {
-		setTheme(newTheme)
-	}
-
-	// Применяем тему к body и сохраняем в localStorage
-        useEffect(() => {
-                const body = document.body
-                body.classList.remove('light', 'dark')
-                body.classList.add(theme)
-                localStorage.setItem('theme', theme)
-        }, [theme])
-
-	// Слушаем изменения системной темы
+	// Если инлайн-скрипт index.html не отработал (другой шаблон, тесты), класс ставится при монтировании
 	useEffect(() => {
-		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-		const handleChange = (e: MediaQueryListEvent) => {
-			// Обновляем только если нет сохраненной темы
-			if (!localStorage.getItem('theme')) {
-				setTheme(e.matches ? 'dark' : 'light')
-			}
-		}
-
-		mediaQuery.addEventListener('change', handleChange)
-		return () => mediaQuery.removeEventListener('change', handleChange)
+		apply(getSnapshot())
 	}, [])
+
+	const setTheme = (next: Theme) => commit(next, true)
 
 	return {
 		theme,
-		toggleTheme,
-		setTheme: setSpecificTheme,
+		toggleTheme: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
+		setTheme,
 		isDark: theme === 'dark',
 		isLight: theme === 'light',
 	}

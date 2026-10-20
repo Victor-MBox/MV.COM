@@ -97,4 +97,13 @@
 	&--full {
 		width: 100%;
 	}
+
+	// Направление сдвига стрелки по ховеру задаёт символ (arrowGlyph): «↗» уходит по диагонали, «↓» — вниз
+	&:hover &__arrow[data-dir='ne'] {
+		transform: translate(3px, -3px);
+	}
+
+	&:hover &__arrow[data-dir='down'] {
+		transform: translateY(3px);
+	}
 }

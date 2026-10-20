@@ -17,7 +17,7 @@ export const HERO_SUBTITLE =
 /** Два числа в стеклянных карточках hero — те же факты, что в PROOF, но числом для счётчика */
 export const HERO_FACTS = [
 	{ value: 6000, suffix: '+', label: 'пользователей NoRandoms без рекламы' },
-	{ value: 8, suffix: ' лет', label: 'в разработке, Тбилиси · удалённо' },
+	{ value: 8, suffix: ' лет', label: 'в разработке, удалённо' },
 ]
 
 export type AudienceTone = 'blue' | 'green' | 'orange' | 'neutral'
@@ -91,8 +91,8 @@ export const AUDIENCES: Audience[] = [
 	{
 		id: 'hr',
 		label: 'HR и тимлиду',
-		title: 'Full-stack на контракт или проект, удалённо из Тбилиси',
-		text: 'Собственный продукт в продакшене. PHP / Laravel, React / TypeScript, MySQL / PostgreSQL, WordPress, GSAP. Открыт к проектной работе и контракту, GMT+4.',
+		title: 'Full-stack на контракт или проект, удалённо',
+		text: 'Собственный продукт в продакшене. PHP / Laravel, React / TypeScript, MySQL / PostgreSQL, WordPress, GSAP. Открыт к проектной работе и контракту.',
 		items: [
 			'Резюме PDF и GitHub — по ссылкам ниже',
 			'Готов к тестовому и техническому интервью',

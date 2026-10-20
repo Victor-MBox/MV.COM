@@ -1,5 +1,4 @@
-import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
-import { useClock } from '../../hooks/useClock'
+import { CONTACT_LINKS } from '../../data/contacts'
 import './SiteFooter.scss'
 
 const LINKS = [
@@ -8,9 +7,11 @@ const LINKS = [
 	{ label: 'Telegram', href: CONTACT_LINKS.telegram },
 ]
 
-/** Футер дизайн-системы 1.0 (docs/design-spec.md §6.15): копирайт, ссылки, город и живые часы */
+/**
+ * Футер дизайн-системы 1.0 (docs/design-spec.md §6.15): копирайт и ссылки. Город и живые часы из ТЗ убраны —
+ * решение владельца от 20.10.2026: сайт не привязан к городу и часовому поясу (они остаются в резюме)
+ */
 export default function SiteFooter() {
-	const time = useClock()
 	return (
 		<footer className='siteFooter'>
 			<p>© {new Date().getFullYear()} Виктор Мацаков</p>
@@ -23,9 +24,6 @@ export default function SiteFooter() {
 					</li>
 				))}
 			</ul>
-			<p>
-				{CONTACTS.location} · время сейчас <time>{time}</time>
-			</p>
 		</footer>
 	)
 }
