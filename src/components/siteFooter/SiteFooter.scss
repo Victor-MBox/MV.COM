@@ -1,0 +1,53 @@
+// Футер (docs/design-spec.md §6.15)
+.siteFooter {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 24px;
+	padding: 24px var(--gutter);
+	border-top: 1px solid var(--border);
+	background: var(--bg);
+
+	p,
+	a,
+	time {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	a {
+		transition: color var(--d-fast);
+
+		&:hover {
+			color: var(--text);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	ul {
+		display: flex;
+		gap: 16px;
+	}
+
+	p:last-child {
+		text-align: right;
+	}
+
+	@media (max-width: 768px) {
+		grid-template-columns: 1fr;
+		gap: 12px;
+		padding: 24px 0;
+
+		p:last-child {
+			text-align: left;
+		}
+	}
+}

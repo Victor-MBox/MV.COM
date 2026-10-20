@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { useContactModal } from '../contactModal/ContactModalContext'
-import { AVAILABILITY } from '../../data/home'
 
 // scss
 import './HomeBanner.scss'

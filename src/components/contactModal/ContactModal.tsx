@@ -1,13 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 import { useContactModal } from './ContactModalContext'
 import ContactForm from '../contactForm/ContactForm'
+import LeadForm from '../leadForm/LeadForm'
+import { isV2Route } from '../../app/routes'
 import './ContactModal.scss'
 
 export default function ContactModal() {
 	const { isOpen, topic, close } = useContactModal()
 	const dialogRef = useRef<HTMLDivElement>(null)
+	// /home3 и /home4 живут на дизайн-системе 1.0 — форма с намерениями (docs/design-spec.md §6.13)
+	const isV2 = isV2Route(useLocation().pathname)
 
 	// Esc закрывает, скролл страницы блокируется, фокус уходит в окно
 	useEffect(() => {
@@ -77,7 +82,11 @@ export default function ContactModal() {
 							</p>
 						</div>
 
-						<ContactForm key={topic} initialTopic={topic} onDone={close} compact />
+						{isV2 ? (
+							<LeadForm key={topic} initialTopic={topic} onDone={close} compact />
+						) : (
+							<ContactForm key={topic} initialTopic={topic} onDone={close} compact />
+						)}
 					</motion.div>
 				</motion.div>
 			)}

@@ -1,0 +1,95 @@
+// Слайдер работ (docs/design-spec-home4.md §5.4)
+.workSlider {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+
+	&__viewport {
+		position: relative;
+		overflow: hidden;
+	}
+
+	&__track {
+		display: flex;
+		cursor: grab;
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__slide {
+		display: flex;
+		flex: 0 0 100%;
+		min-width: 0;
+		padding-right: 28px; // место под язычок с ромбами у правого края карточки
+	}
+
+	// Язычок с ромбами-точками: активный --accent, остальные --text-dim
+	&__tab {
+		position: absolute;
+		right: 0;
+		top: 50%;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 14px 10px;
+		border: 1px solid var(--border);
+		border-left: 0;
+		border-radius: 0 12px 12px 0;
+		background: var(--box);
+		transform: translateY(-50%);
+	}
+
+	&__diamond {
+		position: relative;
+		width: 8px;
+		height: 8px;
+		padding: 0;
+		border-radius: 1px;
+		background: var(--text-dim);
+		transform: rotate(45deg);
+		transition: background-color var(--d-base) var(--ease-out);
+
+		// зона нажатия больше ромба
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -8px;
+		}
+
+		&.is-active {
+			background: var(--accent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	&__controls {
+		display: flex;
+		gap: 8px;
+	}
+
+	&__arrow.button {
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		font-family: var(--font-mono);
+	}
+
+	// Полоса прогресса 2px: бегунок шириной 100% / N сдвигается по активному индексу
+	&__progress {
+		height: 2px;
+		background: var(--border);
+
+		i {
+			display: block;
+			height: 100%;
+			background: var(--text);
+			transition: transform var(--d-base) var(--ease-out);
+		}
+	}
+}

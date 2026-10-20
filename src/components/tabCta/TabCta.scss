@@ -1,0 +1,53 @@
+// Кнопка-язычок (docs/design-spec-home4.md §5.1)
+.tabCta {
+	position: relative;
+	display: inline-block;
+
+	&__btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 240px;
+		height: 52px;
+		padding: 0 24px 2px;
+		clip-path: polygon(0 100%, 7% 0, 93% 0, 100% 100%);
+		background: var(--accent);
+		color: var(--on-accent);
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 16px;
+		line-height: 1;
+		letter-spacing: 0;
+		white-space: nowrap;
+		transition:
+			background-color var(--d-mid) var(--ease-out),
+			transform var(--d-press) var(--ease-out);
+
+		&:hover {
+			background: var(--accent-hover);
+		}
+
+		&:active {
+			transform: scale(0.98);
+		}
+
+		&:focus-visible {
+			outline: none;
+		}
+	}
+
+	// Фокус-кольцо 1.0 вокруг обёртки без clip-path
+	&::after {
+		content: '';
+		position: absolute;
+		inset: -4px;
+		border: 2px solid var(--accent);
+		border-radius: 4px;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	&:has(.tabCta__btn:focus-visible)::after {
+		opacity: 1;
+	}
+}

@@ -101,4 +101,38 @@
 			max-width: 520px;
 		}
 	}
+
+	// Колонки (/home2, концепт H): тонкий крупный номер, заголовок и текст под верхней линией, без таймлайна
+	&--columns {
+		li {
+			padding-top: 24px;
+			border-top: 1px solid var(--btn-border-color);
+
+			&::before {
+				display: none;
+			}
+		}
+
+		.processList__num {
+			width: auto;
+			height: auto;
+			display: block;
+			border: 0;
+			border-radius: 0;
+			background: none;
+			margin: 0;
+			font-family: var(--font-title);
+			font-weight: 300;
+			font-size: 48px;
+			line-height: 100%;
+			letter-spacing: -0.03em;
+			color: var(--accent-blue);
+		}
+
+		h3 {
+			font-size: 22px;
+			line-height: 118%;
+			margin-top: 8px;
+		}
+	}
 }

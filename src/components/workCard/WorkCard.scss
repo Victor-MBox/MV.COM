@@ -1,0 +1,85 @@
+// Карточка работы (docs/design-spec-home4.md §5.4)
+.workCard {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 512px;
+	max-width: 100%;
+
+	&__chip {
+		align-self: flex-start;
+	}
+
+	&__line {
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__cover {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		border-radius: var(--radius-field);
+		background: var(--box-deep);
+		box-shadow: var(--shadow-cover);
+	}
+
+	// Два факта в ряд; в узкой карточке (1024, 390) «Февраль 2026» переносится на свою строку, а не режется
+	&__facts {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px 32px;
+		padding-top: 8px;
+	}
+
+	&__foot {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding-top: 8px;
+	}
+
+	&__title {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 22px;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	// Круг со стрелкой: по ховеру карточки заливается --text, стрелка — цветом фона
+	&__arrow {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: none;
+		width: 40px;
+		height: 40px;
+		border: 1px solid var(--border-strong);
+		border-radius: 50%;
+		font-family: var(--font-mono);
+		font-size: 16px;
+		line-height: 1;
+		color: var(--text);
+		transition:
+			background-color var(--d-mid) var(--ease-out),
+			border-color var(--d-mid) var(--ease-out),
+			color var(--d-mid) var(--ease-out);
+	}
+
+	&:hover &__arrow {
+		background: var(--text);
+		border-color: var(--text);
+		color: var(--bg);
+	}
+
+	@media (max-width: 560px) {
+		width: 100%;
+		padding: 24px;
+	}
+}

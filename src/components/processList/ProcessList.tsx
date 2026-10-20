@@ -4,14 +4,14 @@ import './ProcessList.scss'
 
 type Props = {
 	className?: string
-	/** timeline — четыре колонки с линией через номера (/services, офферы); rows — строки с крупным номером слева (главная) */
-	variant?: 'timeline' | 'rows'
+	/** timeline — четыре колонки с линией через номера (/services, офферы); rows — строки с крупным номером слева (главная); columns — колонки с тонким крупным номером под верхней линией (/home2) */
+	variant?: 'timeline' | 'rows' | 'columns'
 }
 
 /** Четыре шага работы без картинок — единственный процесс на сайте (content.md §4.4). Шаги появляются по очереди */
 export default function ProcessList({ className = '', variant = 'timeline' }: Props) {
 	return (
-		<ol className={`processList${variant === 'rows' ? ' processList--rows' : ''} ${className}`.trim()}>
+		<ol className={`processList${variant === 'timeline' ? '' : ` processList--${variant}`} ${className}`.trim()}>
 			{PROCESS.map((step, i) => (
 				<motion.li
 					key={step.step}

@@ -1,0 +1,100 @@
+// Кнопки системы (docs/design-spec.md §6.2)
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	height: 52px;
+	padding: 0 28px;
+	border: 1px solid transparent;
+	border-radius: var(--radius-pill);
+	font-family: var(--font-title);
+	font-weight: 500;
+	font-size: 16px;
+	line-height: 1;
+	letter-spacing: 0;
+	white-space: nowrap;
+	cursor: pointer;
+	text-decoration: none;
+	transition:
+		background-color var(--d-mid) var(--ease-out),
+		border-color var(--d-mid) var(--ease-out),
+		color var(--d-mid) var(--ease-out),
+		transform var(--d-mid) var(--ease-out);
+
+	&__label,
+	&__arrow {
+		font-family: inherit;
+		font-weight: inherit;
+		color: inherit;
+	}
+
+	&__arrow {
+		font-family: var(--font-mono);
+		font-weight: 400;
+		transition: transform var(--d-mid) var(--ease-out);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+
+	&:active {
+		transform: scale(0.98);
+	}
+
+	&:disabled,
+	&[aria-disabled='true'] {
+		opacity: 0.4;
+		pointer-events: none;
+	}
+
+	&--primary {
+		background: var(--accent);
+		color: var(--on-accent);
+
+		&:hover {
+			background: var(--accent-hover);
+			transform: translateY(-1px);
+		}
+	}
+
+	&--secondary {
+		background: var(--glass);
+		border-color: var(--glass-border);
+		color: var(--text);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+
+		&:hover {
+			border-color: var(--border-strong);
+			background: var(--box-hover);
+		}
+	}
+
+	&--text {
+		height: auto;
+		padding: 0;
+		gap: 8px;
+		border: 0;
+		border-radius: 0;
+		background: none;
+		color: var(--text);
+		font-family: var(--font-body);
+		font-size: 15px;
+		letter-spacing: -0.01em;
+
+		&:active {
+			transform: none;
+		}
+
+		&:hover .button__arrow {
+			transform: translateX(4px);
+		}
+	}
+
+	&--full {
+		width: 100%;
+	}
+}

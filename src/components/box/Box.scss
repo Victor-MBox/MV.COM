@@ -1,0 +1,51 @@
+// Карточка (docs/design-spec.md §6.5) и её свечение (§4.2)
+.box {
+	position: relative;
+	display: block;
+	padding: 32px;
+	border: 1px solid transparent;
+	border-radius: var(--radius-card);
+	background: var(--box);
+	color: inherit;
+	overflow: hidden;
+	isolation: isolate;
+	text-decoration: none;
+	transition:
+		background-color var(--d-base) var(--ease-out),
+		border-color var(--d-base) var(--ease-out),
+		transform var(--d-base) var(--ease-out);
+
+	&--glow::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background: radial-gradient(60% 50% at 0% 0%, var(--accent-soft), transparent 70%);
+		opacity: var(--glow-rest);
+		transition: opacity var(--d-base) var(--ease-out);
+	}
+
+	&--interactive {
+		cursor: pointer;
+
+		&:hover {
+			background: var(--box-hover);
+			border-color: var(--border-strong);
+			transform: translateY(-2px);
+
+			&::before {
+				opacity: 1;
+			}
+		}
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+
+	@media (max-width: 768px) {
+		padding: 24px;
+	}
+}

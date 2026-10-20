@@ -1,0 +1,34 @@
+// Курсор-подпись (docs/design-spec.md §6.12)
+.cursorTag {
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: var(--z-cursor);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 88px;
+	height: 88px;
+	border-radius: 50%;
+	border: 1px solid var(--glass-border);
+	background: var(--glass);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	pointer-events: none;
+	opacity: 0;
+	scale: 0.9;
+	transition: opacity var(--d-cursor) var(--ease-out), scale var(--d-cursor) var(--ease-out);
+
+	span {
+		font-weight: 500; // ТЗ 6.12 просит 600, жирнее 500 на сайте нет (правило 4)
+		font-size: 11px;
+		line-height: 1;
+		letter-spacing: 0.02em;
+		color: var(--text);
+	}
+
+	&.is-on {
+		opacity: 1;
+		scale: 1;
+	}
+}

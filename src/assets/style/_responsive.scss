@@ -595,3 +595,310 @@
 		}
 	}
 }
+
+// Альтернативная главная /home2 (концепт H «Портрет»)
+@media (max-width: 1200px) {
+	body {
+		.heroPortrait__title {
+			font-size: 64px;
+		}
+
+		.audienceTabs {
+			grid-template-columns: 1fr;
+			gap: 24px;
+
+			&__list {
+				position: static;
+				flex-direction: row;
+				overflow-x: auto;
+				border-left: 0;
+				border-bottom: 1px solid var(--border-cards);
+			}
+
+			&__tab {
+				margin-left: 0;
+				padding: 14px 20px;
+				font-size: 20px;
+				white-space: nowrap;
+
+				&::before {
+					left: 0;
+					right: 0;
+					top: auto;
+					bottom: -1px;
+					width: auto;
+					height: 2px;
+				}
+			}
+		}
+
+		.home2Cta {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+}
+
+@media (max-width: 992px) {
+	body {
+		.heroPortrait {
+			min-height: 0;
+
+			&__inner {
+				min-height: 0;
+				max-width: 520px;
+				padding: 48px 40px 24px;
+			}
+
+			&__kicker {
+				margin-top: 40px;
+			}
+
+			&__title {
+				font-size: 52px;
+			}
+
+			&__figure {
+				height: 82%;
+				right: -10%;
+			}
+
+			&__facts {
+				position: relative; // не static: z-index должен оставаться выше оверлеев затемнения и зерна
+				right: auto;
+				bottom: auto;
+				flex-direction: row;
+				flex-wrap: wrap;
+				align-items: stretch;
+				padding: 0 40px 40px;
+			}
+
+			&__fact {
+				flex: 1 1 200px;
+			}
+		}
+
+		.projectCover {
+			height: 520px;
+
+			&__content {
+				left: 32px;
+				right: 32px;
+				bottom: 32px;
+				grid-template-columns: 1fr;
+				gap: 24px;
+			}
+
+			&__title {
+				font-size: 44px;
+			}
+		}
+
+		.home2Quote {
+			&__inner {
+				grid-template-columns: 1fr;
+				gap: 28px;
+				padding: 40px;
+			}
+
+			&__photo {
+				width: 120px;
+				height: 120px;
+			}
+
+			&__text {
+				font-size: 28px;
+			}
+		}
+
+		.whyRows li {
+			grid-template-columns: 72px minmax(0, 1fr);
+
+			p {
+				grid-column: 2;
+			}
+		}
+
+		.hrCard__head {
+			grid-template-columns: 1fr;
+			gap: 24px;
+			padding: 32px 32px 24px;
+		}
+
+		.audienceTabs {
+			&__content {
+				grid-template-columns: 1fr;
+				padding: 32px;
+			}
+
+			&__title {
+				font-size: 30px;
+			}
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	body {
+		.heroPortrait {
+			&__inner {
+				padding: 32px 24px 16px;
+			}
+
+			&__kicker {
+				margin-top: 32px;
+			}
+
+			&__title {
+				font-size: 40px;
+			}
+
+			&__subtitle {
+				font-size: 16px;
+			}
+
+			&__figure {
+				height: 70%;
+				right: -20%;
+			}
+
+			&__facts {
+				padding: 0 24px 24px;
+			}
+		}
+
+		.heroStrip {
+			margin-bottom: 70px;
+		}
+
+		.projectCover {
+			height: 440px;
+
+			&__title {
+				font-size: 34px;
+			}
+
+			&__line {
+				font-size: 16px;
+			}
+
+			&__facts {
+				gap: 24px;
+
+				strong {
+					font-size: 26px;
+				}
+			}
+		}
+
+		.home2Quote {
+			margin-bottom: 70px;
+
+			&__inner {
+				padding: 28px 24px;
+			}
+
+			&__text {
+				font-size: 24px;
+			}
+		}
+
+		.whyRows li {
+			padding: 22px 0;
+
+			h3 {
+				font-size: 22px;
+			}
+		}
+
+		.hrCard__head {
+			padding: 24px;
+		}
+
+		.hrCard__actions .btn {
+			flex: 1 1 160px;
+			justify-content: center;
+		}
+
+		.home2Cta {
+			padding: 36px 24px;
+			gap: 32px;
+
+			&__title {
+				font-size: 32px;
+			}
+		}
+
+		.audienceTabs {
+			&__tab {
+				padding: 12px 16px;
+				font-size: 18px;
+			}
+
+			&__panel {
+				min-height: 0;
+			}
+
+			&__content {
+				padding: 24px;
+			}
+		}
+	}
+}
+
+@media (max-width: 560px) {
+	body {
+		.heroPortrait {
+			&__title {
+				font-size: 34px;
+			}
+
+			&__figure {
+				display: none;
+			}
+
+			&__actions .btn {
+				width: 100%;
+				justify-content: center;
+			}
+
+			&__fact {
+				flex-basis: 100%;
+			}
+		}
+
+		.whyRows li {
+			grid-template-columns: 1fr;
+			gap: 8px;
+
+			p {
+				grid-column: auto;
+			}
+		}
+
+		.heroStrip__sep {
+			display: none;
+		}
+
+		.projectCover {
+			&__shade {
+				background: linear-gradient(180deg, rgba(7, 7, 7, 0.2) 0%, rgba(7, 7, 7, 0.78) 35%, rgba(7, 7, 7, 0.97) 100%);
+			}
+
+			&__content {
+				left: 20px;
+				right: 20px;
+				bottom: 20px;
+			}
+
+			&__facts {
+				flex-wrap: wrap;
+			}
+		}
+
+		.audienceTabs__actions .audienceTabs__cta {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+}

@@ -3,6 +3,8 @@ import type { FormEvent } from 'react'
 import { submitContact } from '../../api/contact'
 import { OFFERS } from '../../data/offers'
 import { BUDGET_RANGES } from '../../data/pricing'
+import { validateContact } from './validate'
+import type { ContactErrors } from './validate'
 import './ContactForm.scss'
 
 type Props = {
@@ -11,7 +13,7 @@ type Props = {
 	compact?: boolean
 }
 
-type Errors = Partial<Record<'name' | 'contact' | 'message' | 'consent', string>>
+type Errors = ContactErrors
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
 export default function ContactForm({ initialTopic = '', onDone, compact = false }: Props) {
@@ -24,20 +26,7 @@ export default function ContactForm({ initialTopic = '', onDone, compact = false
 	const [errors, setErrors] = useState<Errors>({})
 	const [status, setStatus] = useState<Status>('idle')
 
-	const validate = (): Errors => {
-		const next: Errors = {}
-		if (name.trim().length < 2) next.name = 'Напишите, как к вам обращаться'
-		const c = contact.trim()
-		const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c)
-		const looksLikePhone = /^\+?[\d\s()-]{7,}$/.test(c)
-		const looksLikeHandle = /^@?[\w.]{3,}$/.test(c)
-		if (!(looksLikeEmail || looksLikePhone || looksLikeHandle)) {
-			next.contact = 'Укажите e-mail, телефон или ник в Telegram'
-		}
-		if (message.trim().length < 10) next.message = 'Расскажите о задаче чуть подробнее'
-		if (!consent) next.consent = 'Нужно согласие на обработку данных'
-		return next
-	}
+	const validate = () => validateContact({ name, contact, message, consent })
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault()

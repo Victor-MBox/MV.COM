@@ -1,0 +1,478 @@
+// Мини-интерфейсы услуг (docs/design-spec.md §6.8; четыре варианта /home4 — docs/design-spec-home4.md §5.3).
+// Микроанимации запускает ховер карточки .box или контейнера .miniUiHost (витрина услуг)
+.miniUi {
+	display: flex;
+	gap: 12px;
+	height: 180px;
+	padding: 16px;
+	border-radius: var(--radius-field);
+	background: var(--box-deep);
+	overflow: hidden;
+
+	i,
+	b {
+		display: block;
+		font-weight: 500; // плашки без текста, но правило «не жирнее 500» держим и здесь
+	}
+
+	// «текст» — полосы 6px
+	&__bar {
+		width: 100%;
+		height: 6px;
+		border-radius: 3px;
+		background: var(--ui-plate);
+
+		&--short {
+			width: 60%;
+		}
+
+		&--mid {
+			width: 80%;
+		}
+	}
+
+	// --- веб-сервис: сайдбар + таблица ---
+	&__side {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		width: 28%;
+		padding: 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__table {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__row {
+		display: grid;
+		grid-template-columns: 1fr 1fr 44px;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__status {
+		height: 16px;
+		border-radius: 8px;
+		background: var(--box-deep);
+
+		&.is-accent {
+			background: var(--accent);
+		}
+	}
+
+	// --- магазин: карточка товара ---
+	&__product {
+		display: flex;
+		gap: 16px;
+		width: 100%;
+		padding: 16px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+	}
+
+	&__photo {
+		flex: none;
+		width: 108px;
+		height: 108px;
+		border-radius: 8px;
+		background: var(--box-deep);
+	}
+
+	&__info {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		flex: 1;
+		min-width: 0;
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__price {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		color: var(--text);
+	}
+
+	&__buy {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: auto;
+	}
+
+	&__button {
+		padding: 8px 12px;
+		white-space: nowrap;
+		border-radius: var(--radius-pill);
+		background: var(--accent);
+		color: var(--on-accent);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		line-height: 1;
+	}
+
+	&__plus {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		line-height: 1;
+		padding: 6px 8px;
+		border-radius: var(--radius-field);
+		border: 1px solid var(--border);
+		color: var(--text-muted);
+		opacity: 0;
+		transform: translateY(4px);
+		transition: opacity var(--d-mid) var(--ease-out), transform var(--d-mid) var(--ease-out);
+	}
+
+	// --- интеграции: три узла и пунктир ---
+	&--integrations {
+		align-items: center;
+		justify-content: center;
+		gap: 0;
+	}
+
+	&__node {
+		flex: none;
+		padding: 8px 10px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		color: var(--text);
+	}
+
+	// Пунктир между узлами: повторяющийся градиент, по ховеру «бежит» сдвигом background-position
+	&__link {
+		flex: 1 1 32px;
+		min-width: 16px;
+		height: 2px;
+		margin: 0 8px;
+		background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 8px);
+		background-size: 8px 2px;
+	}
+
+	// --- лендинг (/home4): заголовок полосами, кнопка-акцент, справа «форма» из двух полей и кнопки ---
+	&--landing {
+		align-items: stretch;
+	}
+
+	&__copy {
+		display: flex;
+		flex: 1 1 55%;
+		flex-direction: column;
+		justify-content: center;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	&__cta {
+		width: 56px;
+		height: 16px;
+		margin-top: 6px;
+		border-radius: var(--radius-pill);
+		background: var(--accent);
+	}
+
+	&__form {
+		display: flex;
+		flex: 1 1 45%;
+		flex-direction: column;
+		gap: 8px;
+		padding: 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+	}
+
+	&__field {
+		height: 18px;
+		border-radius: 6px;
+		background: var(--box-deep);
+	}
+
+	&__submit {
+		height: 18px;
+		margin-top: auto;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+	}
+
+	// --- сайт компании (/home4): полоска-навигация из четырёх плашек и три «карточки» ---
+	&--corporate {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	&__nav {
+		display: flex;
+		gap: 8px;
+		padding: 8px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+	}
+
+	&__navItem {
+		width: 32px;
+		height: 8px;
+		border-radius: 4px;
+		background: var(--box-deep);
+
+		&.is-accent {
+			background: var(--accent);
+		}
+	}
+
+	&__cards {
+		display: grid;
+		flex: 1;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 8px;
+	}
+
+	&__card {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 10px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__thumb {
+		flex: 1;
+		min-height: 24px;
+		border-radius: 6px;
+		background: var(--box-deep);
+	}
+
+	// --- поддержка (/home4): три строки «задача · статус» с чипами справа ---
+	&--support {
+		flex-direction: column;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	&__task {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 44px;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__state {
+		height: 16px;
+		border-radius: 8px;
+		background: var(--box-deep);
+
+		&.is-accent {
+			background: var(--accent);
+		}
+	}
+
+	// --- агентства (/home4): две колонки «вы» и «я», между ними стрелка ---
+	&--agencies {
+		align-items: center;
+		gap: 12px;
+	}
+
+	&__col {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+		padding: 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__colLabel {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__arrow {
+		flex: none;
+		font-family: var(--font-mono);
+		font-size: 20px;
+		line-height: 1;
+		color: var(--accent);
+		transition: transform var(--d-mid) var(--ease-out);
+	}
+
+	// --- микроанимации по ховеру карточки (.box) или контейнера витрины (.miniUiHost) ---
+	@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+		:is(.box, .miniUiHost):hover &--web-service {
+			.miniUi__row {
+				animation: miniUiRow var(--d-base) var(--ease-out) both;
+				animation-delay: calc(var(--n) * var(--stagger));
+			}
+
+			.miniUi__status.is-accent {
+				animation: miniUiPulse 1.6s var(--ease-out) 2;
+			}
+		}
+
+		:is(.box, .miniUiHost):hover &--ecommerce {
+			.miniUi__button {
+				animation: miniUiPress var(--d-mid) var(--ease-out);
+			}
+
+			.miniUi__plus {
+				opacity: 1;
+				transform: none;
+				transition-delay: var(--d-mid);
+			}
+		}
+
+		:is(.box, .miniUiHost):hover &--integrations .miniUi__link {
+			animation: miniUiDash 1.2s linear infinite;
+		}
+
+		:is(.box, .miniUiHost):hover &--landing .miniUi__cta {
+			animation: miniUiPress var(--d-mid) var(--ease-out);
+		}
+
+		:is(.box, .miniUiHost):hover &--corporate .miniUi__card {
+			animation: miniUiRow var(--d-base) var(--ease-out) both;
+			animation-delay: calc(var(--n) * var(--stagger));
+		}
+
+		:is(.box, .miniUiHost):hover &--support .miniUi__state.is-accent {
+			animation: miniUiPulse 1.6s var(--ease-out) 2;
+		}
+
+		:is(.box, .miniUiHost):hover &--agencies .miniUi__arrow {
+			transform: translateX(4px);
+		}
+	}
+
+	// В узкой карточке (три колонки на 1200–1320) композиции не помещаются в ряд — ставим в столбик.
+	// Контейнер — родительская карточка (.offerBox { container-type: inline-size }), запрос по её ширине
+	@container (max-width: 250px) {
+		&__product {
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		&__photo {
+			width: 100%;
+			height: 40px;
+		}
+
+		&__buy {
+			margin-top: 0;
+		}
+
+		&--integrations {
+			flex-direction: column;
+			gap: 0;
+		}
+
+		&__link {
+			flex: none;
+			width: 2px;
+			height: 14px;
+			margin: 4px 0;
+			background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 8px);
+			background-size: 2px 8px;
+		}
+
+		:is(.box, .miniUiHost):hover &--integrations .miniUi__link {
+			animation-name: miniUiDashY;
+		}
+	}
+
+	@media (max-width: 1200px) {
+		height: 140px;
+		padding: 12px;
+
+		&__photo {
+			width: 84px;
+			height: 84px;
+		}
+	}
+
+	@media (max-width: 560px) {
+		display: none;
+	}
+}
+
+@keyframes miniUiRow {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes miniUiPulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
+}
+
+@keyframes miniUiPress {
+	50% {
+		transform: scale(0.96);
+	}
+}
+
+@keyframes miniUiDash {
+	to {
+		background-position: 16px 0;
+	}
+}
+
+@keyframes miniUiDashY {
+	to {
+		background-position: 0 16px;
+	}
+}

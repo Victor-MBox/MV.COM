@@ -9,6 +9,7 @@ import avatar from '../../resources/avatar.png'
 import ThemeButton from '../themeButton/ThemeButton'
 import SocBtn from '../socBtn/SocBtn'
 import { useContactModal } from '../contactModal/ContactModalContext'
+import { isHomeRoute, isV2Route } from '../../app/routes'
 
 // scss
 import './LeftMenu.scss'
@@ -125,8 +126,12 @@ export default function LeftMenu() {
 	const { open } = useContactModal()
 	const { pathname } = useLocation()
 
-	const isHome = pathname === '/'
-	const isActive = (to: string) => (to === '/' ? isHome : pathname.startsWith(to))
+	// /home2 — альтернативная главная (концепт H): в меню тоже фото и имя, пункт «Главная» активен.
+	// /home3 (дизайн-система 1.0): пункт «Главная» активен, но вместо фото — монограмма (docs/design-spec.md §6.1).
+	// На /home4 это меню не рендерится — там TopHeader (src/app/routes.ts)
+	const isHomePage = isHomeRoute(pathname)
+	const isHome = isHomePage && !isV2Route(pathname)
+	const isActive = (to: string) => (to === '/' ? isHomePage : pathname.startsWith(to))
 
 	return (
 		<header

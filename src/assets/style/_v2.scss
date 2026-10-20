@@ -1,0 +1,333 @@
+// Дизайн-система 1.0 (docs/design-spec.md): базовый слой поверх старых стилей.
+// Класс `v2` на body ставит страница /home3 (useEffect в HomePage3); остальные страницы живут на старых
+// токенах до переноса по §9. После переноса всех страниц скоуп `body.v2` убрать, старые токены удалить.
+
+// Гаттеры и вертикальный ритм секций (§4.3)
+@media (max-width: 1200px) {
+	:root {
+		--gutter: 32px;
+		--section-y: 96px;
+	}
+}
+@media (max-width: 768px) {
+	:root {
+		--gutter: 16px;
+		--section-y: 64px;
+	}
+}
+
+// Lenis (§8.2): инициализируется только на /home3, классы ставит сама библиотека
+html.lenis,
+html.lenis body {
+	height: auto;
+}
+.lenis.lenis-smooth,
+.lenis.lenis-smooth body {
+	scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+	overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+	overflow: hidden;
+}
+
+// Акцент в заголовке (§5.3) и служебный моно-слой (§5.4)
+.accent {
+	color: var(--accent);
+}
+.mono {
+	font-family: var(--font-mono);
+	letter-spacing: 0;
+}
+
+body.v2 {
+	background-color: var(--bg);
+	color: var(--text);
+	transition: background-color var(--d-mid), color var(--d-mid); // §6.14
+	-webkit-font-smoothing: antialiased;
+
+	// Фон чистый, без зерна (§7.1)
+	&::after {
+		display: none;
+	}
+
+	section {
+		margin-bottom: 0;
+	}
+
+	// ----- Меню (§6.1, CSS-рестайл без смены разметки LeftMenu) -----
+	.leftMenu__wrapper {
+		background: var(--bg);
+		border-color: var(--border);
+		border-radius: var(--radius-card);
+		transition: background-color var(--d-mid), border-color var(--d-mid);
+	}
+
+	.leftMenu__toggle {
+		background: var(--box);
+		border-color: var(--border);
+		color: var(--text-muted);
+		box-shadow: none;
+	}
+
+	.brand {
+		&:hover {
+			background: var(--box);
+		}
+
+		&__mark {
+			flex-basis: 40px;
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: none;
+			border: 1px solid var(--border-strong);
+			color: var(--text);
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 14px;
+			letter-spacing: 0;
+		}
+
+		&__dot {
+			display: none; // зелёная точка остаётся только в статусе hero (§4.1 --ok)
+		}
+
+		&__name {
+			font-weight: 500;
+			font-size: 15px;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+
+		&__role {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+	}
+
+	.menu ul li {
+		&::after {
+			display: none;
+		}
+
+		a {
+			font-weight: 500;
+			font-size: 15px;
+			letter-spacing: -0.01em;
+			color: var(--text-muted);
+			opacity: 1;
+			transition: color var(--d-fast);
+
+			svg * {
+				stroke: currentColor;
+			}
+
+			p {
+				font-weight: 500;
+			}
+		}
+
+		&:hover a {
+			color: var(--text);
+		}
+
+		&.active {
+			background: none;
+
+			&::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 50%;
+				width: 6px;
+				height: 6px;
+				margin-top: -3px;
+				border-radius: 50%;
+				background: var(--accent);
+			}
+
+			a {
+				color: var(--text);
+			}
+		}
+	}
+
+	.theme-button {
+		outline-color: var(--border);
+
+		&.light,
+		&.dark {
+			background: var(--box-deep);
+		}
+
+		.thumb {
+			background: var(--box);
+			border-color: var(--border);
+		}
+
+		.option .label {
+			font-weight: 500;
+			color: var(--text-muted);
+		}
+	}
+
+	// Кнопка «Обсудить проект» — primary-пилюля (§6.2)
+	.leftMenu__contact.btn {
+		height: 52px;
+		padding: 0 28px;
+		border: none;
+		border-radius: var(--radius-pill);
+		background: var(--accent);
+		overflow: visible;
+		transition: background-color var(--d-mid) var(--ease-out), transform var(--d-mid) var(--ease-out);
+
+		&::after {
+			display: none;
+		}
+
+		span {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 16px;
+			letter-spacing: 0;
+			color: var(--on-accent);
+		}
+
+		svg path {
+			stroke: var(--on-accent);
+		}
+
+		&:hover {
+			background: var(--accent-hover);
+			transform: translateY(-1px);
+		}
+
+		&:active {
+			transform: scale(0.98);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	// ----- Модалка (§6.13): панель и шапка, форма внутри — LeadForm -----
+	.modal {
+		background: var(--overlay);
+		backdrop-filter: blur(8px);
+
+		&__dialog {
+			border-radius: var(--radius-card);
+			border: 1px solid var(--border);
+			background: var(--box);
+			box-shadow: none;
+		}
+
+		&__close {
+			border-radius: 50%;
+			border-color: var(--border);
+			background: var(--box-deep);
+			color: var(--text);
+			opacity: 1;
+
+			&:hover {
+				border-color: var(--border-strong);
+			}
+		}
+
+		&__title {
+			font-weight: 500;
+			font-size: clamp(22px, 2vw, 28px);
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			color: var(--text);
+		}
+
+		&__subtitle {
+			letter-spacing: -0.01em;
+			color: var(--text-muted);
+		}
+	}
+
+	// Курсор-подпись (§6.12): системный курсор скрыт только пока компонент активен
+	&.has-cursor [data-cursor] {
+		cursor: none;
+	}
+}
+
+// Интро первой загрузки (§7.1, t = 0): пункты меню появляются со стаггером 25 мс. Класс ставит HomePage3 один раз за сессию
+body.v2-intro .menu ul li {
+	animation: v2MenuIn var(--d-base) var(--ease-out) both;
+
+	@for $i from 1 through 5 {
+		&:nth-child(#{$i}) {
+			animation-delay: #{($i - 1) * 25}ms;
+		}
+	}
+}
+
+@keyframes v2MenuIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body.v2-intro .menu ul li {
+		animation: none;
+	}
+}
+
+// ===== /home4 (docs/design-spec-home4.md §3.1): токены только для этого маршрута =====
+// Классы `v2 home4` ставит HomePage4. body.v2.home4 специфичнее body.light, поэтому светлый блок повторяет весь список
+body.v2.home4 {
+	--bg: #0a0a0a; // Portilo чёрный; #161616 из 1.0 рядом с ним выглядит серым
+	--box: #141414; // карточки Portilo
+	--box-hover: #1a1a1a;
+	--box-deep: #0d0d0d; // панели внутри карточек, мини-интерфейсы
+	--accent: #ff4625; // «горячий» акцент Portilo — решение владельца от 19.10.2026
+	--accent-hover: #ff6a4f;
+	--accent-text: #ff6a4f; // мелкий акцентный текст, контраст ≥ 4.5:1
+	--accent-soft: rgba(255, 70, 37, 0.14);
+	--hero-line: rgba(255, 255, 255, 0.05); // линии сетки в hero
+	--header-h: 72px; // высота шапки TopHeader (56 на ≤768)
+	--strip-bg: #fefefe; // инвертированная бегущая строка финала
+	--strip-text: #0a0a0a;
+}
+
+body.v2.home4.light {
+	--bg: #f4f3f1;
+	--box: #ffffff;
+	--box-hover: #ffffff;
+	--box-deep: #ebeae7;
+	--accent: #e63e1f;
+	--accent-hover: #cf3619;
+	--accent-text: #c9341a;
+	--accent-soft: rgba(230, 62, 31, 0.1);
+	--hero-line: rgba(0, 0, 0, 0.06);
+	--strip-bg: #161616;
+	--strip-text: #f4f3f1;
+}
+
+@media (max-width: 768px) {
+	body.v2.home4 {
+		--header-h: 56px;
+	}
+}
+
+// Каркас App на маршруте с верхней шапкой (§4.5): .main больше не флекс с меню слева,
+// секции сами держат контейнер 1320px и гаттеры (HomePage4.scss, .h4Container)
+.main--top {
+	display: block;
+	gap: 0;
+	padding: 0;
+	max-width: none;
+}

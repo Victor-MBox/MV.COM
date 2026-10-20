@@ -91,4 +91,41 @@
 	&:hover &__foot svg {
 		transform: translateX(4px);
 	}
+
+	&__price {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 10px;
+	}
+
+	// Подробная плитка (/home2): «для кого» под названием, цена крупнее, срок рядом
+	&__for {
+		font-size: 13px;
+		letter-spacing: -0.01em;
+		color: var(--text-decor);
+		margin-top: -4px;
+	}
+
+	&__term {
+		font-weight: 400;
+		font-size: 13px;
+		letter-spacing: -0.01em;
+		color: var(--text-decor);
+	}
+
+	&--detailed &__price {
+		font-family: var(--font-title);
+		font-size: 18px;
+	}
+
+	&--blue &__for,
+	&--orange &__for {
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	&--blue &__term,
+	&--orange &__term {
+		color: rgba(255, 255, 255, 0.8);
+	}
 }

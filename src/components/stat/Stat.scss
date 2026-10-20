@@ -1,0 +1,57 @@
+// Цифра-доказательство (docs/design-spec.md §5.2, §6.6)
+.stat {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	min-width: 0;
+
+	&__num {
+		display: inline-grid;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(40px, 4vw, 64px);
+		line-height: 1;
+		letter-spacing: -0.02em;
+		font-variant-numeric: tabular-nums;
+		color: var(--text);
+
+		> * {
+			grid-area: 1 / 1;
+			font-family: inherit;
+			font-weight: inherit;
+			white-space: nowrap;
+		}
+
+		span {
+			font-family: inherit;
+			font-weight: inherit;
+			color: inherit;
+		}
+	}
+
+	&__ghost {
+		visibility: hidden;
+	}
+
+	&__label {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&--card &__num {
+		font-size: 32px;
+	}
+
+	&--accent &__num {
+		color: var(--accent);
+	}
+
+	@media (max-width: 768px) {
+		&--hero &__num {
+			font-size: 40px;
+		}
+	}
+}

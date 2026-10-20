@@ -1,0 +1,45 @@
+// Карточка формата (docs/design-spec-home4.md §5.5)
+.priceCard {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: 100%;
+
+	&:hover {
+		background: var(--box-hover);
+		border-color: var(--border-strong);
+		transform: translateY(-2px);
+	}
+
+	&__label {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 18px;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+		color: var(--text);
+	}
+
+	&__price {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(28px, 2.6vw, 36px);
+		line-height: 1;
+		letter-spacing: -0.02em;
+		font-variant-numeric: tabular-nums;
+		color: var(--text);
+	}
+
+	&__text {
+		flex: 1;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__cta {
+		align-self: flex-start;
+		margin-top: 12px;
+	}
+}

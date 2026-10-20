@@ -15,11 +15,15 @@ type Props = {
 	wide?: boolean
 	/** Порядковый номер в сетке — задержка появления */
 	index?: number
+	/** Подробная плитка (/home2): строка «для кого» под названием и срок рядом с ценой */
+	detailed?: boolean
 }
 
 /** Типографическая плитка оффера на главной: название, строка, цена и стрелка. Сетка — `.offerTiles` */
-export default function OfferTile({ offer, tone, wide = false, index = 0 }: Props) {
-	const cn = ['offerTile', tone && `offerTile--${tone}`, wide && 'offerTile--wide'].filter(Boolean).join(' ')
+export default function OfferTile({ offer, tone, wide = false, index = 0, detailed = false }: Props) {
+	const cn = ['offerTile', tone && `offerTile--${tone}`, wide && 'offerTile--wide', detailed && 'offerTile--detailed']
+		.filter(Boolean)
+		.join(' ')
 
 	return (
 		<MotionLink
@@ -32,9 +36,13 @@ export default function OfferTile({ offer, tone, wide = false, index = 0 }: Prop
 			transition={{ duration: 0.4, delay: (index % 3) * 0.07, ease: [0.4, 0, 0.2, 1] }}
 		>
 			<span className='offerTile__title'>{offer.title}</span>
+			{detailed && <span className='offerTile__for'>{offer.forWhom}</span>}
 			<span className='offerTile__line'>{offer.line}</span>
 			<span className='offerTile__foot'>
-				{offer.priceFrom}
+				<span className='offerTile__price'>
+					{offer.priceFrom}
+					{detailed && <span className='offerTile__term'>· {offer.term}</span>}
+				</span>
 				<svg
 					viewBox='0 0 24 24'
 					fill='none'
