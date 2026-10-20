@@ -1,24 +1,56 @@
-import { useParams } from 'react-router-dom'
-import PageHeader from '../../components/pageHeader/PageHeader'
-import FooterBanner from '../../components/footerBanner/FooterBanner'
-import ProcessList from '../../components/processList/ProcessList'
-import Accordion from '../../components/accordion/Accordion'
-import ServiceIcon from '../../components/serviceIcon/ServiceIcon'
-import ProjectCard from '../../components/projectCard/ProjectCard'
-import FeaturedProject from '../../components/featuredProject/FeaturedProject'
-import OfferIllustration from '../../components/offerIllustration/OfferIllustration'
+import { Link, useParams } from 'react-router-dom'
+import PageHead from '../../components/pageHead/PageHead'
+import SectionHead from '../../components/sectionHead/SectionHead'
+import type { Headline } from '../../components/sectionHead/SectionHead'
+import Button from '../../components/button/Button'
+import Stat from '../../components/stat/Stat'
+import Chip from '../../components/chip/Chip'
+import Reveal from '../../components/reveal/Reveal'
+import DimAccordion from '../../components/dimAccordion/DimAccordion'
+import WorkCard from '../../components/workCard/WorkCard'
+import type { WorkCardData } from '../../components/workCard/WorkCard'
+import ProcessSteps from '../../components/processSteps/ProcessSteps'
+import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { OFFERS, getOffer } from '../../data/offers'
 import { getService } from '../../data/services'
 import type { Service } from '../../data/services'
 import { AFTER_LAUNCH } from '../../data/pricing'
 import { PROJECTS } from '../../data/projects'
+import type { Project, ProjectFact } from '../../data/projects'
+import { CASE_FACTS } from '../../data/home'
 import NotFoundPage from '../NotFoundPage'
 import './OfferPage.scss'
 
+// TODO (владелец): заголовки секций страницы оффера; в каждом — не больше одного выделения
+const H2: Record<'fit' | 'outcomes' | 'price' | 'examples' | 'faq' | 'tech', Headline> = {
+	fit: { text: 'Кому подходит, а кому нет', muted: 'а кому нет' },
+	outcomes: { text: 'Что получите' },
+	price: { text: 'Сколько стоит и от чего зависит', muted: 'и от чего зависит' },
+	examples: { text: 'Примеры из этого направления', muted: 'из этого направления' },
+	faq: { text: 'Вопросы по этой услуге', muted: 'по этой услуге' },
+	tech: { text: 'Как это устроено технически', muted: 'технически' },
+}
+
+/** Формат оплаты — общий для всех офферов (content.md §4.2, п. 4) */
+const PAYMENT = 'По смете с оплатой по этапам или по часам — зависит от того, насколько объём понятен до старта.'
+
+/** Кейс → карточка работы: факты те же, что в слайдере главной (CASE_FACTS) */
+const toWorkCard = (p: Project): WorkCardData => ({
+	slug: p.slug,
+	title: p.title,
+	client: p.client,
+	line: p.line,
+	cover: p.cover,
+	highlights: CASE_FACTS.map(i => p.highlights?.[i]).filter((h): h is ProjectFact => !!h),
+})
+
+const pad = (n: number) => String(n).padStart(2, '0')
+
 /**
- * Страница оффера (content.md §4.2): шапка с ценой → кому подходит / не подходит → что получите →
- * сколько стоит и от чего зависит → примеры → процесс → FAQ → аккордеон техники → CTA.
+ * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка с ценой и сроком → кому подходит / не подходит →
+ * что получите → сколько стоит и от чего зависит → примеры (если есть кейсы по категориям) → процесс → вопросы →
+ * аккордеон «Стек и детали» (единственное место с названиями технологий) → CTA
  */
 export default function OfferPage() {
 	const { offer: key } = useParams()
@@ -27,176 +59,200 @@ export default function OfferPage() {
 
 	if (!offer) return <NotFoundPage />
 
-	// Тот же вариант свечения, что у карточки этого оффера в сетке
-	const glow = (OFFERS.indexOf(offer) % 3) + 1
-	const projects = PROJECTS.filter(p => p.categories.some(c => offer.categories.includes(c))).slice(0, 2)
+	const number = pad(OFFERS.indexOf(offer) + 1)
+	const projects = PROJECTS.filter(p => p.categories.some(c => offer.categories.includes(c)))
+		.slice(0, 2)
+		.map(toWorkCard)
 	const subservices = offer.services.map(k => getService(k)).filter((s): s is Service => !!s)
+	const faq = offer.faq.map((f, i) => ({ id: `q${i + 1}`, title: f.q, content: <p>{f.a}</p> }))
+
+	const tech = (
+		<div className='offerPage__tech'>
+			<div className='offerPage__techGroup'>
+				<h4 className='offerPage__h3'>Стек</h4>
+				<ul className='offerPage__chips' aria-label='Стек'>
+					{offer.tech.stack.map(t => (
+						<Chip as='li' key={t}>
+							{t}
+						</Chip>
+					))}
+				</ul>
+			</div>
+			{subservices.length > 0 && (
+				<div className='offerPage__techGroup'>
+					<h4 className='offerPage__h3'>Что ещё делаю в этом направлении</h4>
+					<ul className='offerPage__subservices'>
+						{subservices.map(s => (
+							<li key={s.key}>
+								<strong>{s.title}</strong>
+								<span>{s.short}</span>
+							</li>
+						))}
+					</ul>
+				</div>
+			)}
+			<div className='offerPage__techGroup'>
+				<h4 className='offerPage__h3'>Хостинг и передача</h4>
+				<ul className='offerPage__notes'>
+					{offer.tech.notes.map(n => (
+						<li key={n}>{n}</li>
+					))}
+				</ul>
+			</div>
+		</div>
+	)
 
 	return (
 		<article className='offerPage' key={offer.key}>
-			<PageHeader
-				className={`offerHeader offerHeader--glow-${glow}`}
-				icon={<OfferIllustration offer={offer.key} />}
-				title={offer.title}
-				subtitle={offer.line}
-				crumbs={[{ label: 'Услуги', to: '/services' }, { label: offer.title }]}
+			<PageHead
+				label={`услуга ${number}`}
+				title={{ text: offer.title }}
+				lead={offer.line}
+				meta={
+					<>
+						<Link to='/services'>Услуги</Link> · {offer.title}
+					</>
+				}
+				actions={
+					<>
+						<Button onClick={() => open(offer.title)}>{offer.cta}</Button>
+						<Button variant='text' to='/services'>
+							Все услуги
+						</Button>
+					</>
+				}
 				aside={
-					<div className='offerPrice'>
-						<strong>{offer.priceFrom}</strong>
-						<span className='offerPrice__term'>{offer.term}</span>
-						{offer.priceDetail && <span className='offerPrice__detail'>{offer.priceDetail}</span>}
-						<button type='button' className='btn btn_light' onClick={() => open(offer.title)}>
-							<span className='btn__label'>Обсудить задачу</span>
-						</button>
-					</div>
+					<>
+						<div className='offerPage__stats'>
+							<Stat value={offer.priceFrom} label='стоимость' size='hero' />
+							<Stat value={offer.term} label='срок' size='hero' />
+						</div>
+						{offer.priceDetail && <p className='offerPage__priceDetail'>{offer.priceDetail}</p>}
+					</>
 				}
 			/>
 
-			<section className='offerPage__section offerFit'>
-				<div>
-					<h2 className='offerPage__h2'>Кому подходит</h2>
-					<ul className='offerFit__list'>
-						{offer.audience.map(a => (
-							<li key={a}>
-								<span className='offerPage__check'>
-									<ServiceIcon name='check' />
-								</span>
-								{a}
-							</li>
-						))}
-					</ul>
-				</div>
-				<div>
-					<h2 className='offerPage__h2'>Кому не подходит</h2>
-					<ul className='offerFit__list offerFit__list--no'>
-						{offer.notFor.map(n => (
-							<li key={n}>
-								<span className='offerFit__dash' aria-hidden='true'>
-									—
-								</span>
-								{n}
-							</li>
-						))}
-					</ul>
-				</div>
-			</section>
-
-			<section className='offerPage__section'>
-				<h2 className='offerPage__h2'>Что получите</h2>
-				<ul className='offerPage__outcomes'>
-					{offer.outcomes.map(o => (
-						<li key={o}>
-							<span className='offerPage__check'>
-								<ServiceIcon name='check' />
-							</span>
-							{o}
-						</li>
-					))}
-				</ul>
-			</section>
-
-			<section className='offerPage__section'>
-				<h2 className='offerPage__h2'>Сколько стоит и от чего зависит</h2>
-				<dl className='priceSheet'>
-					<div>
-						<dt>От чего зависит цена</dt>
-						<dd>
-							<ol className='priceSheet__list'>
-								{offer.priceFactors.map(f => (
-									<li key={f}>{f}</li>
+			<section className='section' id='fit'>
+				<div className='container'>
+					<SectionHead label='для кого' title={H2.fit} />
+					<div className='offerPage__fit'>
+						<Reveal>
+							<p className='offerPage__colLabel'>подходит</p>
+							<ul className='offerPage__rows'>
+								{offer.audience.map(a => (
+									<li key={a}>{a}</li>
 								))}
-							</ol>
-						</dd>
-					</div>
-					<div>
-						<dt>Формат оплаты</dt>
-						<dd>
-							По смете с оплатой по этапам или по часам — зависит от того, насколько объём понятен до старта.
-						</dd>
-					</div>
-					<div>
-						<dt>Что не входит</dt>
-						<dd>
-							<ul className='priceSheet__inline'>
-								{offer.notIncluded.map(n => (
+							</ul>
+						</Reveal>
+						<Reveal delay={0.1}>
+							<p className='offerPage__colLabel'>не подходит</p>
+							<ul className='offerPage__rows offerPage__rows--no'>
+								{offer.notFor.map(n => (
 									<li key={n}>{n}</li>
 								))}
 							</ul>
-						</dd>
+						</Reveal>
 					</div>
-					<div>
-						<dt>После запуска</dt>
-						<dd>{offer.afterLaunch ?? AFTER_LAUNCH}</dd>
-					</div>
-				</dl>
+				</div>
+			</section>
+
+			<section className='section' id='outcomes'>
+				<div className='container'>
+					<SectionHead label='результат' title={H2.outcomes} />
+					<Reveal as='ol' className='offerPage__outcomes'>
+						{offer.outcomes.map((o, i) => (
+							<li key={o}>
+								<span className='offerPage__num'>{pad(i + 1)}</span>
+								{o}
+							</li>
+						))}
+					</Reveal>
+				</div>
+			</section>
+
+			<section className='section' id='price'>
+				<div className='container'>
+					<SectionHead label='цена' title={H2.price} />
+					<Reveal as='div' className='offerPage__price'>
+						<dl>
+							<div>
+								<dt>от чего зависит цена</dt>
+								<dd>
+									<ol className='offerPage__factors'>
+										{offer.priceFactors.map((f, i) => (
+											<li key={f}>
+												<span className='offerPage__num'>{pad(i + 1)}</span>
+												{f}
+											</li>
+										))}
+									</ol>
+								</dd>
+							</div>
+							<div>
+								<dt>формат оплаты</dt>
+								<dd>
+									<p>{PAYMENT}</p>
+								</dd>
+							</div>
+							<div>
+								<dt>что не входит</dt>
+								<dd>
+									<ul className='offerPage__chips' aria-label='Что не входит'>
+										{offer.notIncluded.map(n => (
+											<Chip as='li' key={n}>
+												{n}
+											</Chip>
+										))}
+									</ul>
+								</dd>
+							</div>
+							<div>
+								<dt>после запуска</dt>
+								<dd>
+									<p>{offer.afterLaunch ?? AFTER_LAUNCH}</p>
+								</dd>
+							</div>
+						</dl>
+					</Reveal>
+				</div>
 			</section>
 
 			{projects.length > 0 && (
-				<section className='offerPage__section'>
-					<h2 className='offerPage__h2'>Примеры</h2>
-					<div className='offerPage__projects'>
-						{projects.map((p, i) =>
-							p.featured ? <FeaturedProject key={p.slug} project={p} /> : <ProjectCard key={p.slug} project={p} index={i} />
-						)}
+				<section className='section' id='examples'>
+					<div className='container'>
+						<SectionHead label='примеры' title={H2.examples} action={{ label: 'Все работы', to: '/portfolio' }} />
+						<ul className='offerPage__examples'>
+							{projects.map((p, i) => (
+								<Reveal as='li' key={p.slug} index={i}>
+									<WorkCard item={p} />
+								</Reveal>
+							))}
+						</ul>
 					</div>
 				</section>
 			)}
 
-			<section className='offerPage__section'>
-				<h2 className='offerPage__h2'>Как проходит работа</h2>
-				<ProcessList />
+			<ProcessSteps withWhy={false} />
+
+			<section className='section' id='faq'>
+				<div className='container offerPage__narrow'>
+					<SectionHead label='вопросы' title={H2.faq} />
+					<Reveal>
+						<DimAccordion idPrefix='offerFaq' items={faq} multiple />
+					</Reveal>
+				</div>
 			</section>
 
-			<section className='offerPage__section'>
-				<h2 className='offerPage__h2'>Частые вопросы</h2>
-				<Accordion items={offer.faq.map(f => ({ key: f.q, head: f.q, body: <p>{f.a}</p> }))} />
+			<section className='section' id='tech'>
+				<div className='container offerPage__narrow'>
+					<SectionHead label='техника' title={H2.tech} />
+					<Reveal>
+						<DimAccordion idPrefix='offerTech' items={[{ id: 'stack', title: 'Стек и детали', content: tech }]} wide />
+					</Reveal>
+				</div>
 			</section>
 
-			<section className='offerPage__section' aria-label='Техническая часть'>
-				<Accordion
-					items={[
-						{
-							key: 'tech',
-							head: 'Как это устроено технически',
-							body: (
-								<div className='offerPage__tech'>
-									<div>
-										<h3>Стек</h3>
-										<ul className='stackChips'>
-											{offer.tech.stack.map(t => (
-												<li key={t}>{t}</li>
-											))}
-										</ul>
-									</div>
-									{subservices.length > 0 && (
-										<div>
-											<h3>Что ещё делаю в этом направлении</h3>
-											<ul className='offerPage__subservices'>
-												{subservices.map(s => (
-													<li key={s.key}>
-														<strong>{s.title}</strong>
-														<span>{s.short}</span>
-													</li>
-												))}
-											</ul>
-										</div>
-									)}
-									<div>
-										<h3>Хостинг и передача</h3>
-										<ul className='offerPage__notes'>
-											{offer.tech.notes.map(n => (
-												<li key={n}>{n}</li>
-											))}
-										</ul>
-									</div>
-								</div>
-							),
-						},
-					]}
-				/>
-			</section>
-
-			<FooterBanner cta={offer.cta} topic={offer.title} />
+			<CtaBlock cta={offer.cta} topic={offer.title} />
 		</article>
 	)
 }

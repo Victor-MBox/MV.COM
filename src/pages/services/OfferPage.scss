@@ -1,219 +1,321 @@
-@use '../../assets/style/glow';
-
-// Страница оффера
-
-// Шапка продолжает карточку: та же иллюстрация и то же свечение
-.offerHeader {
-	&--glow-1,
-	&--glow-3 {
-		--offer-accent: var(--accent-blue);
-
-		&::before {
-			@include glow.spot(0.5);
-			@include glow.spot-blue;
-			top: -120px;
-			left: -160px;
-		}
-	}
-
-	&--glow-2 {
-		--offer-accent: var(--accent-orange);
-
-		&::before {
-			@include glow.spot(0.5);
-			@include glow.spot-orange;
-			top: -120px;
-			left: -160px;
-		}
-	}
-}
-
-
+// Страница оффера (content.md §4.2; docs/design-spec.md §9) на дизайн-системе 1.0: шапка — PageHead с двумя цифрами справа,
+// секции — строки с разделителями без рамок (карточка в карточке запрещена), процесс и CTA — общие компоненты
 .offerPage {
-	&__section {
-		margin-bottom: 90px;
-	}
+	// Шапка: цена и срок столбиком в правой колонке. Кегль hero (64px) не вмещает строки вроде «от 15 000 ₽ за задачу»
+	// в четыре колонки aside, поэтому кегль цены карточки формата (docs/design-spec-home4.md §3.2) и перенос разрешён
+	&__stats {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
 
-	&__h2 {
-		font-weight: 600;
-		font-size: 32px;
-		line-height: 100%;
-		letter-spacing: -0.05em;
-		color: var(--text-title);
-		margin-bottom: 28px;
-	}
+		.stat {
+			align-items: flex-end;
+		}
 
-	&__check {
-		flex: 0 0 22px;
-		width: 22px;
-		height: 22px;
-		margin-top: 1px;
-		color: #77ea31;
+		.stat__num {
+			font-size: clamp(28px, 2.6vw, 36px);
 
-		svg {
-			width: 22px;
-			height: 22px;
+			> * {
+				white-space: normal;
+			}
 		}
 	}
 
+	&__priceDetail {
+		max-width: 32ch;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.5;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Заголовок группы внутри секции или аккордеона (H3 по шкале, h4 в DOM под h3 аккордеона)
+	&__h3 {
+		margin-bottom: 16px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+		color: var(--text);
+	}
+
+	// Номер строки: моно 13px, как в панели «что влияет» PricingBlock
+	&__num {
+		flex: none;
+		min-width: 2ch;
+		padding-top: 4px;
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Чипы стека и «что не входит»
+	&__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+
+		.uiChip {
+			white-space: normal;
+		}
+	}
+
+	// ---------- Кому подходит / не подходит ----------
+	&__fit {
+		display: grid;
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		gap: 48px;
+		align-items: start;
+	}
+
+	&__colLabel {
+		margin-bottom: 12px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Строки с точками: подходит — точка --accent (роль «точки-маркеры»), не подходит — --text-dim
+	&__rows {
+		border-top: 1px solid var(--border);
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 16px;
+			padding: 16px 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 16px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text);
+
+			&::before {
+				content: '';
+				flex: none;
+				width: 8px;
+				height: 8px;
+				margin-top: 9px;
+				border-radius: 50%;
+				background: var(--accent);
+			}
+		}
+
+		&--no li {
+			color: var(--text-body);
+
+			&::before {
+				background: var(--text-dim);
+			}
+		}
+	}
+
+	// ---------- Что получите ----------
 	&__outcomes {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0 40px;
+		gap: 0 48px;
+		border-top: 1px solid var(--border);
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 16px;
+			padding: 16px 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 16px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+	}
+
+	// ---------- Сколько стоит: строки «подпись моно → содержимое», как .pricingBlock__details ----------
+	&__price {
+		dl {
+			border-top: 1px solid var(--border);
+		}
+
+		dl > div {
+			display: grid;
+			grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+			gap: 24px;
+			padding: 20px 0;
+			border-bottom: 1px solid var(--border);
+		}
+
+		dt {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.6;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		dd {
+			margin: 0;
+		}
+
+		p {
+			max-width: 64ch;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	&__factors {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
 
 		li {
 			display: flex;
 			align-items: flex-start;
 			gap: 12px;
-			padding: 16px 0;
-			border-top: 1px solid var(--border-cards);
-			font-size: 16px;
-			line-height: 150%;
-			letter-spacing: -0.02em;
-			color: var(--text-title);
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+
+		.offerPage__num {
+			padding-top: 3px;
 		}
 	}
 
-	&__projects {
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
+	// ---------- Примеры: карточки работ не шире 512px ----------
+	&__examples {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 512px));
+		gap: 24px;
+
+		> li {
+			display: flex;
+			min-width: 0;
+		}
+
+		.workCard {
+			width: 100%;
+		}
 	}
 
-	// Внутри аккордеона
+	// ---------- Вопросы и техника: колонка 10/12, как FAQ на /services ----------
+	&__narrow {
+		max-width: calc(var(--container) * 10 / 12);
+	}
+
+	// Аккордеон «Стек и детали»: содержимое шире 56ch ответа FAQ — внутри списки и чипы
+
 	&__tech {
 		display: flex;
 		flex-direction: column;
-		gap: 32px;
-		padding-top: 6px;
-
-		h3 {
-			font-weight: 600;
-			font-size: 18px;
-			letter-spacing: -0.03em;
-			color: var(--text-title);
-			margin-bottom: 14px;
-		}
-
-		.stackChips {
-			padding-left: 0;
-			list-style: none;
-		}
+		gap: 40px;
+		padding-top: 4px;
 	}
 
-	&__tech &__subservices {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 12px 32px;
-		padding-left: 0;
-		list-style: none;
+	// Подуслуги направления: строки «название → строка» с разделителями
+	&__subservices {
+		border-top: 1px solid var(--border);
 
 		li {
-			padding-top: 12px;
-			border-top: 1px solid var(--border-cards);
+			display: grid;
+			grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+			gap: 24px;
+			padding: 14px 0;
+			border-bottom: 1px solid var(--border);
 		}
 
 		strong {
-			display: block;
-			font-weight: 600;
+			font-weight: 500;
 			font-size: 15px;
-			letter-spacing: -0.03em;
-			color: var(--text-title);
-			margin-bottom: 4px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text);
 		}
 
 		span {
-			font-size: 14px;
-			line-height: 145%;
-			letter-spacing: -0.02em;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
 			color: var(--text-body);
 		}
 	}
 
-	&__tech &__notes {
+	// Хостинг и передача: строки с пригашённой точкой
+	&__notes {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
-		padding-left: 0;
-		list-style: none;
 
 		li {
+			display: flex;
+			gap: 12px;
 			font-size: 15px;
-			line-height: 150%;
-			letter-spacing: -0.02em;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
 			color: var(--text-body);
+
+			&::before {
+				content: '';
+				flex: none;
+				width: 6px;
+				height: 6px;
+				margin-top: 9px;
+				border-radius: 50%;
+				background: var(--text-dim);
+			}
 		}
 	}
-}
 
-// Цена в шапке
-.offerPrice {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	min-width: 250px;
-	max-width: 320px;
-	padding: 24px 26px;
-	border-radius: 18px;
-	border: 1px solid var(--border-cards);
-	background: var(--bg-primary);
-
-	strong {
-		font-weight: 600;
-		font-size: 28px;
-		line-height: 110%;
-		letter-spacing: -0.04em;
-		color: var(--text-title);
+	// ---------- Адаптив ----------
+	@media (max-width: 1200px) {
+		&__narrow {
+			max-width: none;
+		}
 	}
 
-	&__term {
-		font-size: 15px;
-		letter-spacing: -0.02em;
-		color: var(--text-title);
+	@media (max-width: 992px) {
+		&__stats .stat {
+			align-items: flex-start;
+		}
+
+		&__fit {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+
+		&__examples {
+			grid-template-columns: minmax(0, 512px);
+		}
 	}
 
-	&__detail {
-		font-size: 13px;
-		line-height: 140%;
-		letter-spacing: -0.02em;
-		color: var(--text-body);
-	}
+	@media (max-width: 768px) {
+		&__outcomes {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
 
-	.btn {
-		margin-top: 12px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0 24px;
-	}
-}
+		&__price dl > div {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
 
-// Кому подходит / не подходит — две колонки строк
-.offerFit {
-	display: grid;
-	grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-	gap: 40px;
-	align-items: start;
+		&__subservices li {
+			grid-template-columns: 1fr;
+			gap: 4px;
+		}
 
-	&__list li {
-		display: flex;
-		align-items: flex-start;
-		gap: 12px;
-		padding: 14px 0;
-		border-top: 1px solid var(--border-cards);
-		font-size: 16px;
-		line-height: 145%;
-		letter-spacing: -0.02em;
-		color: var(--text-title);
-	}
-
-	&__list--no li {
-		color: var(--text-body);
-	}
-
-	&__dash {
-		flex: 0 0 22px;
-		text-align: center;
-		color: var(--text-decor);
+		&__tech {
+			gap: 32px;
+		}
 	}
 }

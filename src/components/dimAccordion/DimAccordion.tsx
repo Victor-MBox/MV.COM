@@ -19,6 +19,8 @@ type Props = {
 	className?: string
 	/** Префикс id панелей для aria-controls */
 	idPrefix?: string
+	/** Тело без ограничения 56ch — для колонок и чипов внутри (техника кейса и оффера) */
+	wide?: boolean
 }
 
 const EASE_OUT = [0.2, 0.7, 0.2, 1] as const
@@ -27,7 +29,7 @@ const EASE_OUT = [0.2, 0.7, 0.2, 1] as const
  * Аккордеон с пригашиванием соседей по OKC (docs/design-spec.md §6.10): пока один пункт открыт или под курсором,
  * заголовки остальных уходят в --text-dim; панель раскрывается по высоте за 360 мс, текст — opacity/y с задержкой 120 мс.
  */
-export default function DimAccordion({ items, multiple = false, defaultOpen = [], className, idPrefix = 'acc' }: Props) {
+export default function DimAccordion({ items, multiple = false, defaultOpen = [], className, idPrefix = 'acc', wide = false }: Props) {
 	const [open, setOpen] = useState<string[]>(defaultOpen)
 	const [hovered, setHovered] = useState<string | null>(null)
 	const dimmed = open.length > 0 || hovered !== null
@@ -49,7 +51,7 @@ export default function DimAccordion({ items, multiple = false, defaultOpen = []
 	}
 
 	return (
-		<div className={['dimAcc', numbered ? '' : 'dimAcc--plain', className ?? ''].filter(Boolean).join(' ')} data-dimmed={dimmed}>
+		<div className={['dimAcc', numbered ? '' : 'dimAcc--plain', wide ? 'dimAcc--wide' : '', className ?? ''].filter(Boolean).join(' ')} data-dimmed={dimmed}>
 			{items.map(item => {
 				const isOpen = open.includes(item.id)
 				const panelId = `${idPrefix}-${item.id}`

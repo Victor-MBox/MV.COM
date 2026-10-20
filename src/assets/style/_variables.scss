@@ -1,116 +1,59 @@
-// Определяем CSS-переменные для тем
+// Токены дизайн-системы (docs/design-spec.md §4, §5.1, §8.1) со значениями главной (docs/design-spec-home4.md §3.1) —
+// с 20.10.2026 единственные токены сайта. Темы: :root — тёмная по умолчанию, body.light — светлая, body.dark — тёмная явно
+// (класс ставит useTheme и инлайн-скрипт в index.html). Новую переменную, зависящую от темы, добавлять во все три блока
+
 :root {
-	// Шрифты (не зависят от темы): Geologica — заголовки, Golos Text — текст
-	--font-title: 'Geologica', sans-serif;
-	--font-body: 'Golos Text', sans-serif;
+	// ----- Не зависят от темы -----
+	--font-title: 'Geologica', sans-serif; // заголовки, цифры, дисплейное имя
+	--font-body: 'Golos Text', sans-serif; // текст
+	--font-mono: 'JetBrains Mono', monospace; // служебный слой: метки, номера, теги, подписи
 
-	//! Темная тема  (по умолчанию)# //*
-	--bg-primary: #0d0d0d; // цвет фона объектов
-	--bg-secondary: #0a0a0a; // цвет фона сайта
-	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
-	--text-title: #fff; // цвет заголовков
-	--text-menu-active: #fff; // цвет меню актив
-	--text-primary: #fff; // цвет осн текста
-	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
-	--text-body: rgba(255, 255, 255, 0.8); // читаемый текст абзацев (§4.1; до 19.10.2026 было 0.68)
-	--border-color: linear-gradient(
-		90deg,
-		#2e2e2e 0%,
-		rgba(30, 30, 30, 0.2) 50%,
-		#2e2e2e 100%
-	); // бордеры пункта главного меню
-
-	--bg-menu-a: #1a1a1a; // цвет фона ссылки
-
-	// кнопка переключения темы
-	--btn-border-color: #2e2e2e; // цвет бордера кнопок
-	--bg-btn-theme: #191919; // фон кнопки свичера
-
-	// btn меню Связаться
-	--bg-btn-menu: linear-gradient(180deg, #131313 0%, #212121 100%);
-	--btn-menu-text: rgba(255, 255, 255, 0.25); // цвет текста кнопки
-
-	// btn HOME
-	--bg-btn-menu_light: linear-gradient(180deg, #fff 0%, #a6a6a6 100%);
-
-	//* Главная
-	--bg-banner: radial-gradient(
-		circle,
-		rgba(40, 40, 40, 1) 0%,
-		rgba(17, 17, 17, 1) 58%
-	); // фон главного баннера
-
-	--border-cards: #1e1e1e; // бордер карточек осн
-	--text-decor: #9f9f9f; // code на главной
-
-	// Cards
-	--bg-cards: linear-gradient(
-		151deg,
-		rgb(120, 120, 120) -52%,
-		rgb(17, 17, 17) 19%,
-		rgb(10, 10, 10) 100%
-	); // bg cards
-
-	// other
-	--bg-svg-steck: #282828;
-
-	// акценты свечения карточек и иллюстраций
-	--accent-blue: #3795ff;
-	--accent-orange: #ff6514;
-
-	// блок «Для HR»: свечение за фото справа
-	--bg-spotlight: radial-gradient(circle at 85% 50%, #262626 0%, #111 50%);
-	// тень скриншотов кейса
-	--shadow-screen: 0 30px 60px rgba(0, 0, 0, 0.5);
-
-	// /home2 (концепт H «Портрет»): сцена hero и цитаты, растворение портрета в фон, стеклянные карточки
-	--bg-hero: #070707;
-	--hero-fade: linear-gradient(90deg, rgba(7, 7, 7, 0.95) 35%, rgba(7, 7, 7, 0.4) 70%, rgba(7, 7, 7, 0) 100%);
-	--bg-glass: rgba(13, 13, 13, 0.7);
-	--border-glass: rgba(255, 255, 255, 0.1);
-	// ===== Дизайн-система 1.0: не зависят от темы (docs/design-spec.md §4.3, §5.1, §8.1) =====
-	--font-mono: 'JetBrains Mono', monospace;
+	// Движение (§8.1)
 	--ease-out: cubic-bezier(0.2, 0.7, 0.2, 1); // основной
 	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); // маски заголовков
-	--d-press: 120ms; // нажатие круглой CTA
+	--d-press: 120ms;
 	--d-fast: 180ms;
 	--d-mid: 240ms; // кнопки, строки списков, стрелки, смена темы
 	--d-cursor: 300ms;
 	--d-base: 360ms;
-	--d-wipe: 500ms; // заливка круглой CTA
+	--d-wipe: 500ms;
 	--d-reveal: 600ms;
 	--d-slow: 700ms;
 	--d-dim: 800ms; // пригашивание соседей в аккордеоне
 	--d-undim: 1000ms;
 	--d-count: 1200ms; // счётчики
 	--stagger: 60ms;
+
+	// Размеры (§4.3)
 	--radius-card: 20px;
 	--radius-field: 12px;
 	--radius-pill: 999px;
 	--container: 1320px;
-	--gutter: 48px; // 32 на ≤1200, 16 на ≤768 — переопределяется в _v2.scss
+	--gutter: 48px; // 32 на ≤1200, 16 на ≤768 — _system.scss
 	--section-y: 128px; // 96 на ≤1200, 64 на ≤768
+	--header-h: 72px; // высота шапки TopHeader (56 на ≤768)
 	--z-sticky: 10;
 	--z-menu: 50;
 	--z-modal: 100;
 	--z-cursor: 9999;
 
-	// ===== Дизайн-система 1.0 (docs/design-spec.md §4) — используется /home3, потом весь сайт =====
-	--bg: #161616; // фон страницы
-	--box: #1c1c1c; // карточки, панели, поля
-	--box-hover: #212121; // карточка по ховеру
-	--box-deep: #111111; // подложки внутри карточек: мини-интерфейсы, код, теги
+	// ----- Тёмная тема (по умолчанию) -----
+	--bg: #0a0a0a; // фон страницы (Portilo чёрный)
+	--box: #141414; // карточки, панели, поля
+	--box-hover: #1a1a1a; // карточка по ховеру
+	--box-deep: #0d0d0d; // подложки внутри карточек: мини-интерфейсы, код, теги
 	--text: #fefefe; // заголовки, девиз, цифры
+	--text-body: rgba(255, 255, 255, 0.8); // читаемый текст абзацев
 	--text-muted: #8a8a8a; // подписи, метки, даты
-	--text-dim: #3a3a3a; // пригашённые соседи в аккордеоне, неактивные табы
+	--text-dim: #3a3a3a; // пригашённые соседи в аккордеоне, неактивные пункты
 	--border: rgba(255, 255, 255, 0.1); // разделители, бордеры полей
-	--border-strong: rgba(255, 255, 255, 0.22); // бордер карточки по ховеру, фокус-кольцо
-	--accent: #f07077; // слово в заголовке, кнопка, точки, цифры hero (альтернатива #ff4625 / #ff6a4f)
-	--accent-hover: #f58b91;
-	--accent-text: #f07077; // акцентный мелкий текст
-	--accent-soft: rgba(240, 112, 119, 0.12); // подложка чипов, свечение карточек
+	--border-strong: rgba(255, 255, 255, 0.22); // бордер карточки по ховеру, круг со стрелкой
+	--accent: #ff4625; // единственный акцент: слово в заголовке, primary-кнопка, точки-маркеры, цифра hero
+	--accent-hover: #ff6a4f;
+	--accent-text: #ff6a4f; // акцентный мелкий текст, контраст ≥ 4.5:1
+	--accent-soft: rgba(255, 70, 37, 0.14); // свечение карточек
 	--on-accent: #161616; // текст на акцентной заливке
-	--glass: rgba(255, 255, 255, 0.06); // стекло кнопки и курсора
+	--glass: rgba(255, 255, 255, 0.06); // стекло кнопок, переключателя темы и курсора
 	--glass-border: rgba(255, 255, 255, 0.12);
 	--ok: #77ea31; // только точка «онлайн» и успех формы
 	--error: #ff6b4a; // только ошибки формы
@@ -118,88 +61,27 @@
 	--ui-plate: rgba(255, 255, 255, 0.08); // §6.8 плашки мини-интерфейса
 	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.45); // §4.3 единственная тень — скриншоты кейса
 	--overlay: rgba(0, 0, 0, 0.6); // §6.13 оверлей модалки
-
+	--hero-line: rgba(255, 255, 255, 0.05); // линии сетки в hero
+	--strip-bg: #fefefe; // инвертированная бегущая строка финала
+	--strip-text: #0a0a0a;
 }
 
-//! Светлая тема
+// ----- Светлая тема (docs/design-spec.md §10, значения docs/design-spec-home4.md §9) -----
 body.light {
-	--bg-primary: #fff; // цвет фона объектов
-	--bg-secondary: #fff; // цвет фона сайта
-	--text-menu: #8c8c8c; // цвет меню не актив
-	--text-title: #262626; // цвет заголовков
-	--text-menu-active: #262626; // цвет меню актив
-	--text-primary: #262626; // цвет осн текста
-	--text-secondary: rgba(0, 0, 0, 0.3); // цвет полупрозрачного текста
-	--text-body: rgba(22, 22, 22, 0.82); // читаемый текст абзацев (§4.1; до 19.10.2026 было 0.78)
-	--border-color: linear-gradient(
-		90deg,
-		#dedede 0%,
-		rgb(255 255 255 / 20%) 50%,
-		#dedede 100%
-	); // бордеры пункта главного меню
-
-	--bg-menu-a: #f0f0f0; // цвет фона ссылки
-
-	// кнопка переключения темы
-	--btn-border-color: #dedede; // цвет бордера кнопок
-	--bg-btn-theme: #fff; // фон кнопки свичера
-
-	// btn меню Связаться
-	--bg-btn-menu: linear-gradient(180deg, #fff 0%, #e3e3e3 100%);
-	--btn-menu-text: rgba(0, 0, 0, 0.5); // цвет текста кнопки
-
-	// btn HOME
-	--bg-btn-menu_light: linear-gradient(180deg, #3d3d3d 0%, #000 100%);
-
-	//* Главная
-	--bg-banner: radial-gradient(
-		circle,
-		rgb(230, 230, 230) 0%,
-		rgba(247, 247, 247, 1) 58%
-	); // фон главного баннера
-
-	--border-cards: #ddd; // бордер карточек осн
-	--text-decor: #9f9f9f; // code на главной
-
-	// Cards
-	--bg-cards: linear-gradient(
-		151deg,
-		rgb(255, 255, 255) -52%,
-		#ffffff 19%,
-		#fff 100%
-	); // bg cards
-
-	// other
-	--bg-svg-steck: #e5e5e5;
-
-	// акценты свечения карточек и иллюстраций
-	--accent-blue: #3795ff;
-	--accent-orange: #ff6514;
-
-	// блок «Для HR»: свечение за фото справа
-	--bg-spotlight: radial-gradient(circle at 85% 50%, #e4e4e4 0%, #f7f7f7 50%);
-	// тень скриншотов кейса
-	--shadow-screen: 0 24px 48px rgba(0, 0, 0, 0.14);
-
-	// /home2 (концепт H «Портрет»): сцена hero и цитаты, растворение портрета в фон, стеклянные карточки
-	--bg-hero: #f3f3f3;
-	--hero-fade: linear-gradient(90deg, rgba(243, 243, 243, 0.95) 35%, rgba(243, 243, 243, 0.45) 70%, rgba(243, 243, 243, 0) 100%);
-	--bg-glass: rgba(255, 255, 255, 0.72);
-	--border-glass: rgba(0, 0, 0, 0.08);
-	// ===== Дизайн-система 1.0 (docs/design-spec.md §4, §10) =====
 	--bg: #f4f3f1;
 	--box: #ffffff;
-	--box-hover: #ffffff; // в светлой теме по ховеру меняется только бордер
+	--box-hover: #ffffff; // по ховеру меняется только бордер
 	--box-deep: #ebeae7;
 	--text: #161616;
+	--text-body: rgba(22, 22, 22, 0.82);
 	--text-muted: #6f6f6f;
 	--text-dim: #c9c8c5;
 	--border: rgba(0, 0, 0, 0.1);
 	--border-strong: rgba(0, 0, 0, 0.22);
-	--accent: #e4555d; // альтернатива #e63e1f
-	--accent-hover: #d4454d;
-	--accent-text: #c93f47; // контраст ≥ 4.5:1 на светлом
-	--accent-soft: rgba(228, 85, 93, 0.1);
+	--accent: #e63e1f;
+	--accent-hover: #cf3619;
+	--accent-text: #c9341a;
+	--accent-soft: rgba(230, 62, 31, 0.1);
 	--on-accent: #ffffff;
 	--glass: rgba(0, 0, 0, 0.04);
 	--glass-border: rgba(0, 0, 0, 0.14);
@@ -209,96 +91,37 @@ body.light {
 	--ui-plate: rgba(0, 0, 0, 0.06);
 	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.18);
 	--overlay: rgba(0, 0, 0, 0.6);
-
+	--hero-line: rgba(0, 0, 0, 0.06);
+	--strip-bg: #161616;
+	--strip-text: #f4f3f1;
 }
 
-//! Темная тема (явно)
+// ----- Тёмная тема явно (ручной выбор при системной светлой) -----
 body.dark {
-	--bg-primary: #0d0d0d; // цвет фона объектов
-	--bg-secondary: #0a0a0a; // цвет фона сайта
-	--text-menu: rgba(255, 255, 255, 0.25); // цвет меню не актив
-	--text-title: #fff; // цвет заголовков
-	--text-menu-active: #fff; // цвет меню актив
-	--text-primary: #fff; // цвет осн текста
-	--text-secondary: rgba(255, 255, 255, 0.25); // цвет полупрозрачного текста
-	--text-body: rgba(255, 255, 255, 0.8); // читаемый текст абзацев (§4.1; до 19.10.2026 было 0.68)
-	--border-color: linear-gradient(
-		90deg,
-		#2e2e2e 0%,
-		rgba(30, 30, 30, 0.2) 50%,
-		#2e2e2e 100%
-	); // бордеры пункта главного меню
-
-	--bg-menu-a: #1a1a1a; // цвет фона ссылки
-
-	// кнопка переключения темы
-	--btn-border-color: #2e2e2e; // цвет бордера кнопок
-	--bg-btn-theme: #191919; // фон кнопки свичера
-
-	// btn меню Связаться
-	--bg-btn-menu: linear-gradient(180deg, #131313 0%, #212121 100%);
-	--btn-menu-text: rgba(255, 255, 255, 0.25); // цвет текста кнопки
-
-	// btn HOME
-	--bg-btn-menu_light: linear-gradient(180deg, #fff 0%, #a6a6a6 100%);
-
-	//* Главная
-	--bg-banner: radial-gradient(
-		circle,
-		rgba(40, 40, 40, 1) 0%,
-		rgba(17, 17, 17, 1) 58%
-	); // фон главного баннера
-
-	--border-cards: #1e1e1e; // бордер карточек осн
-	--text-decor: #9f9f9f; // code на главной
-
-	// Cards
-	--bg-cards: linear-gradient(
-		151deg,
-		rgb(120, 120, 120) -52%,
-		rgb(17, 17, 17) 19%,
-		rgb(10, 10, 10) 100%
-	); // bg cards
-
-	// other
-	--bg-svg-steck: #282828;
-
-	// акценты свечения карточек и иллюстраций
-	--accent-blue: #3795ff;
-	--accent-orange: #ff6514;
-
-	// блок «Для HR»: свечение за фото справа
-	--bg-spotlight: radial-gradient(circle at 85% 50%, #262626 0%, #111 50%);
-	// тень скриншотов кейса
-	--shadow-screen: 0 30px 60px rgba(0, 0, 0, 0.5);
-
-	// /home2 (концепт H «Портрет»): сцена hero и цитаты, растворение портрета в фон, стеклянные карточки
-	--bg-hero: #070707;
-	--hero-fade: linear-gradient(90deg, rgba(7, 7, 7, 0.95) 35%, rgba(7, 7, 7, 0.4) 70%, rgba(7, 7, 7, 0) 100%);
-	--bg-glass: rgba(13, 13, 13, 0.7);
-	--border-glass: rgba(255, 255, 255, 0.1);
-	// ===== Дизайн-система 1.0 (docs/design-spec.md §4) — используется /home3, потом весь сайт =====
-	--bg: #161616; // фон страницы
-	--box: #1c1c1c; // карточки, панели, поля
-	--box-hover: #212121; // карточка по ховеру
-	--box-deep: #111111; // подложки внутри карточек: мини-интерфейсы, код, теги
-	--text: #fefefe; // заголовки, девиз, цифры
-	--text-muted: #8a8a8a; // подписи, метки, даты
-	--text-dim: #3a3a3a; // пригашённые соседи в аккордеоне, неактивные табы
-	--border: rgba(255, 255, 255, 0.1); // разделители, бордеры полей
-	--border-strong: rgba(255, 255, 255, 0.22); // бордер карточки по ховеру, фокус-кольцо
-	--accent: #f07077; // слово в заголовке, кнопка, точки, цифры hero (альтернатива #ff4625 / #ff6a4f)
-	--accent-hover: #f58b91;
-	--accent-text: #f07077; // акцентный мелкий текст
-	--accent-soft: rgba(240, 112, 119, 0.12); // подложка чипов, свечение карточек
-	--on-accent: #161616; // текст на акцентной заливке
-	--glass: rgba(255, 255, 255, 0.06); // стекло кнопки и курсора
+	--bg: #0a0a0a;
+	--box: #141414;
+	--box-hover: #1a1a1a;
+	--box-deep: #0d0d0d;
+	--text: #fefefe;
+	--text-body: rgba(255, 255, 255, 0.8);
+	--text-muted: #8a8a8a;
+	--text-dim: #3a3a3a;
+	--border: rgba(255, 255, 255, 0.1);
+	--border-strong: rgba(255, 255, 255, 0.22);
+	--accent: #ff4625;
+	--accent-hover: #ff6a4f;
+	--accent-text: #ff6a4f;
+	--accent-soft: rgba(255, 70, 37, 0.14);
+	--on-accent: #161616;
+	--glass: rgba(255, 255, 255, 0.06);
 	--glass-border: rgba(255, 255, 255, 0.12);
-	--ok: #77ea31; // только точка «онлайн» и успех формы
-	--error: #ff6b4a; // только ошибки формы
-	--glow-rest: 0.5; // §4.2 свечение карточки в покое
-	--ui-plate: rgba(255, 255, 255, 0.08); // §6.8 плашки мини-интерфейса
-	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.45); // §4.3 единственная тень — скриншоты кейса
-	--overlay: rgba(0, 0, 0, 0.6); // §6.13 оверлей модалки
-
+	--ok: #77ea31;
+	--error: #ff6b4a;
+	--glow-rest: 0.5;
+	--ui-plate: rgba(255, 255, 255, 0.08);
+	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.45);
+	--overlay: rgba(0, 0, 0, 0.6);
+	--hero-line: rgba(255, 255, 255, 0.05);
+	--strip-bg: #fefefe;
+	--strip-text: #0a0a0a;
 }

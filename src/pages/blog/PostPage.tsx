@@ -1,11 +1,16 @@
 import { Link, useParams } from 'react-router-dom'
-import PageHeader from '../../components/pageHeader/PageHeader'
-import FooterBanner from '../../components/footerBanner/FooterBanner'
+import PageHead from '../../components/pageHead/PageHead'
+import SectionHead from '../../components/sectionHead/SectionHead'
+import Reveal from '../../components/reveal/Reveal'
+import Chip from '../../components/chip/Chip'
+import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { POSTS, formatDate, getPost } from '../../data/posts'
 import type { PostBlock } from '../../data/posts'
 import NotFoundPage from '../NotFoundPage'
-import './BlogPage.scss'
+import PostCard from './PostCard'
+import './PostPage.scss'
 
+/** Блок статьи (src/data/posts.ts PostBlock): абзац, подзаголовок, список, цитата, код */
 function Block({ block }: { block: PostBlock }) {
 	switch (block.type) {
 		case 'h2':
@@ -31,59 +36,68 @@ function Block({ block }: { block: PostBlock }) {
 	}
 }
 
+/**
+ * Статья (docs/design-spec.md §9): шапка с крошкой, датой и временем чтения, теги → тело в колонке 68ch →
+ * «Ещё в блоге» двумя карточками → CTA. Нет поста — 404
+ */
 export default function PostPage() {
 	const { slug } = useParams()
 	const post = getPost(slug)
 	if (!post) return <NotFoundPage />
 
 	const others = POSTS.filter(p => p.slug !== post.slug).slice(0, 2)
+	const meta = (
+		<span className='postPage__meta'>
+			<Link to='/blog'>Блог</Link> · <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingTime} мин чтения
+		</span>
+	)
 
 	return (
-		<article className='post' key={post.slug}>
-			<PageHeader
-				title={post.title}
-				crumbs={[{ label: 'Блог', to: '/blog' }, { label: formatDate(post.date) }]}
-				aside={
-					<div className='post__aside'>
-						<span>{post.readingTime} мин чтения</span>
-						<ul className='post__tags'>
+		<article className='postPage' key={post.slug}>
+			<PageHead
+				label='статья'
+				title={{ text: post.title }}
+				meta={meta}
+				actions={
+					post.tags.length > 0 && (
+						<ul className='postPage__tags' aria-label='Теги'>
 							{post.tags.map(t => (
-								<li key={t} className='tag'>
+								<Chip as='li' key={t}>
 									{t}
-								</li>
+								</Chip>
+							))}
+						</ul>
+					)
+				}
+				className='postPage__head'
+			/>
+
+			<section className='section' id='content' aria-label='Текст статьи'>
+				<div className='container postPage__grid'>
+					<Reveal className='postPage__body'>
+						{post.content.map((b, i) => (
+							<Block key={i} block={b} />
+						))}
+					</Reveal>
+				</div>
+			</section>
+
+			{others.length > 0 && (
+				<section className='section' id='more'>
+					<div className='container'>
+						<SectionHead label='ещё' title={{ text: 'Ещё в блоге' }} action={{ label: 'Все статьи', to: '/blog' }} />
+						<ul className='postPage__more'>
+							{others.map((o, i) => (
+								<Reveal as='li' key={o.slug} index={i} className='postPage__moreItem'>
+									<PostCard post={o} />
+								</Reveal>
 							))}
 						</ul>
 					</div>
-				}
-			/>
-
-			{post.cover && (
-				<div className='post__cover'>
-					<img src={post.cover} alt='' />
-				</div>
+				</section>
 			)}
 
-			<div className='post__layout'>
-				<div className='post__content'>
-					{post.content.map((b, i) => (
-						<Block key={i} block={b} />
-					))}
-				</div>
-				<aside className='post__sidebar'>
-					<div className='post__sidebar-title'>Ещё в блоге</div>
-					{others.map(o => (
-						<Link key={o.slug} to={`/blog/${o.slug}`} className='post__more'>
-							<time dateTime={o.date}>{formatDate(o.date)}</time>
-							<strong>{o.title}</strong>
-						</Link>
-					))}
-					<Link to='/blog' className='link-btn'>
-						<span>Все статьи</span>
-					</Link>
-				</aside>
-			</div>
-
-			<FooterBanner />
+			<CtaBlock />
 		</article>
 	)
 }

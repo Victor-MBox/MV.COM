@@ -1,4 +1,4 @@
-// Верхняя шапка /home4 (docs/design-spec-home4.md §4). Токены — _variables.scss и скоуп body.v2.home4 в _v2.scss
+// Верхняя шапка сайта (docs/design-spec-home4.md §4; с 20.10.2026 на всех страницах). Токены — _variables.scss
 
 // Ссылка «К содержанию» (.skipLink) — общая с SiteHeader, объявлена в _v2.scss
 
@@ -44,30 +44,20 @@
 		padding: 0 var(--gutter);
 	}
 
-	// Слово-логотип с акцентной точкой, как «Portilo.»
+	// Монограмма «VM.» (components/logo) вместо слова-логотипа «Portilo.»: буквы currentColor, точка --accent
 	&__logo {
 		display: inline-flex;
-		align-items: baseline;
-		gap: 3px;
-		font-family: var(--font-title);
-		font-weight: 500;
-		font-size: 18px;
-		line-height: 1;
-		letter-spacing: -0.02em;
+		align-items: center;
 		color: var(--text);
-		white-space: nowrap;
+
+		.logo {
+			height: 22px;
+		}
 
 		&:focus-visible {
 			outline: 2px solid var(--accent);
 			outline-offset: 4px;
 		}
-	}
-
-	&__dot {
-		width: 5px;
-		height: 5px;
-		border-radius: 50%;
-		background: var(--accent);
 	}
 
 	&__nav {
@@ -89,7 +79,7 @@
 			white-space: nowrap;
 			transition: color var(--d-fast);
 
-			// Активный пункт: точка 4px под текстом — та же роль маркера, что у точки в LeftMenu 1.0
+			// Активный пункт: точка 4px под текстом — та же роль маркера, что у активного пункта меню в ТЗ 1.0
 			&::after {
 				content: '';
 				position: absolute;
@@ -216,83 +206,9 @@
 	}
 }
 
-// Переключатель темы в шапке и в мобильном меню (§4.1): круг 40px на стекле, одна иконка currentColor 18px,
-// поворот на 180° при смене темы. Старая разметка ThemeButton остаётся, её подписи и бегунок скрыты
+// Переключатель темы в шапке и в мобильном меню (§4.1): ThemeToggle — круг 40px на стекле, одна иконка currentColor
 .topHeader__theme {
 	display: inline-flex;
-
-	.theme-button {
-		position: relative;
-		width: 40px;
-		height: 40px;
-		outline: none;
-		border: 1px solid var(--glass-border);
-		border-radius: 50%;
-		color: var(--text);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		transition: border-color var(--d-mid) var(--ease-out);
-
-		&.light,
-		&.dark {
-			background: var(--glass);
-		}
-
-		&:hover {
-			border-color: var(--border-strong);
-		}
-
-		&:focus-visible {
-			outline: 2px solid var(--accent);
-			outline-offset: 4px;
-		}
-
-		.thumb,
-		.option .label,
-		.option .icon {
-			display: none;
-		}
-
-		.option {
-			position: absolute;
-			inset: 0;
-			flex: none;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-weight: 500; // у старого переключателя 600 — на сайте нет начертаний жирнее 500
-			opacity: 0;
-			transition: opacity var(--d-mid) var(--ease-out);
-
-			&::before {
-				content: '';
-				width: 18px;
-				height: 18px;
-				background: currentColor;
-				mask: var(--icon) center / contain no-repeat;
-				-webkit-mask: var(--icon) center / contain no-repeat;
-				transition: transform var(--d-base) var(--ease-out);
-			}
-
-			&.light {
-				--icon: url('../../resources/svg/theme-icon_light.svg');
-			}
-
-			&.dark {
-				--icon: url('../../resources/svg/theme-icon_dark.svg');
-			}
-		}
-
-		// В тёмной теме показываем солнце («включить светлую»), в светлой — луну; иконка поворачивается на 180°
-		&.dark .option.light,
-		&.light .option.dark {
-			opacity: 1;
-		}
-
-		&.light .option::before {
-			transform: rotate(180deg);
-		}
-	}
 }
 
 // Полноэкранная панель меню (§4.2), портал в body
@@ -426,8 +342,8 @@
 }
 
 // Интро первой загрузки (§6.1, t = 0): логотип, ссылки и кнопки появляются со стаггером 25 мс.
-// Класс home4-intro ставит HomePage4 один раз за сессию
-body.home4-intro .topHeader [data-intro] {
+// Класс home-intro ставит HomePage один раз за сессию
+body.home-intro .topHeader [data-intro] {
 	animation: topHeaderIn var(--d-base) var(--ease-out) both;
 	animation-delay: calc(var(--i, 0) * 25ms);
 }
@@ -442,7 +358,7 @@ body.home4-intro .topHeader [data-intro] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	body.home4-intro .topHeader [data-intro] {
+	body.home-intro .topHeader [data-intro] {
 		animation-duration: var(--d-mid);
 		animation-delay: 0ms;
 	}

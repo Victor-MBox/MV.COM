@@ -1,17 +1,20 @@
-import PageHeader from '../../components/pageHeader/PageHeader'
-import Card from '../../components/cards/Cards'
-import Accordion from '../../components/accordion/Accordion'
-import TitleRow from '../../components/titleRow/TitleRow'
-import FeaturedProject from '../../components/featuredProject/FeaturedProject'
-import FooterBanner from '../../components/footerBanner/FooterBanner'
+import PageHead from '../../components/pageHead/PageHead'
+import SectionHead from '../../components/sectionHead/SectionHead'
+import DimAccordion from '../../components/dimAccordion/DimAccordion'
+import CaseCard from '../../components/caseCard/CaseCard'
+import CtaBlock from '../../components/ctaBlock/CtaBlock'
+import Reveal from '../../components/reveal/Reveal'
+import Button from '../../components/button/Button'
+import Chip from '../../components/chip/Chip'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { EXPERIENCE, STACK_GROUPS } from '../../data/experience'
 import { PROJECTS } from '../../data/projects'
 import { CONTACT_LINKS } from '../../data/contacts'
-import { HR_BLOCK } from '../../data/home'
-import avatar from '../../resources/avatar.png'
+import { HR_BLOCK, HR_LINE } from '../../data/home'
+import avatar from '../../resources/avatar.webp'
 import './AboutPage.scss'
 
+/** Три абзаца о себе (content.md §4.6): первый — лид шапки, остальные — секция «О себе» */
 const ABOUT = [
 	'Восемь лет делаю сайты и веб-сервисы: от лендингов на WordPress до продуктов на Laravel и React. Беру проект целиком — структура, дизайн, фронтенд, бэкенд, запуск и поддержка — и отвечаю за результат, а не за отдельный слой.',
 	'Лучше всего получается собрать систему из многих частей и довести её до живых пользователей. Пример — NoRandoms, собственная платформа для подбора напарников по играм: спроектировал, написал и вывел в поиск в одиночку, от схемы базы и WebSockets до SEO-ядра из тысяч страниц.',
@@ -25,113 +28,141 @@ const PRINCIPLES = [
 	'Промежуточные версии — каждую неделю, без сюрпризов в конце.',
 ]
 
-const FEATURED = PROJECTS.filter(p => p.featured).slice(0, 1)
+const STATUS = 'Открыт для проектов'
+const ROLE = 'Full-stack разработчик'
 
-/** «Обо мне» — страница для найма (content.md §4.6): шапка с резюме и GitHub → о себе → стек → опыт → принципы → главный кейс */
+// TODO (владелец): заголовки секций; в каждом — одно приглушённое выделение (muted), акцента на странице нет
+const H2 = {
+	about: { text: 'Один разработчик на весь проект', muted: 'на весь проект' },
+	stack: { text: 'Чем работаю', muted: 'работаю' },
+	experience: { text: 'Где и что делал', muted: 'и что делал' },
+	principles: { text: 'Четыре правила, которых держусь', muted: 'которых держусь' },
+	work: { text: 'Главный кейс' },
+}
+
+const FEATURED = PROJECTS.find(p => p.featured)
+
+/**
+ * «Обо мне» — страница для найма (content.md §4.6; docs/design-spec.md §9): шапка с фото, резюме и GitHub →
+ * о себе → стек группами → опыт аккордеоном → принципы → главный кейс → CTA
+ */
 export default function AboutPage() {
 	const { open } = useContactModal()
 
+	const experience = EXPERIENCE.map((e, i) => ({
+		id: e.period,
+		number: String(i + 1).padStart(2, '0'),
+		title: `${e.position} · ${e.company}`,
+		content: (
+			<div className='aboutPage__job'>
+				<p className='aboutPage__period'>{e.period}</p>
+				<p>{e.summary}</p>
+				<ul className='aboutPage__details'>
+					{e.details.map(d => (
+						<li key={d}>{d}</li>
+					))}
+				</ul>
+			</div>
+		),
+	}))
+
 	return (
-		<>
-			<PageHeader
-				title='Виктор Мацаков'
-				subtitle='Full-stack разработчик · удалённо'
+		<div className='aboutPage'>
+			<PageHead
+				label='обо мне'
+				title={{ text: 'Виктор Мацаков' }}
+				lead={ABOUT[0]}
+				meta={`${ROLE} · ${HR_LINE.place}`}
+				asideFirst
 				actions={
 					<>
-						<a className='btn btn_light' href={HR_BLOCK.cv} download>
-							<span className='btn__label'>Резюме PDF</span>
-						</a>
-						<a className='btn btn_dark' href={CONTACT_LINKS.github} target='_blank' rel='noopener noreferrer'>
-							<span>GitHub</span>
-						</a>
-						<button type='button' className='btn btn_dark' onClick={() => open()}>
-							<span>Написать</span>
-						</button>
+						<Button href={HR_BLOCK.cv} download>
+							Скачать резюме
+						</Button>
+						<Button variant='secondary' href={CONTACT_LINKS.github} arrow arrowGlyph='↗'>
+							GitHub
+						</Button>
+						<Button variant='text' onClick={() => open()}>
+							Написать
+						</Button>
 					</>
 				}
 				aside={
 					<div className='aboutPage__photo'>
-						<img src={avatar} alt='Виктор Мацаков' />
-						<span className='aboutPage__status'>
+						<img src={avatar} alt='Виктор Мацаков' width={418} height={418} />
+						<p className='aboutPage__status'>
 							<i aria-hidden='true' />
-							Открыт для проектов
-						</span>
+							{STATUS}
+						</p>
 					</div>
 				}
 			/>
 
-			<section className='aboutPage__section aboutPage__intro'>
-				{ABOUT.map(p => (
-					<p key={p}>{p}</p>
-				))}
+			<section className='section' id='about'>
+				<div className='container aboutPage__about'>
+					<SectionHead label='о себе' title={H2.about} className='aboutPage__aboutHead' />
+					<Reveal className='aboutPage__text' delay={0.08}>
+						{ABOUT.slice(1).map(p => (
+							<p key={p}>{p}</p>
+						))}
+					</Reveal>
+				</div>
 			</section>
 
-			<section className='aboutPage__section' id='stack'>
-				<TitleRow title='Стек' />
-				<dl className='aboutStack'>
-					{STACK_GROUPS.map(g => (
-						<div key={g.title}>
-							<dt>{g.title}</dt>
-							<dd>
-								<ul className='stackChips'>
+			<section className='section' id='stack'>
+				<div className='container'>
+					<SectionHead label='стек' title={H2.stack} />
+					<Reveal as='ul' className='aboutPage__stack'>
+						{STACK_GROUPS.map(g => (
+							<li key={g.title} className='aboutPage__stackRow'>
+								<span className='aboutPage__stackTitle'>{g.title}</span>
+								<ul className='aboutPage__chips'>
 									{g.items.map(i => (
-										<li key={i}>{i}</li>
+										<Chip as='li' key={i}>
+											{i}
+										</Chip>
 									))}
 								</ul>
-							</dd>
-						</div>
-					))}
-				</dl>
+							</li>
+						))}
+					</Reveal>
+				</div>
 			</section>
 
-			<section className='aboutPage__section' id='experience'>
-				<TitleRow title='Опыт' />
-				<Accordion
-					defaultOpen={EXPERIENCE[0].period}
-					items={EXPERIENCE.map(e => ({
-						key: e.period,
-						meta: e.period,
-						head: (
-							<>
-								{e.position}
-								<span className='aboutPage__company'> · {e.company}</span>
-							</>
-						),
-						body: (
-							<>
-								<p>{e.summary}</p>
-								<ul>
-									{e.details.map(d => (
-										<li key={d}>{d}</li>
-									))}
-								</ul>
-							</>
-						),
-					}))}
-				/>
+			<section className='section' id='experience'>
+				<div className='container'>
+					<SectionHead label='опыт' title={H2.experience} />
+					<Reveal>
+						<DimAccordion idPrefix='exp' items={experience} defaultOpen={[experience[0].id]} />
+					</Reveal>
+				</div>
 			</section>
 
-			<section className='aboutPage__section'>
-				<Card className='aboutPage__principles'>
-					<div className='title'>Принципы</div>
-					<ul>
-						{PRINCIPLES.map(p => (
-							<li key={p}>{p}</li>
+			<section className='section' id='principles'>
+				<div className='container'>
+					<SectionHead label='принципы' title={H2.principles} />
+					<ul className='aboutPage__principles'>
+						{PRINCIPLES.map((p, i) => (
+							<Reveal as='li' key={p} index={i}>
+								{p}
+							</Reveal>
 						))}
 					</ul>
-				</Card>
+				</div>
 			</section>
 
-			{FEATURED.length > 0 && (
-				<section className='aboutPage__section'>
-					<TitleRow title='Главный кейс' btn='Все работы' to='/portfolio' />
-					{FEATURED.map(p => (
-						<FeaturedProject key={p.slug} project={p} />
-					))}
+			{FEATURED && (
+				<section className='section' id='work'>
+					<div className='container'>
+						<SectionHead label='работы' title={H2.work} action={{ label: 'Все работы', to: '/portfolio' }} />
+						<Reveal>
+							<CaseCard project={FEATURED} wide />
+						</Reveal>
+					</div>
 				</section>
 			)}
 
-			<FooterBanner />
-		</>
+			<CtaBlock cta='Написать' />
+		</div>
 	)
 }

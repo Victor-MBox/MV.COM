@@ -11,7 +11,7 @@ type Props = {
 /**
  * Мини-интерфейс услуги из HTML-элементов (docs/design-spec.md §6.8): подложка --box-deep, «текст» полосами,
  * ровно один элемент залит акцентом. Микроанимации запускает ховер родительской карточки (.box:hover)
- * или любого контейнера с классом .miniUiHost (витрина услуг /home4).
+ * или любого контейнера с классом .miniUiHost (витрина услуг главной).
  */
 export default function MiniUi({ variant, className }: Props) {
 	const cn = ['miniUi', `miniUi--${variant}`, className ?? ''].filter(Boolean).join(' ')

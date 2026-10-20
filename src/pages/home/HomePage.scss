@@ -1,42 +1,15 @@
-// Главная /home4 по docs/design-spec-home4.md (композиция Portilo на дизайн-системе 1.0). Токены — скоуп body.v2.home4
-// в _v2.scss, компоненты — рядом с ними. Здесь раскладка секций §6, типографика §3.2 и адаптив §8.
-// Классы с префиксом h4, чтобы не пересекаться с HomePage3.scss (.hero, .faq__inner и т. п. — глобальные)
+// Главная по docs/design-spec-home4.md (композиция Portilo): с 20.10.2026 — единственная главная сайта, её токены стали
+// базовыми (_variables.scss), заголовки 500, .container и .section — глобальные (_system.scss). Здесь раскладка секций §6,
+// типографика §3.2 и адаптив §8; классы с префиксом home
 
-.home4 {
+.home {
 	overflow-x: clip; // водяной знак и бегущие строки не создают горизонтальной прокрутки (§8)
-
-	// Заголовки — только 500 (правило 4 1.0): UA-стиль h1–h4 даёт bold, и он просачивался бы в потомков
-	h1,
-	h2,
-	h3,
-	h4 {
-		font-weight: 500;
-	}
-
-	// Элементы с явным шрифтом не должны терять его из-за глобального `* { font-family: var(--font-body) }`.
-	// h3/h4 не включены: внутри DimAccordion у строк свои шрифты и веса
-	:is(h1, h2, .display, .accent, .muted) * {
-		font-family: inherit;
-		font-weight: inherit;
-	}
-}
-
-.h4Container {
-	max-width: var(--container);
-	margin: 0 auto;
-	padding: 0 var(--gutter);
-}
-
-// Вертикальный ритм: padding-block из 1.0 §4.3 делится между соседями; якоря останавливаются под шапкой
-.h4Section {
-	padding-block: calc(var(--section-y) / 2);
-	scroll-margin-top: var(--header-h);
 }
 
 // ---------- 6.1 Hero ----------
 // Высота фиксированная (решение владельца от 20.10.2026), а не 100svh из ТЗ: первый экран не растягивается на всё окно,
 // следующая секция видна сразу. Шапка 72px входит в эти 680
-.h4Hero {
+.homeHero {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -148,7 +121,7 @@
 			-webkit-mask-image: linear-gradient(#000 78%, transparent);
 		}
 
-		// В светлой теме портрет стоит на панели --box-deep (как «стадия» на /home2)
+		// В светлой теме портрет стоит на панели --box-deep («стадия» под портретом)
 		body.light &::before {
 			content: '';
 			position: absolute;
@@ -228,118 +201,8 @@
 	}
 }
 
-// ---------- 6.2 Как работаю ----------
-.h4Process {
-	&__grid {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-
-		> * + * {
-			border-left: 1px solid var(--border);
-		}
-	}
-
-	&__col {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-		padding: 0 28px;
-
-		&:first-child {
-			padding-left: 0;
-		}
-
-		&:last-child {
-			padding-right: 0;
-		}
-	}
-
-	// Линейная иллюстрация шага (ProcessArt): штрих --text-muted, один акцентный элемент; добавлена 20.10.2026 как «воздух»
-	// между заголовком секции и текстом колонок. На ховере колонки штрих светлеет до --text-body
-	&__art {
-		display: block;
-		width: 160px;
-		height: 96px;
-		margin-bottom: 12px;
-		color: var(--text-muted);
-		transition: color var(--d-mid) var(--ease-out);
-
-		.is-accent {
-			stroke: var(--accent);
-		}
-
-		.is-accentFill {
-			fill: var(--accent);
-			stroke: none;
-		}
-	}
-
-	&__col:hover &__art {
-		color: var(--text-body);
-	}
-
-	&__head {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 12px;
-	}
-
-	&__title {
-		font-family: var(--font-title);
-		font-weight: 500;
-		font-size: 20px;
-		line-height: 1.3;
-		letter-spacing: -0.01em;
-		color: var(--text);
-	}
-
-	&__num {
-		font-family: var(--font-mono);
-		font-size: 13px;
-		line-height: 1.4;
-		letter-spacing: 0;
-		color: var(--text-muted);
-		white-space: nowrap;
-	}
-
-	&__text {
-		flex: 1;
-		font-size: 15px;
-		line-height: 1.6;
-		letter-spacing: -0.01em;
-		color: var(--text-muted);
-	}
-
-	// Панель с обещанием «Почему со мной» (там, где у Portilo процент и заливка): без акцента
-	&__panel {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		margin-top: 8px;
-		padding: 20px;
-		border-radius: var(--radius-field);
-		background: var(--box-deep);
-	}
-
-	&__why {
-		font-family: var(--font-title);
-		font-weight: 500;
-		font-size: 18px;
-		line-height: 1.3;
-		letter-spacing: -0.01em;
-		color: var(--text);
-	}
-
-	&__whyText {
-		font-size: 14px;
-		line-height: 1.5;
-		color: var(--text-muted);
-	}
-}
-
 // ---------- 6.4 Работы ----------
-.h4Work {
+.homeWork {
 	&__grid {
 		display: grid;
 		grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -384,85 +247,14 @@
 	}
 }
 
-// ---------- 6.5 Сколько стоит ----------
-.h4Pricing {
-	&__cards {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 24px;
-		margin-bottom: 24px;
-
-		> li {
-			display: flex;
-			min-width: 0;
-		}
-	}
-
-	&__panel {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 48px;
-		padding: 32px;
-		border-radius: var(--radius-card);
-		background: var(--box);
-	}
-
-	&__h {
-		margin-bottom: 20px;
-		font-family: var(--font-title);
-		font-weight: 500;
-		font-size: 20px;
-		line-height: 1.3;
-		letter-spacing: -0.01em;
-		color: var(--text);
-	}
-
-	&__list {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-
-		li {
-			display: flex;
-			align-items: flex-start;
-			gap: 12px;
-			font-size: 15px;
-			line-height: 1.6;
-			letter-spacing: -0.01em;
-			color: var(--text-body);
-		}
-	}
-
-	// Галочки акцентные (иконки либо акцентные, либо никакие); номера — моно
-	&__check {
-		flex: none;
-		width: 16px;
-		height: 16px;
-		margin-top: 4px;
-		color: var(--accent);
-	}
-
-	&__num {
-		flex: none;
-		min-width: 2ch;
-		padding-top: 3px;
-		font-family: var(--font-mono);
-		font-weight: 500;
-		font-size: 13px;
-		line-height: 1.4;
-		letter-spacing: 0;
-		color: var(--text-muted);
-	}
-}
-
 // ---------- 6.6 Вопросы ----------
-.h4Faq__inner {
+.homeFaq__inner {
 	width: calc(100% * 8 / 12);
 	margin: 0 auto;
 }
 
 // ---------- 6.7 Для HR ----------
-.h4Hr {
+.homeHr {
 	&__actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -491,7 +283,7 @@
 }
 
 // ---------- 6.8 Цифры ----------
-.h4Stats {
+.homeStats {
 	&__row {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -515,7 +307,7 @@
 }
 
 // ---------- 6.9 Финал ----------
-.h4Final {
+.homeFinal {
 	position: relative;
 	padding-top: 0;
 	overflow: hidden; // водяной знак шире окна
@@ -596,13 +388,13 @@
 
 // ---------- Адаптив (§8) ----------
 @media (max-width: 1200px) {
-	.h4Faq__inner {
+	.homeFaq__inner {
 		width: 100%;
 	}
 }
 
 @media (max-width: 992px) {
-	.h4Hero {
+	.homeHero {
 		height: auto;
 
 		&__in {
@@ -681,101 +473,46 @@
 		}
 	}
 
-	.h4Process__grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-
-		> * + * {
-			border-left: 0;
-		}
-
-		> :nth-child(even) {
-			border-left: 1px solid var(--border);
-		}
-
-		> :nth-child(n + 3) {
-			padding-top: 32px;
-			margin-top: 32px;
-			border-top: 1px solid var(--border);
-		}
-	}
-
-	.h4Process__col {
-		&:nth-child(odd) {
-			padding-left: 0;
-		}
-
-		&:nth-child(even) {
-			padding-right: 0;
-		}
-	}
-
-	.h4Work__grid {
+	.homeWork__grid {
 		display: flex;
 		flex-direction: column-reverse; // сначала текст, затем карточка
 		align-items: center;
 		gap: 48px;
 	}
 
-	.h4Work__card {
+	.homeWork__card {
 		width: 100%;
 		max-width: 540px;
 	}
 
-	.h4Pricing__cards {
-		grid-template-columns: 1fr;
-	}
 }
 
 @media (max-width: 768px) {
-	.h4Pricing__panel {
-		grid-template-columns: 1fr;
-		gap: 32px;
-		padding: 24px;
-	}
-
-	.h4Stats__row {
+	.homeStats__row {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 40px 24px;
 	}
 
-	.h4Final__in {
+	.homeFinal__in {
 		gap: 32px;
 	}
 }
 
 @media (max-width: 560px) {
-	.h4Hero__cta {
+	.homeHero__cta {
 		width: 100%;
 	}
 
-	.h4Process__grid {
-		grid-template-columns: 1fr;
-
-		> :nth-child(even) {
-			border-left: 0;
-		}
-
-		> :nth-child(n + 2) {
-			padding-top: 24px;
-			margin-top: 24px;
-			border-top: 1px solid var(--border);
-		}
-	}
-
-	.h4Process__col {
-		padding: 0;
-	}
-
-	.h4Hr__actions .button--secondary {
+	.homeHr__actions .button--secondary {
 		flex: 1 1 auto;
 	}
 
-	.h4Stats__row {
+	.homeStats__row {
 		grid-template-columns: 1fr;
 		gap: 32px;
 	}
 
-	.h4Final__meta {
+	.homeFinal__meta {
 		flex-direction: column;
 		align-items: center;
 		gap: 8px;

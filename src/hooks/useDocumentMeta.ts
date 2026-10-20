@@ -25,7 +25,7 @@ function setMeta(attr: 'name' | 'property', key: string, content: string) {
 }
 
 /**
- * Title, description, Open Graph и canonical страницы (ТЗ /home5 §18). Дефолты для всего сайта лежат в index.html;
+ * Title, description, Open Graph и canonical страницы (ТЗ §18). Дефолты для всего сайта лежат в index.html;
  * хук переопределяет их, пока страница смонтирована, и возвращает прежние значения при уходе.
  * Пререндера нет: поисковики, исполняющие JavaScript, увидят эти теги, остальные — дефолты из index.html.
  */

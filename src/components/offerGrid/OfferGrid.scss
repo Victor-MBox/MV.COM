@@ -1,0 +1,134 @@
+// Карточки офферов на /services: три колонки, мини-интерфейс на подложке, цена и круг со стрелкой как у WorkCard
+.offerGrid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px;
+
+	> li {
+		display: flex;
+		min-width: 0;
+	}
+
+	&__card {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 14px;
+		min-width: 0;
+	}
+
+	&__slot {
+		display: grid;
+		place-items: center;
+		aspect-ratio: 16 / 9;
+		margin-bottom: 6px;
+		padding: 20px;
+		border-radius: var(--radius-field);
+		background: var(--box-deep);
+		overflow: hidden;
+
+		.miniUi {
+			width: 100%;
+			height: min(100%, 160px);
+			padding: 12px;
+		}
+	}
+
+	&__meta {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		span {
+			font-family: inherit;
+		}
+
+		span:last-child {
+			color: var(--accent-text);
+		}
+	}
+
+	&__title {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 22px;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	&__line {
+		flex: 1;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__foot {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: auto;
+		padding-top: 12px;
+	}
+
+	&__price {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	// Круг со стрелкой: по ховеру карточки заливается --text, стрелка — цветом фона
+	&__arrow {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: none;
+		width: 40px;
+		height: 40px;
+		border: 1px solid var(--border-strong);
+		border-radius: 50%;
+		font-family: var(--font-mono);
+		font-size: 16px;
+		line-height: 1;
+		color: var(--text);
+		transition:
+			background-color var(--d-mid) var(--ease-out),
+			border-color var(--d-mid) var(--ease-out),
+			color var(--d-mid) var(--ease-out);
+	}
+
+	&__card:hover &__arrow {
+		background: var(--text);
+		border-color: var(--text);
+		color: var(--bg);
+	}
+
+	@media (max-width: 1200px) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	@media (max-width: 640px) {
+		grid-template-columns: 1fr;
+
+		&__slot {
+			display: none;
+		}
+	}
+}

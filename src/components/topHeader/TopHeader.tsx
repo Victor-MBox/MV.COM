@@ -4,19 +4,20 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
-import { NAV, SOCIAL, WORDMARK } from '../../data/home4'
-import type { SocialKey } from '../../data/home4'
+import { NAV, SOCIAL, WORDMARK } from '../../data/home'
+import type { SocialKey } from '../../data/home'
 import { useContactModal } from '../contactModal/ContactModalContext'
 import { getLenis } from '../../hooks/useLenis'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
-import ThemeButton from '../themeButton/ThemeButton'
+import ThemeToggle from '../themeToggle/ThemeToggle'
 import Button from '../button/Button'
+import Logo from '../logo/Logo'
 import './TopHeader.scss'
 
 /** Прокрутка, после которой шапка получает фон и блюр (§4.1) */
 const SCROLLED_AT = 24
 const EASE = [0.2, 0.7, 0.2, 1] as const
-const HOME = '/home4'
+const HOME = '/'
 
 const svg = { width: 20, height: 20, fill: 'currentColor', 'aria-hidden': true } as const
 
@@ -43,7 +44,7 @@ const SOCIAL_LABELS: Record<SocialKey, string> = { github: 'GitHub', telegram: '
 const intro = (i: number) => ({ 'data-intro': true, style: { '--i': i } as CSSProperties })
 
 /**
- * Верхняя шапка /home4 (docs/design-spec-home4.md §4): слово-логотип, ссылки, переключатель темы и кнопка на десктопе;
+ * Верхняя шапка сайта (docs/design-spec-home4.md §4; с 20.10.2026 на всех страницах): монограмма «VM.» (`Logo`), ссылки, переключатель темы и кнопка на десктопе;
  * на ≤992 — круглая кнопка-меню с четырьмя точками и полноэкранная панель (ловушка фокуса, Esc, скролл стоит);
  * справа плавающая панель соцссылок (≥1200). Панель меню и соцпанель рендерятся порталом в body, чтобы position: fixed
  * не привязывался к шапке с blur. Липкая, прозрачная над hero, с фоном после 24px прокрутки.
@@ -125,8 +126,7 @@ export default function TopHeader() {
 			<header className={cn}>
 				<div className='topHeader__in'>
 					<Link to={HOME} className='topHeader__logo' aria-label={`${WORDMARK}, на главную`} {...intro(0)}>
-						{WORDMARK}
-						<i className='topHeader__dot' aria-hidden='true' />
+						<Logo />
 					</Link>
 
 					<nav className='topHeader__nav' aria-label='Основное меню'>
@@ -148,7 +148,7 @@ export default function TopHeader() {
 
 					<div className='topHeader__actions'>
 						<span className='topHeader__theme' {...intro(NAV.length + 1)}>
-							<ThemeButton />
+							<ThemeToggle />
 						</span>
 						<span className='topHeader__ctaWrap' {...intro(NAV.length + 2)}>
 							<Button variant='secondary' className='topHeader__cta' onClick={() => openModal()}>
@@ -220,7 +220,7 @@ export default function TopHeader() {
 								transition={{ duration: 0.24, delay: reduced ? 0 : menuItems.length * 0.04 }}
 							>
 								<span className='topHeader__theme'>
-									<ThemeButton />
+									<ThemeToggle />
 								</span>
 								<a href={CONTACT_LINKS.email}>{CONTACTS.email}</a>
 								<a href={CONTACT_LINKS.telegram} target='_blank' rel='noopener noreferrer'>

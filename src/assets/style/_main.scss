@@ -1,5 +1,5 @@
-// Шрифты (Geologica, Golos Text, JetBrains Mono) подключены в index.html через preconnect + <link>,
-// чтобы браузер начинал грузить их до разбора CSS (docs/design-spec.md §11)
+// Базовые правила поверх reset. Шрифты (Geologica, Golos Text, JetBrains Mono) подключены в index.html через preconnect + <link>,
+// чтобы браузер начинал грузить их до разбора CSS (docs/design-spec.md §11). Токены — _variables.scss, слой системы — _system.scss
 
 * {
 	box-sizing: border-box;
@@ -7,11 +7,11 @@
 	scroll-behavior: smooth;
 }
 
-// Заголовки — Geologica, текст — Golos Text (концепт D «Типографика»)
+// Заголовки — Geologica; вес 500 ставит _system.scss
 h1,
 h2,
 h3,
-.title {
+h4 {
 	font-family: var(--font-title);
 }
 
@@ -28,97 +28,9 @@ img {
 	height: auto;
 }
 
-.desktop {
-	display: block;
-}
-.mobile {
-	display: none;
-}
-
-section {
-	margin-bottom: 50px;
-}
-
-body::after {
-	content: '';
-	background: url(../../resources/bg_01.gif);
-	opacity: 0.03;
-	width: 100vw;
-	height: 100vh;
-	display: block;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: -1;
-}
-
-.main {
-	display: flex;
-	gap: 20px;
-	padding: 10px;
-
-	max-width: 1440px;
-	padding-left: 15px;
-	padding-right: 15px;
-	margin: 0 auto;
-	.container {
-		width: 100%;
-		min-width: 0; // флекс-элемент не должен расти от min-content содержимого (бегущие строки, длинные слова)
-	}
-}
-
+// Страница под шапкой: минимальная высота, чтобы футер не всплывал на коротких страницах
 .page {
 	min-height: 60dvh;
-}
-
-// Текстовая ссылка «Все услуги →» в акцентном цвете: строки заголовков, кейс, блок HR
-.textLink {
-	font-size: 15px;
-	letter-spacing: -0.01em;
-	color: var(--accent-blue);
-	white-space: nowrap;
-	padding: 0;
-	transition: opacity 0.2s;
-
-	&:hover {
-		opacity: 0.8;
-	}
-}
-
-// 404
-.notFound {
-	min-height: 60dvh;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	gap: 16px;
-	padding: 60px 20px;
-	border-radius: 18px;
-	border: 1px solid var(--border-cards);
-	background: var(--bg-banner);
-
-	&__code {
-		font-weight: 700;
-		font-size: 120px;
-		line-height: 100%;
-		letter-spacing: -0.06em;
-		color: var(--text-title);
-		opacity: 0.15;
-	}
-
-	h1 {
-		font-weight: 700;
-		font-size: 36px;
-		letter-spacing: -0.04em;
-		color: var(--text-title);
-	}
-
-	p {
-		color: var(--text-secondary);
-		margin-bottom: 16px;
-	}
 }
 
 // Доступность: меньше движения
@@ -128,53 +40,5 @@ body::after {
 	*::after {
 		animation-duration: 0.01ms !important;
 		transition-duration: 0.01ms !important;
-	}
-}
-
-// Фильтры-чипсы
-.chips {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-}
-
-.chip {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 14px;
-	border-radius: 10px;
-	border: 1px solid var(--border-cards);
-	background: var(--bg-primary);
-	font-size: 15px;
-	letter-spacing: -0.03em;
-	color: var(--text-body);
-	transition: color 0.2s, border-color 0.2s, background 0.2s;
-
-	&:hover {
-		color: var(--text-title);
-		border-color: var(--btn-border-color);
-	}
-
-	&.is-active {
-		color: var(--bg-menu-a);
-		background: var(--text-primary);
-		border-color: var(--text-primary);
-	}
-}
-
-// Теги технологий
-.stackChips {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-
-	li {
-		padding: 9px 12px;
-		border-radius: 8px;
-		background: var(--bg-svg-steck);
-		color: var(--text-title);
-		font-size: 14px;
-		letter-spacing: -0.02em;
 	}
 }

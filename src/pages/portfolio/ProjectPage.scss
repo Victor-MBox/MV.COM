@@ -1,344 +1,377 @@
-// Страница кейса: одна читаемая колонка, факты полосой, списки с разделителями, техника в аккордеоне
+// Страница кейса (docs/design-spec.md §9; content.md §4.7): обложка с единственной тенью системы, счётчики по центру
+// как в секции «Цифры» главной, «Коротко» в три колонки с разделителями, техника в DimAccordion без карточек внутри
+.projectPage {
+	overflow-x: clip; // слайды галереи въезжают сбоку на 60px — не должны давать горизонтальной прокрутки
 
-.project {
-	&__aside {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 14px;
-
-		.btn {
-			display: inline-flex;
-			align-items: center;
-		}
+	// ---------- Шапка: факты моно в две строки и статус с точкой --ok ----------
+	&__facts,
+	&__role {
+		display: block;
+		font-family: inherit;
 	}
 
-	&__live {
+	&__role {
+		margin-top: 6px;
+	}
+
+	&__status {
 		display: inline-flex;
 		align-items: center;
-		gap: 10px;
-		padding: 11px 14px;
-		border-radius: 10px;
-		border: 1px solid var(--border-cards);
-		background: var(--bg-primary);
-		font-size: 14px;
-		letter-spacing: -0.02em;
-		color: var(--text-title);
-		white-space: nowrap;
+		gap: 8px;
+		font-family: inherit;
+		color: var(--text);
 
 		i {
-			flex: 0 0 auto;
+			display: block;
 			width: 8px;
 			height: 8px;
 			border-radius: 50%;
-			background: #77ea31;
-			box-shadow: 0 0 0 4px rgba(119, 234, 49, 0.18);
+			background: var(--ok);
 		}
 	}
 
+	// ---------- Обложка на всю ширину контейнера ----------
 	&__cover {
-		border-radius: 18px;
+		border-radius: var(--radius-card);
 		overflow: hidden;
-		border: 1px solid var(--border-cards);
-		aspect-ratio: 21 / 9;
-		margin-bottom: 20px;
-		background: var(--bg-menu-a);
+		background: var(--box-deep);
+		box-shadow: var(--shadow-cover);
 
 		img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
 			display: block;
+			width: 100%;
+			height: auto;
+			aspect-ratio: 21 / 9;
+			object-fit: cover;
+			object-position: center top;
 		}
 	}
 
-	&__h2 {
-		font-weight: 600;
-		font-size: 32px;
-		line-height: 100%;
-		letter-spacing: -0.05em;
-		color: var(--text-title);
-		margin-bottom: 28px;
-	}
-
-	// Факты одной полосой
-	&__facts {
-		padding: 26px 30px;
-		border-radius: 18px;
-		border: 1px solid var(--border-cards);
-		background: var(--bg-primary);
-		margin-bottom: 70px;
-
-		dl {
-			display: grid;
-			grid-template-columns: repeat(4, minmax(0, 1fr));
-			gap: 30px;
-		}
-
-		dt {
-			font-size: 13px;
-			letter-spacing: -0.02em;
-			color: var(--text-decor);
-			margin-bottom: 8px;
-		}
-
-		dd {
-			font-size: 16px;
-			line-height: 130%;
-			letter-spacing: -0.03em;
-			color: var(--text-title);
-		}
-	}
-
-	// «Коротко»: задача / что сделал / результат — список с разделителями
-	&__brief {
-		margin-bottom: 70px;
-
-		ol {
-			border-top: 1px solid var(--border-cards);
-		}
+	// ---------- Четыре счётчика по центру без разделителей (как .homeStats на главной) ----------
+	&__metrics {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 32px;
+		margin-top: 80px;
+		text-align: center;
 
 		li {
-			display: grid;
-			grid-template-columns: 220px minmax(0, 1fr);
-			gap: 30px;
-			align-items: start;
-			padding: 30px 0;
-			border-bottom: 1px solid var(--border-cards);
+			display: flex;
+			justify-content: center;
+			min-width: 0;
 		}
 
-		h3 {
-			font-weight: 600;
-			font-size: 24px;
-			line-height: 110%;
-			letter-spacing: -0.04em;
-			color: var(--text-title);
-			padding-top: 2px;
+		.stat {
+			align-items: center;
+		}
+
+		.stat__num {
+			font-size: clamp(48px, 5vw, 72px);
+		}
+	}
+
+	// ---------- «Коротко»: три колонки с линиями сверху ----------
+	&__brief {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 32px;
+
+		li {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			padding-top: 20px;
+			border-top: 1px solid var(--border);
+			min-width: 0;
 		}
 
 		p {
-			max-width: 640px;
 			font-size: 17px;
-			line-height: 160%;
-			letter-spacing: -0.02em;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
 			color: var(--text-body);
 		}
 	}
 
-	&__metrics {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 10px;
-		margin-bottom: 70px;
-
-		> div {
-			padding: 24px 18px;
-			border: 1px solid var(--border-cards);
-			background: var(--bg-primary);
-			border-radius: 18px;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 12px;
-			text-align: center;
-		}
+	&__briefLabel {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
 	}
 
-	&__metric-value {
-		font-weight: 600;
-		font-size: 34px;
-		line-height: 100%;
-		letter-spacing: -0.04em;
-		color: var(--text-title);
+	// ---------- Стек и аккордеон техники ----------
+	&__stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
 	}
 
-	&__metric-label {
-		font-weight: 500;
-		font-size: 14px;
-		line-height: 120%;
-		letter-spacing: -0.03em;
-		color: var(--text-body);
+	&__accordion {
+		margin-top: 48px;
+
+		// Внутри один пункт с блоками в две колонки — ограничение 56ch тела аккордеона здесь не нужно
 	}
 
-	&__gallery {
-		margin-bottom: 70px;
-	}
-
-	// Аккордеон «Как это устроено технически»
 	&__tech {
-		margin-bottom: 70px;
-	}
-
-	&__techBody {
 		display: flex;
 		flex-direction: column;
-		gap: 36px;
-		padding-top: 6px;
+		gap: 48px;
+		padding-top: 4px;
+	}
 
-		.stackChips {
-			padding-left: 0;
-			list-style: none;
+	&__techBlock {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+
+		> h3 {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 20px;
+			line-height: 1.3;
+			letter-spacing: -0.01em;
+			color: var(--text);
 		}
 	}
 
-	&__techBlock h3 {
-		font-weight: 600;
-		font-size: 18px;
-		letter-spacing: -0.03em;
-		color: var(--text-title);
-		margin-bottom: 16px;
-	}
-
-	&__techBody &__featureList {
+	// «Что внутри»: модули в две колонки, строки с разделителями, без рамок
+	&__features {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 18px 32px;
-		padding-left: 0;
-		list-style: none;
+		gap: 0 48px;
 
 		li {
-			padding-top: 14px;
-			border-top: 1px solid var(--border-cards);
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			padding: 16px 0;
+			border-top: 1px solid var(--border);
+			min-width: 0;
 		}
 
 		h4 {
-			font-weight: 600;
+			font-family: var(--font-body);
+			font-weight: 500;
 			font-size: 16px;
-			line-height: 120%;
-			letter-spacing: -0.03em;
-			color: var(--text-title);
-			margin-bottom: 6px;
+			line-height: 1.4;
+			letter-spacing: -0.01em;
+			color: var(--text);
 		}
 
 		p {
 			font-size: 15px;
-			line-height: 150%;
-			letter-spacing: -0.02em;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
 			color: var(--text-body);
 		}
 	}
 
-	&__techBody &__steps {
+	// «Этапы работы»: номер моно слева, заголовок и текст справа
+	&__steps {
 		display: flex;
 		flex-direction: column;
-		padding-left: 0;
-		list-style: none;
 
 		li {
 			display: grid;
-			grid-template-columns: 44px minmax(0, 1fr);
-			gap: 6px 16px;
-			align-items: start;
+			grid-template-columns: 40px minmax(0, 1fr);
+			gap: 6px 24px;
+			align-items: baseline;
 			padding: 16px 0;
-			border-top: 1px solid var(--border-cards);
+			border-top: 1px solid var(--border);
 		}
 
 		h4 {
-			font-weight: 600;
+			font-family: var(--font-body);
+			font-weight: 500;
 			font-size: 16px;
-			line-height: 120%;
-			letter-spacing: -0.03em;
-			color: var(--text-title);
+			line-height: 1.4;
+			letter-spacing: -0.01em;
+			color: var(--text);
 		}
 
 		p {
 			grid-column: 2;
-			max-width: 680px;
+			max-width: 64ch;
 			font-size: 15px;
-			line-height: 150%;
-			letter-spacing: -0.02em;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
 			color: var(--text-body);
 		}
 	}
 
-	&__step-num {
+	&__stepNum {
+		font-family: var(--font-mono);
+		font-weight: 500;
 		font-size: 13px;
-		letter-spacing: 0.08em;
-		color: var(--text-decor);
-		padding-top: 3px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
 	}
 
-	&__cta {
-		padding: 50px 40px;
-		border-radius: 18px;
-		border: 1px solid var(--border-cards);
-		background: var(--bg-banner);
-		text-align: center;
-
-		h2 {
-			font-weight: 700;
-			font-size: 36px;
-			letter-spacing: -0.04em;
-			color: var(--text-title);
-			margin-bottom: 14px;
-		}
-
-		p {
-			font-size: 16px;
-			line-height: 150%;
-			color: var(--text-body);
-			margin-bottom: 28px;
-		}
-	}
-
+	// ---------- Соседние кейсы: две карточки-ссылки с миниатюрой обложки ----------
 	&__nav {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 20px;
-		margin: 20px 0 50px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
 
-		&-link {
-			position: relative;
-			display: flex;
+		li {
+			display: grid;
+			min-width: 0;
+		}
+
+		// Единственный сосед «Следующий» встаёт в правую колонку
+		li:only-child.projectPage__navItem--next {
+			grid-column: 2;
+		}
+	}
+
+	&__navLink {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+		padding: 24px;
+
+		&--next {
+			flex-direction: row-reverse;
+			text-align: right;
+		}
+	}
+
+	&__navCover {
+		display: block;
+		flex: 0 0 160px;
+		aspect-ratio: 16 / 10;
+		border-radius: var(--radius-field);
+		overflow: hidden;
+		background: var(--box-deep);
+
+		img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: left top;
+			transition: scale var(--d-slow) var(--ease-out);
+		}
+	}
+
+	&__navLink:hover &__navCover img {
+		scale: 1.04;
+	}
+
+	&__navText {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	&__navDir {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__navTitle {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(22px, 2vw, 28px);
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	// ---------- Адаптив ----------
+	@media (max-width: 992px) {
+		&__brief {
+			grid-template-columns: 1fr;
+			gap: 0;
+
+			li {
+				padding: 20px 0;
+			}
+
+			li:last-child {
+				border-bottom: 1px solid var(--border);
+			}
+		}
+
+		&__features {
+			grid-template-columns: 1fr;
+		}
+
+		&__nav {
+			grid-template-columns: 1fr;
+			gap: 16px;
+
+			li:only-child.projectPage__navItem--next {
+				grid-column: auto;
+			}
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__cover img {
+			aspect-ratio: 16 / 10;
+		}
+
+		&__metrics {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 40px 24px;
+			margin-top: 56px;
+		}
+
+		&__accordion {
+			margin-top: 40px;
+		}
+
+		&__tech {
+			gap: 40px;
+		}
+
+		&__brief p,
+		&__features p,
+		&__steps p {
+			font-size: 16px;
+		}
+
+		&__navLink {
+			gap: 16px;
+		}
+
+		&__navCover {
+			flex-basis: 120px;
+		}
+	}
+
+	@media (max-width: 560px) {
+		&__metrics {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+
+		&__steps li {
+			grid-template-columns: 1fr;
+			gap: 4px;
+		}
+
+		&__steps p {
+			grid-column: auto;
+		}
+
+		&__navLink,
+		&__navLink--next {
 			flex-direction: column;
-			justify-content: flex-end;
-			min-height: 180px;
-			padding: 28px 30px;
-			border-radius: 18px;
-			overflow: hidden;
-			border: 1px solid var(--border-cards);
-			color: #fff;
-			isolation: isolate;
-
-			img {
-				position: absolute;
-				inset: 0;
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				z-index: -2;
-				transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-			}
-
-			&::before {
-				content: '';
-				position: absolute;
-				inset: 0;
-				z-index: -1;
-				background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
-			}
-
-			&:hover img {
-				transform: scale(1.06);
-			}
-
-			&--next {
-				text-align: right;
-				align-items: flex-end;
-			}
+			align-items: stretch;
+			text-align: left;
 		}
 
-		&-dir {
-			font-size: 13px;
-			letter-spacing: -0.02em;
-			opacity: 0.7;
-			margin-bottom: 10px;
-		}
-
-		&-title {
-			font-weight: 700;
-			font-size: 28px;
-			letter-spacing: -0.04em;
+		&__navCover {
+			flex-basis: auto;
 		}
 	}
 }

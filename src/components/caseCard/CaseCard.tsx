@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import type { Project } from '../../data/projects'
-import { parseStat } from '../../data/home3'
+import { parseStat } from '../stat/formatStat'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
 import Box from '../box/Box'
 import Chip from '../chip/Chip'
@@ -26,7 +26,8 @@ export default function CaseCard({ project, wide }: Props) {
 	const hoverable = useMediaQuery(MQ.hover)
 	const coarse = useMediaQuery(MQ.coarse)
 	const reduced = useMediaQuery(MQ.reduced)
-	const { scrollYProgress } = useScroll({ target: coverRef, offset: ['start end', 'end start'] })
+	// target только у широкой карточки: у обычной обложки нет, и framer бросал бы «Target ref is defined but not hydrated»
+	const { scrollYProgress } = useScroll(wide ? { target: coverRef, offset: ['start end', 'end start'] } : undefined)
 	const y = useTransform(scrollYProgress, [0, 1], [-12, 12])
 	const parallax = wide && hoverable && !coarse && !reduced
 

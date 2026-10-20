@@ -9,7 +9,7 @@ import type { WorkCardData } from '../workCard/WorkCard'
 import './WorkSlider.scss'
 
 type Props = {
-	/** Карточки в порядке показа (WORK_SLIDES в home4.ts: главный кейс первым) */
+	/** Карточки в порядке показа (WORK_SLIDES в data/home.ts: главный кейс первым) */
 	items: WorkCardData[]
 }
 

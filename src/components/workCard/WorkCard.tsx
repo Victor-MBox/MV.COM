@@ -1,5 +1,5 @@
 import type { ProjectFact } from '../../data/projects'
-import { parseStat } from '../../data/home3'
+import { parseStat } from '../stat/formatStat'
 import Box from '../box/Box'
 import Chip from '../chip/Chip'
 import Stat from '../stat/Stat'
@@ -9,7 +9,7 @@ import './WorkCard.scss'
 
 /**
  * Данные карточки работы. Project из data/projects.ts подходит структурно (cover, highlights); примеры-плейсхолдеры
- * (WORK_PLACEHOLDERS в home4.ts) вместо скриншота дают art и ведут на страницу оффера через to
+ * (WORK_PLACEHOLDERS в data/home.ts) вместо скриншота дают art и ведут на страницу оффера через to
  */
 export type WorkCardData = {
 	slug: string
@@ -21,7 +21,7 @@ export type WorkCardData = {
 	cover?: string
 	/** Векторная обложка вместо скриншота (у примеров-плейсхолдеров) */
 	art?: CoverArtVariant
-	/** Факты карточки — ровно те, что показываются (для PROJECTS отбираются по CASE_FACTS в home4.ts) */
+	/** Факты карточки — ровно те, что показываются (для PROJECTS отбираются по CASE_FACTS в data/home.ts) */
 	highlights?: ProjectFact[]
 	/** Куда ведёт карточка; по умолчанию — страница кейса /portfolio/:slug */
 	to?: string

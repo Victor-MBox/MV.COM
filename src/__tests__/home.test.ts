@@ -4,7 +4,10 @@ import {
 	FINAL_META,
 	FINAL_TITLE,
 	H2,
+	HERO_OFFER,
 	HERO_STAT,
+	HR_BLOCK,
+	HR_LINE,
 	NAME,
 	NAME_LINES,
 	NAV,
@@ -14,18 +17,18 @@ import {
 	STATS,
 	STRIP,
 	WATERMARK,
+	WHY_ME,
 	WORK_PLACEHOLDERS,
 	WORK_SLIDES,
-} from '../data/home4'
-import { parseStat } from '../data/home3'
+} from '../data/home'
+import { parseStat } from '../components/stat/formatStat'
 import { OFFERS, offerPath } from '../data/offers'
 import { PROCESS } from '../data/experience'
-import { HR_BLOCK, HR_LINE, WHY_ME } from '../data/home'
 import { PROJECTS } from '../data/projects'
 import { CONTACTS, CONTACT_LINKS } from '../data/contacts'
 import { ROUTE_PATHS } from '../app/routes'
 
-describe('home4: Portilo, меню в шапке', () => {
+describe('главная: Portilo, меню в шапке', () => {
 	it('витрина услуг содержит каждый оффер ровно один раз', () => {
 		expect(SHOWCASE_ORDER.length).toBe(OFFERS.length)
 		expect(new Set(SHOWCASE_ORDER).size).toBe(OFFERS.length)
@@ -65,6 +68,11 @@ describe('home4: Portilo, меню в шапке', () => {
 			expect(p.art).toBeTruthy()
 			p.highlights?.forEach(h => expect(h.value).not.toMatch(/^\d/)) // без чисел — они только в 6.8 и карточке NoRandoms
 		})
+	})
+
+	it('H1-абзац hero: лид и одна акцентная фраза', () => {
+		expect(HERO_OFFER.lead.length).toBeGreaterThan(20)
+		expect(HERO_OFFER.accent).toBe('Цена и срок — до старта.')
 	})
 
 	it('в каждом H2 не больше одного выделения, и оно — подстрока текста', () => {

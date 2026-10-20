@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { OFFERS, getOffer, offerPath } from '../data/offers'
 import { SERVICES } from '../data/services'
 import { BUDGET_RANGES, PRICING, PRICING_MODELS } from '../data/pricing'
-import { HOME_OFFER_LAYOUT } from '../data/home'
 
 describe('offers', () => {
 	it('ровно семь офферов с уникальными URL-ключами', () => {
@@ -49,13 +48,6 @@ describe('offers', () => {
 		expect(OFFERS.some(o => /битрикс/i.test(o.title))).toBe(false)
 		const support = getOffer('support')
 		expect(support?.outcomes.some(t => /1С-Битрикс/.test(t))).toBe(true)
-	})
-
-	it('раскладка плиток на главной покрывает все семь офферов без повторов, две плитки цветные', () => {
-		const keys = HOME_OFFER_LAYOUT.map(i => i.key)
-		expect(new Set(keys).size).toBe(OFFERS.length)
-		keys.forEach(k => expect(getOffer(k)).toBeDefined())
-		expect(HOME_OFFER_LAYOUT.filter(i => i.tone).length).toBe(2)
 	})
 
 	it('getOffer и offerPath', () => {

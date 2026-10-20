@@ -1,6 +1,6 @@
 import './CoverArt.scss'
 
-/** Варианты обложки-иллюстрации для примеров-плейсхолдеров в слайдере работ /home4 (WORK_PLACEHOLDERS в home4.ts) */
+/** Варианты обложки-иллюстрации для примеров-плейсхолдеров в слайдере работ главной (WORK_PLACEHOLDERS в data/home.ts) */
 export type CoverArtVariant = 'shop' | 'corporate'
 
 type Props = {
