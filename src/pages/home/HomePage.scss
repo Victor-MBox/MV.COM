@@ -3,17 +3,18 @@
 // типографика §3.2 и адаптив §8; классы с префиксом home
 
 .home {
-	overflow-x: clip; // водяной знак и бегущие строки не создают горизонтальной прокрутки (§8)
+	overflow-x: clip; // бегущая строка стека и слайдер работ не создают горизонтальной прокрутки (§8)
 }
 
 // ---------- 6.1 Hero ----------
-// Высота фиксированная (решение владельца от 20.10.2026), а не 100svh из ТЗ: первый экран не растягивается на всё окно,
-// следующая секция видна сразу. Шапка 72px входит в эти 680
+// Высота по окну, но не выше 820px (макет владельца «Hero 1b», 20.10.2026): на обычных ноутбуках первый экран — весь
+// вьюпорт, на высоких мониторах следующая секция видна сразу. Нижняя граница 680 — чтобы содержимое не резалось
+// на низких окнах. Шапка 72px входит в эту высоту
 .homeHero {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	height: 680px;
+	height: clamp(680px, 100svh, 820px);
 	padding-top: var(--header-h); // шапка прозрачная поверх
 	overflow: hidden;
 
@@ -97,41 +98,40 @@
 		transform-origin: left center;
 	}
 
-	// Портрет в колонках 6–11 (ТЗ даёт 6–12, но тогда в светлой теме рубашка накрывает подпись цифры в колонках 10–12),
-	// прижат к низу, высота до 88% секции, снизу растворяется
+	// Портрет в колонках 5–12 на всю высоту содержимого (макет «Hero 1b»): кадр выше области на четверть, верх уходит
+	// под прозрачную шапку на 24px, низ срезан секцией и растворяется маской с 74% высоты области. Кегль портрета
+	// привязан к высоте секции, а не к ширине колонок: при 820px это 760px в ширину, как в макете. Кадр без обрезки
+	// (victor-hero.webp 1122×1402, см. code.md §9): при узкой колонке 993–1200 картинку ограничивает ширина, и низ кадра
+	// всё равно остаётся за нижней кромкой — без ровного края обрезки
 	&__portrait {
 		position: absolute;
-		left: calc(var(--gutter) + (100% - 2 * var(--gutter)) * 5 / 12);
-		right: calc(var(--gutter) + (100% - 2 * var(--gutter)) / 12);
-		bottom: 0;
-		display: flex;
-		align-items: flex-end;
-		justify-content: center;
-		height: 88%;
+		inset: 0 var(--gutter) 0 calc(var(--gutter) + (100% - 2 * var(--gutter)) * 4 / 12);
 		pointer-events: none;
 
 		img {
+			position: absolute;
+			left: 50%;
+			top: -24px;
 			display: block;
 			width: auto;
 			max-width: 100%;
-			height: 100%;
+			height: 125%;
 			object-fit: contain;
-			object-position: center bottom;
-			mask-image: linear-gradient(#000 78%, transparent);
-			-webkit-mask-image: linear-gradient(#000 78%, transparent);
+			object-position: center top;
+			transform: translateX(-50%);
+			// 59–80% высоты картинки = 74–100% высоты области
+			mask-image: linear-gradient(#000 59%, transparent 80%);
+			-webkit-mask-image: linear-gradient(#000 59%, transparent 80%);
 		}
 
-		// В светлой теме портрет стоит на панели --box-deep («стадия» под портретом)
+		// В светлой теме портрет стоит на панели --box-deep («стадия» под портретом) от верхнего отступа содержимого
+		// до нижней кромки; голова выходит за верх панели. Картинка позиционирована и идёт в DOM после ::before — она выше
 		body.light &::before {
 			content: '';
 			position: absolute;
-			inset: 0;
+			inset: 48px 0 0;
 			border-radius: 24px 24px 0 0;
 			background: var(--box-deep);
-		}
-
-		body.light & img {
-			position: relative;
 		}
 	}
 
@@ -149,6 +149,14 @@
 		grid-column: 1 / 6;
 		display: flex;
 		gap: 16px;
+	}
+
+	// Абзац и под ним primary-пилюля «Обсудить проект» — CTA стоит рядом с «Цена и срок — до старта» (макет «Hero 1b»)
+	&__offerBody {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 28px;
 	}
 
 	&__quote {
@@ -189,15 +197,6 @@
 		.stat {
 			align-items: flex-end;
 		}
-	}
-
-	// Язычок по центру нижней кромки
-	&__cta {
-		position: absolute;
-		left: 50%;
-		bottom: 0;
-		z-index: 2;
-		transform: translateX(-50%);
 	}
 }
 
@@ -306,86 +305,6 @@
 	}
 }
 
-// ---------- 6.9 Финал ----------
-.homeFinal {
-	position: relative;
-	padding-top: 0;
-	overflow: hidden; // водяной знак шире окна
-
-	// Инвертированная бегущая строка на всю ширину окна; без маски краёв — иначе края просвечивали бы фоном
-	&__strip {
-		display: flex;
-		align-items: center;
-		height: 48px;
-		background: var(--strip-bg);
-		color: var(--strip-text);
-
-		.marquee {
-			width: 100%;
-			mask-image: none;
-			-webkit-mask-image: none;
-		}
-	}
-
-	&__stripItem {
-		display: inline-flex;
-		align-items: center;
-		font-family: var(--font-body);
-		font-weight: 500;
-		font-size: 15px;
-		line-height: 1;
-		letter-spacing: -0.01em;
-		color: var(--strip-text);
-		white-space: nowrap;
-
-		i {
-			padding: 0 20px;
-			font-style: normal;
-			color: var(--accent);
-		}
-	}
-
-	&__in {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 40px;
-		padding-top: calc(var(--section-y) / 2);
-		text-align: center;
-	}
-
-	&__title {
-		font-family: var(--font-title);
-		font-weight: 500;
-		font-size: clamp(56px, 9vw, 120px);
-		line-height: 0.95;
-		letter-spacing: -0.03em;
-		color: var(--text);
-	}
-
-	&__meta {
-		display: flex;
-		justify-content: space-between;
-		gap: 24px;
-		width: 100%;
-		padding-top: 24px;
-		border-top: 1px solid var(--border);
-		font-family: var(--font-mono);
-		font-size: 14px;
-		line-height: 1.4;
-		letter-spacing: 0;
-		color: var(--text-muted);
-
-		span {
-			font-family: inherit;
-		}
-	}
-
-	&__mark {
-		margin-top: 24px;
-	}
-}
-
 // ---------- Адаптив (§8) ----------
 @media (max-width: 1200px) {
 	.homeFaq__inner {
@@ -424,8 +343,15 @@
 			height: auto;
 
 			img {
+				position: static;
+				top: auto; // в светлой теме картинка relative (над панелью) — смещения десктопа не должны действовать
+				left: auto;
 				width: min(100%, 320px);
 				height: auto;
+				margin: 0 auto;
+				transform: none;
+				mask-image: linear-gradient(#000 78%, transparent);
+				-webkit-mask-image: linear-gradient(#000 78%, transparent);
 			}
 
 			body.light &::before {
@@ -436,6 +362,10 @@
 
 			body.light & {
 				position: relative;
+			}
+
+			body.light & img {
+				position: relative; // над панелью
 			}
 		}
 
@@ -451,6 +381,10 @@
 			align-items: center;
 		}
 
+		&__offerBody {
+			align-items: center;
+		}
+
 		&__quote {
 			justify-content: center;
 			padding-top: 0;
@@ -463,13 +397,6 @@
 			.stat {
 				align-items: center;
 			}
-		}
-
-		&__cta {
-			position: static;
-			display: flex;
-			justify-content: center;
-			transform: none;
 		}
 	}
 
@@ -492,14 +419,13 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 40px 24px;
 	}
-
-	.homeFinal__in {
-		gap: 32px;
-	}
 }
 
 @media (max-width: 560px) {
-	.homeHero__cta {
+	// Кнопка hero на всю ширину, как раньше язычок
+	.homeHero__offerBody,
+	.homeHero__cta,
+	.homeHero__cta .button {
 		width: 100%;
 	}
 
@@ -510,11 +436,4 @@
 	.homeStats__row {
 		grid-template-columns: 1fr;
 		gap: 32px;
-	}
-
-	.homeFinal__meta {
-		flex-direction: column;
-		align-items: center;
-		gap: 8px;
-	}
-}
+	}}

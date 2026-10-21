@@ -9,6 +9,7 @@ import type { SocialKey } from '../../data/home'
 import { useContactModal } from '../contactModal/ContactModalContext'
 import { getLenis } from '../../hooks/useLenis'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
+import { useScrollLock } from '../../hooks/useScrollLock'
 import ThemeToggle from '../themeToggle/ThemeToggle'
 import Button from '../button/Button'
 import Logo from '../logo/Logo'
@@ -79,13 +80,14 @@ export default function TopHeader() {
 		}
 	}, [])
 
-	// Открытое меню: скролл стоит, Esc закрывает, Tab ходит по кругу между кнопкой и пунктами, фокус возвращается на кнопку
+	useScrollLock(showMenu)
+
+	// Открытое меню: Lenis стоит (прокрутку страницы держит useScrollLock), Esc закрывает, Tab ходит по кругу между кнопкой
+	// и пунктами, фокус возвращается на кнопку
 	useEffect(() => {
 		if (!showMenu) return
 		const lenis = getLenis()
 		lenis?.stop()
-		const prevOverflow = document.body.style.overflow
-		document.body.style.overflow = 'hidden'
 		const focusTimer = window.setTimeout(() => panelRef.current?.querySelector<HTMLElement>('a, button')?.focus(), 50)
 
 		const onKey = (e: KeyboardEvent) => {
@@ -108,7 +110,6 @@ export default function TopHeader() {
 		return () => {
 			document.removeEventListener('keydown', onKey)
 			window.clearTimeout(focusTimer)
-			document.body.style.overflow = prevOverflow
 			lenis?.start()
 			toggle?.focus()
 		}

@@ -296,7 +296,7 @@
 // Плавающая панель соцссылок (§4.3), портал в body; только ≥1200 и пока закрыто меню
 .socialDock {
 	position: fixed;
-	right: 0;
+	right: var(--scrollbar-gap, 0px); // под оверлеем полосы прокрутки нет — панель остаётся на месте (useScrollLock)
 	top: 50%;
 	z-index: var(--z-sticky);
 	display: flex;

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
 	CASE_FACTS,
-	FINAL_META,
-	FINAL_TITLE,
+	FOOTER,
+	FOOTER_META,
 	H2,
 	HERO_OFFER,
 	HERO_STAT,
@@ -16,7 +16,6 @@ import {
 	SOCIAL,
 	STATS,
 	STRIP,
-	WATERMARK,
 	WHY_ME,
 	WORK_PLACEHOLDERS,
 	WORK_SLIDES,
@@ -34,6 +33,11 @@ describe('главная: Portilo, меню в шапке', () => {
 		expect(new Set(SHOWCASE_ORDER).size).toBe(OFFERS.length)
 		SHOWCASE_ORDER.forEach(key => expect(OFFERS.some(o => o.key === key)).toBe(true))
 		expect(STRIP).toEqual(OFFERS.map(o => o.title))
+	})
+
+	it('форма футера: имя, контакт и задача — те же поля, что проверяет validateContact', () => {
+		expect(FOOTER.fields.map(f => f.key)).toEqual(['name', 'contact', 'message'])
+		FOOTER.fields.forEach(f => expect(f.placeholder.length).toBeGreaterThan(5))
 	})
 
 	it('под каждым шагом процесса — своё обещание «Почему со мной»', () => {
@@ -84,19 +88,18 @@ describe('главная: Portilo, меню в шапке', () => {
 		})
 	})
 
-	it('имя в две строки, девиз финала и водяной знак — без цифр', () => {
-		expect(FINAL_TITLE.length).toBe(2)
+	it('имя в две строки, заголовок футера — без цифр', () => {
 		expect(NAME_LINES).toEqual(['Виктор', 'Мацаков'])
-		;[NAME, WATERMARK, ...FINAL_TITLE, ...NAME_LINES].forEach(s => {
+		;[NAME, FOOTER.title, ...NAME_LINES].forEach(s => {
 			expect(s.length).toBeGreaterThan(2)
 			expect(s).not.toMatch(/\d/)
 		})
 	})
 
 	it('города и часового пояса на сайте нет (решение владельца от 20.10.2026)', () => {
-		const strings = [...FINAL_META, HR_LINE.place, HR_BLOCK.text, CONTACTS.location]
+		const strings = [...FOOTER_META, FOOTER.text, HR_LINE.place, HR_BLOCK.text, CONTACTS.location]
 		strings.forEach(s => expect(s).not.toMatch(/Тбилиси|Грузия|GMT|UTC/i))
-		expect(FINAL_META.length).toBe(2)
+		expect(FOOTER_META.length).toBe(2)
 	})
 
 	it('ссылки шапки ведут на существующие маршруты, соцссылки — на ключи CONTACT_LINKS', () => {

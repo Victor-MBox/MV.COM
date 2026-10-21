@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useScrollLock } from '../../hooks/useScrollLock'
 import './Gallery.scss'
 
 export type GalleryImage = { src: string; caption: string }
@@ -42,6 +43,8 @@ export default function Gallery({ images, title }: Props) {
 		setActive(i)
 	}
 
+	useScrollLock(isOpen)
+
 	// Клавиатура: стрелки листают, Esc закрывает лайтбокс
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
@@ -51,12 +54,7 @@ export default function Gallery({ images, title }: Props) {
 		}
 		if (!isOpen) return
 		document.addEventListener('keydown', onKey)
-		const prev = document.body.style.overflow
-		document.body.style.overflow = 'hidden'
-		return () => {
-			document.removeEventListener('keydown', onKey)
-			document.body.style.overflow = prev
-		}
+		return () => document.removeEventListener('keydown', onKey)
 	}, [isOpen, go])
 
 	if (count === 0) return null

@@ -1,33 +1,95 @@
 // Страница оффера (content.md §4.2; docs/design-spec.md §9) на дизайн-системе 1.0: шапка — PageHead с двумя цифрами справа,
 // секции — строки с разделителями без рамок (карточка в карточке запрещена), процесс и CTA — общие компоненты
 .offerPage {
-	// Шапка: цена и срок столбиком в правой колонке. Кегль hero (64px) не вмещает строки вроде «от 15 000 ₽ за задачу»
-	// в четыре колонки aside, поэтому кегль цены карточки формата (docs/design-spec-home4.md §3.2) и перенос разрешён
-	&__stats {
+	// ---------- Шапка ----------
+	// Цена и срок — бейджи в одну строку перед кнопками: подпись моно + значение кеглем цены карточки (20px).
+	// Уточнение цены (priceDetail) — моно-строкой рядом, переносится под бейджи, когда не помещается
+	&__facts {
 		display: flex;
-		flex-direction: column;
-		gap: 24px;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+	}
 
-		.stat {
-			align-items: flex-end;
+	&__badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__badge {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 10px;
+		padding: 11px 20px 12px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--box);
+
+		dt {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.4;
+			letter-spacing: 0;
+			color: var(--text-muted);
 		}
 
-		.stat__num {
-			font-size: clamp(28px, 2.6vw, 36px);
-
-			> * {
-				white-space: normal;
-			}
+		dd {
+			margin: 0;
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 20px;
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+			color: var(--text);
 		}
 	}
 
 	&__priceDetail {
-		max-width: 32ch;
+		max-width: 30ch;
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.5;
 		letter-spacing: 0;
 		color: var(--text-muted);
+	}
+
+	// Иллюстрация справа: мини-интерфейс оффера в цикле на панели --box со свечением в правом верхнем углу
+	// (как Box glow, но без ховера — .box запускал бы ховер-анимации MiniUi поверх цикла). Панель по высоте левой
+	// колонки (PageHead asideWide), мини-интерфейс по центру, увеличен zoom — пропорции композиций те же, что в карточках
+	&__visual {
+		position: relative;
+		display: grid;
+		flex: 1;
+		place-items: center;
+		min-height: 320px;
+		padding: 40px;
+		border-radius: var(--radius-card);
+		background: var(--box);
+		overflow: hidden;
+		isolation: isolate;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			pointer-events: none;
+			background: radial-gradient(60% 50% at 100% 0%, var(--accent-soft), transparent 70%);
+			opacity: var(--glow-rest);
+		}
+
+		// display: flex — перебивает скрытие мини-интерфейса на ≤560 (там он декоративный слот карточки, здесь — иллюстрация)
+		.miniUi {
+			display: flex;
+			width: 100%;
+			max-width: 440px;
+			height: 200px;
+			padding: 16px;
+			zoom: 1.25;
+		}
 	}
 
 	// Заголовок группы внутри секции или аккордеона (H3 по шкале, h4 в DOM под h3 аккордеона)
@@ -283,9 +345,10 @@
 		}
 	}
 
+	// Под кнопками панель по высоте мини-интерфейса, а не по высоте колонки
 	@media (max-width: 992px) {
-		&__stats .stat {
-			align-items: flex-start;
+		&__visual {
+			min-height: 0;
 		}
 
 		&__fit {
@@ -299,6 +362,14 @@
 	}
 
 	@media (max-width: 768px) {
+		&__visual {
+			padding: 24px;
+
+			.miniUi {
+				zoom: 1;
+			}
+		}
+
 		&__outcomes {
 			grid-template-columns: 1fr;
 			gap: 0;
@@ -316,6 +387,27 @@
 
 		&__tech {
 			gap: 32px;
+		}
+	}
+
+	// Телефон: два бейджа в одну строку равными колонками, подпись над значением, длинная цена переносится внутри
+	@media (max-width: 560px) {
+		&__badges {
+			display: grid;
+			flex: 1 1 100%;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		&__badge {
+			flex-direction: column;
+			gap: 2px;
+			padding: 10px 16px 11px;
+			border-radius: var(--radius-field);
+
+			dd {
+				font-size: 18px;
+				white-space: normal;
+			}
 		}
 	}
 }

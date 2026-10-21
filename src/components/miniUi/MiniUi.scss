@@ -387,6 +387,126 @@
 		}
 	}
 
+	// --- циклические сценарии (loop, шапка страницы оффера): те же движения, что по ховеру, но по кругу и связанные
+	// в историю. Акцент в каждый момент — у одного элемента: он переходит по строкам, пунктам меню, задачам.
+	// Отрицательная задержка сдвигает фазу без пустого старта (при положительной до старта действовал бы кадр 0%).
+	// При reduced-motion правила не применяются вовсе — композиция стоит в исходном виде
+	@media (prefers-reduced-motion: no-preference) {
+		// Веб-сервис, 6 с: строки таблицы появляются по очереди, статус-акцент проходит по строкам сверху вниз, строки уходят
+		&--loop.miniUi--web-service {
+			.miniUi__row {
+				animation: miniUiLoopRow 6s var(--ease-out) infinite both;
+				animation-delay: calc(var(--n) * 120ms);
+			}
+
+			.miniUi__status {
+				animation: miniUiLoopStatus 6s var(--ease-out) infinite both;
+				animation-delay: calc(var(--n) * 1.2s);
+			}
+		}
+
+		// Магазин, 3.2 с: нажатие «В корзину», всплывает «+1» и тает
+		&--loop.miniUi--ecommerce {
+			.miniUi__button {
+				animation: miniUiLoopTap 3.2s var(--ease-out) infinite;
+				animation-delay: -2.6s;
+			}
+
+			.miniUi__plus {
+				animation: miniUiLoopPlus 3.2s var(--ease-out) infinite both;
+			}
+		}
+
+		// Интеграции, 2.4 с: пунктир бежит, узлы по очереди подсвечиваются — заявка идёт из формы в CRM и в Telegram
+		&--loop.miniUi--integrations {
+			.miniUi__link {
+				animation: miniUiDash 1.2s linear infinite;
+			}
+
+			.miniUi__node {
+				animation: miniUiLoopNode 2.4s var(--ease-out) infinite;
+				animation-delay: calc((var(--n) - 3) * 0.6s);
+			}
+		}
+
+		// Лендинг, 5 с: нажатие на кнопку-акцент, поля формы заполняются по очереди, отправка, сброс
+		&--loop.miniUi--landing {
+			.miniUi__cta {
+				animation: miniUiLoopTap 5s var(--ease-out) infinite;
+			}
+
+			.miniUi__field::after {
+				animation: miniUiLoopType 5s var(--ease-out) infinite both;
+			}
+
+			.miniUi__field:nth-of-type(2)::after {
+				animation-delay: 0.7s;
+			}
+
+			.miniUi__submit {
+				animation: miniUiLoopSubmit 5s var(--ease-out) infinite both;
+			}
+		}
+
+		// Сайт компании, 9.6 с: акцент переходит по пунктам меню, карточки «страницы» пересобираются на каждом переходе
+		&--loop.miniUi--corporate {
+			.miniUi__navItem {
+				animation: miniUiLoopNav 9.6s var(--ease-out) infinite;
+				animation-delay: calc((var(--n) - 4) * 2.4s);
+			}
+
+			.miniUi__card {
+				animation: miniUiLoopCard 2.4s var(--ease-out) infinite both;
+				animation-delay: calc(var(--n) * 80ms);
+			}
+		}
+
+		// Поддержка, 4.5 с: задача «в работе» (акцент) переходит сверху вниз
+		&--loop.miniUi--support .miniUi__state {
+			animation: miniUiLoopState 4.5s var(--ease-out) infinite;
+			animation-delay: calc((var(--n) - 3) * 1.5s);
+		}
+
+		// Агентства, 3.6 с: стрелка подталкивает, во второй колонке по очереди «дописываются» строки
+		&--loop.miniUi--agencies {
+			.miniUi__arrow {
+				animation: miniUiLoopNudge 3.6s var(--ease-out) infinite;
+			}
+
+			.miniUi__col:last-of-type .miniUi__bar {
+				transform-origin: left center;
+				animation: miniUiLoopGrow 3.6s var(--ease-out) infinite both;
+			}
+
+			.miniUi__col:last-of-type .miniUi__bar:nth-of-type(2) {
+				animation-delay: 150ms;
+			}
+
+			.miniUi__col:last-of-type .miniUi__bar:nth-of-type(3) {
+				animation-delay: 300ms;
+			}
+		}
+	}
+
+	// «Ввод текста» в поле формы лендинга — полоса внутри поля, видна только в цикле
+	&__field {
+		position: relative;
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 8px;
+			width: 55%;
+			height: 4px;
+			margin-top: -2px;
+			border-radius: 2px;
+			background: var(--text-dim);
+			transform: scaleX(0);
+			transform-origin: left center;
+		}
+	}
+
 	// В узкой карточке (три колонки на 1200–1320) композиции не помещаются в ряд — ставим в столбик.
 	// Контейнер — родительская карточка (.offerBox { container-type: inline-size }), запрос по её ширине
 	@container (max-width: 250px) {
@@ -474,5 +594,191 @@
 @keyframes miniUiDashY {
 	to {
 		background-position: 0 16px;
+	}
+}
+
+// --- циклы (loop) ---
+@keyframes miniUiLoopRow {
+	0% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	8%,
+	86% {
+		opacity: 1;
+		transform: none;
+	}
+	96%,
+	100% {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+}
+
+// Окно акцента 23–38% цикла; при задержке n × 1.2 с строки загораются по очереди и гаснут до ухода таблицы
+@keyframes miniUiLoopStatus {
+	0%,
+	20%,
+	41%,
+	100% {
+		background-color: var(--box-deep);
+	}
+	23%,
+	38% {
+		background-color: var(--accent);
+	}
+}
+
+@keyframes miniUiLoopTap {
+	0%,
+	100% {
+		transform: none;
+	}
+	4% {
+		transform: scale(0.92);
+	}
+	10% {
+		transform: none;
+	}
+}
+
+@keyframes miniUiLoopPlus {
+	0%,
+	26% {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	34%,
+	70% {
+		opacity: 1;
+		transform: none;
+	}
+	82%,
+	100% {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
+// Узел светится первую треть цикла; три узла со сдвигом 0.6 с — сигнал идёт слева направо, затем пауза
+@keyframes miniUiLoopNode {
+	0%,
+	100% {
+		box-shadow: inset 0 0 0 1px transparent;
+	}
+	8%,
+	22% {
+		box-shadow: inset 0 0 0 1px var(--accent);
+	}
+	36% {
+		box-shadow: inset 0 0 0 1px transparent;
+	}
+}
+
+@keyframes miniUiLoopType {
+	0%,
+	12% {
+		transform: scaleX(0);
+	}
+	24%,
+	86% {
+		transform: scaleX(1);
+	}
+	94%,
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+@keyframes miniUiLoopSubmit {
+	0%,
+	44% {
+		transform: none;
+		background-color: transparent;
+	}
+	48% {
+		transform: scale(0.94);
+		background-color: var(--text-dim);
+	}
+	54%,
+	80% {
+		transform: none;
+		background-color: var(--text-dim);
+	}
+	90%,
+	100% {
+		transform: none;
+		background-color: transparent;
+	}
+}
+
+// Пункт меню — акцент свою четверть цикла
+@keyframes miniUiLoopNav {
+	0%,
+	24%,
+	100% {
+		background-color: var(--accent);
+	}
+	26%,
+	98% {
+		background-color: var(--box-deep);
+	}
+}
+
+@keyframes miniUiLoopCard {
+	0% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	16%,
+	86% {
+		opacity: 1;
+		transform: none;
+	}
+	96%,
+	100% {
+		opacity: 0;
+		transform: none;
+	}
+}
+
+// Задача — акцент свою треть цикла
+@keyframes miniUiLoopState {
+	0%,
+	30%,
+	100% {
+		background-color: var(--accent);
+	}
+	34%,
+	96% {
+		background-color: var(--box-deep);
+	}
+}
+
+@keyframes miniUiLoopNudge {
+	0%,
+	100% {
+		transform: none;
+	}
+	12% {
+		transform: translateX(6px);
+	}
+	24% {
+		transform: none;
+	}
+}
+
+@keyframes miniUiLoopGrow {
+	0%,
+	18% {
+		transform: scaleX(0);
+	}
+	34%,
+	84% {
+		transform: scaleX(1);
+	}
+	94%,
+	100% {
+		transform: scaleX(0);
 	}
 }

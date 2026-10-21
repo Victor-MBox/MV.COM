@@ -1,6 +1,5 @@
 import PageHead from '../../components/pageHead/PageHead'
 import Reveal from '../../components/reveal/Reveal'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { POSTS } from '../../data/posts'
 import PostCard from './PostCard'
 import './BlogPage.scss'
@@ -31,8 +30,6 @@ export default function BlogPage() {
 					</ul>
 				</div>
 			</section>
-
-			<CtaBlock />
 		</div>
 	)
 }

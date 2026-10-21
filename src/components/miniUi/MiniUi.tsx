@@ -5,16 +5,21 @@ export type MiniUiVariant = 'web-service' | 'ecommerce' | 'integrations' | 'land
 
 type Props = {
 	variant: MiniUiVariant
+	/** Анимация по кругу без ховера — шапка страницы оффера */
+	loop?: boolean
 	className?: string
 }
+
+const n = (i: number) => ({ '--n': i }) as React.CSSProperties
 
 /**
  * Мини-интерфейс услуги из HTML-элементов (docs/design-spec.md §6.8): подложка --box-deep, «текст» полосами,
  * ровно один элемент залит акцентом. Микроанимации запускает ховер родительской карточки (.box:hover)
- * или любого контейнера с классом .miniUiHost (витрина услуг главной).
+ * или любого контейнера с классом .miniUiHost (витрина услуг главной); с `loop` — бесконечный сценарий без ховера.
+ * `--n` — индекс элемента для задержек по очереди.
  */
-export default function MiniUi({ variant, className }: Props) {
-	const cn = ['miniUi', `miniUi--${variant}`, className ?? ''].filter(Boolean).join(' ')
+export default function MiniUi({ variant, loop, className }: Props) {
+	const cn = ['miniUi', `miniUi--${variant}`, loop ? 'miniUi--loop' : '', className ?? ''].filter(Boolean).join(' ')
 
 	if (variant === 'web-service') {
 		return (
@@ -27,7 +32,7 @@ export default function MiniUi({ variant, className }: Props) {
 				</div>
 				<div className='miniUi__table'>
 					{[0, 1, 2].map(i => (
-						<div className='miniUi__row' key={i} style={{ '--n': i } as React.CSSProperties}>
+						<div className='miniUi__row' key={i} style={n(i)}>
 							<i className='miniUi__bar' />
 							<i className='miniUi__bar miniUi__bar--short' />
 							<b className={`miniUi__status${i === 0 ? ' is-accent' : ''}`} />
@@ -80,12 +85,12 @@ export default function MiniUi({ variant, className }: Props) {
 			<div className={cn} aria-hidden='true'>
 				<div className='miniUi__nav'>
 					{[0, 1, 2, 3].map(i => (
-						<i key={i} className={`miniUi__navItem${i === 0 ? ' is-accent' : ''}`} />
+						<i key={i} className={`miniUi__navItem${i === 0 ? ' is-accent' : ''}`} style={n(i)} />
 					))}
 				</div>
 				<div className='miniUi__cards'>
 					{[0, 1, 2].map(i => (
-						<div className='miniUi__card' key={i} style={{ '--n': i } as React.CSSProperties}>
+						<div className='miniUi__card' key={i} style={n(i)}>
 							<i className='miniUi__thumb' />
 							<i className='miniUi__bar' />
 							<i className='miniUi__bar miniUi__bar--short' />
@@ -100,7 +105,7 @@ export default function MiniUi({ variant, className }: Props) {
 		return (
 			<div className={cn} aria-hidden='true'>
 				{[0, 1, 2].map(i => (
-					<div className='miniUi__task' key={i}>
+					<div className='miniUi__task' key={i} style={n(i)}>
 						<i className={`miniUi__bar${i === 1 ? ' miniUi__bar--mid' : ''}`} />
 						<b className={`miniUi__state${i === 0 ? ' is-accent' : ''}`} />
 					</div>
@@ -131,11 +136,17 @@ export default function MiniUi({ variant, className }: Props) {
 
 	return (
 		<div className={cn} aria-hidden='true'>
-			<span className='miniUi__node'>Форма</span>
+			<span className='miniUi__node' style={n(0)}>
+				Форма
+			</span>
 			<i className='miniUi__link' />
-			<span className='miniUi__node'>CRM</span>
+			<span className='miniUi__node' style={n(1)}>
+				CRM
+			</span>
 			<i className='miniUi__link' />
-			<span className='miniUi__node'>Telegram</span>
+			<span className='miniUi__node' style={n(2)}>
+				Telegram
+			</span>
 		</div>
 	)
 }

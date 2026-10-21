@@ -17,7 +17,9 @@
 	}
 }
 
-// Lenis (§8.2): инициализируется страницей, которой он нужен (useLenis), классы ставит сама библиотека
+// Lenis (§8.2): инициализируется страницей, которой он нужен (useLenis), классы ставит сама библиотека.
+// Правила `.lenis-stopped { overflow }` из lenis.css здесь нет намеренно: Lenis стоит только под оверлеями, прокрутку там
+// блокирует useScrollLock с возвратом ширины полосы, а overflow от класса прятал полосу без компенсации — страница прыгала вбок
 html.lenis,
 html.lenis body {
 	height: auto;
@@ -29,9 +31,6 @@ html.lenis body {
 .lenis.lenis-smooth [data-lenis-prevent] {
 	overscroll-behavior: contain;
 }
-.lenis.lenis-stopped {
-	overflow: hidden;
-}
 
 // useScroll({ target }) у framer-motion считает смещение от контейнера прокрутки и требует у него не-static position (CaseCard wide)
 html {
@@ -39,6 +38,8 @@ html {
 }
 
 body {
+	// Пока открыт оверлей, на месте спрятанной полосы прокрутки — отступ её ширины (useScrollLock), страница не сдвигается
+	padding-right: var(--scrollbar-gap, 0px);
 	background-color: var(--bg);
 	color: var(--text);
 	transition: background-color var(--d-mid), color var(--d-mid); // §6.14

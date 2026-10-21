@@ -10,7 +10,6 @@ import Work from './sections/Work'
 import Faq from './sections/Faq'
 import Hr from './sections/Hr'
 import Stats from './sections/Stats'
-import Final from './sections/Final'
 import './HomePage.scss'
 
 /** Интро hero проигрывается один раз за сессию (docs/design-spec-home4.md §6.1) */
@@ -63,7 +62,6 @@ export default function HomePage() {
 			<Faq />
 			<Hr />
 			<Stats />
-			<Final />
 			<Cursor />
 		</div>
 	)

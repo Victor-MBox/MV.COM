@@ -3,14 +3,13 @@ import PageHead from '../../components/pageHead/PageHead'
 import SectionHead from '../../components/sectionHead/SectionHead'
 import type { Headline } from '../../components/sectionHead/SectionHead'
 import Button from '../../components/button/Button'
-import Stat from '../../components/stat/Stat'
 import Chip from '../../components/chip/Chip'
 import Reveal from '../../components/reveal/Reveal'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
+import MiniUi from '../../components/miniUi/MiniUi'
 import WorkCard from '../../components/workCard/WorkCard'
 import type { WorkCardData } from '../../components/workCard/WorkCard'
 import ProcessSteps from '../../components/processSteps/ProcessSteps'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { OFFERS, getOffer } from '../../data/offers'
 import { getService } from '../../data/services'
@@ -18,7 +17,7 @@ import type { Service } from '../../data/services'
 import { AFTER_LAUNCH } from '../../data/pricing'
 import { PROJECTS } from '../../data/projects'
 import type { Project, ProjectFact } from '../../data/projects'
-import { CASE_FACTS } from '../../data/home'
+import { CASE_FACTS, SHOWCASE_ORDER } from '../../data/home'
 import NotFoundPage from '../NotFoundPage'
 import './OfferPage.scss'
 
@@ -48,7 +47,8 @@ const toWorkCard = (p: Project): WorkCardData => ({
 const pad = (n: number) => String(n).padStart(2, '0')
 
 /**
- * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка с ценой и сроком → кому подходит / не подходит →
+ * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (цена и срок бейджами, справа мини-интерфейс оффера
+ * в цикле — тот же, что на карточке /services) → кому подходит / не подходит →
  * что получите → сколько стоит и от чего зависит → примеры (если есть кейсы по категориям) → процесс → вопросы →
  * аккордеон «Стек и детали» (единственное место с названиями технологий) → CTA
  */
@@ -60,6 +60,7 @@ export default function OfferPage() {
 	if (!offer) return <NotFoundPage />
 
 	const number = pad(OFFERS.indexOf(offer) + 1)
+	const visual = SHOWCASE_ORDER.find(k => k === offer.key)
 	const projects = PROJECTS.filter(p => p.categories.some(c => offer.categories.includes(c)))
 		.slice(0, 2)
 		.map(toWorkCard)
@@ -113,6 +114,21 @@ export default function OfferPage() {
 						<Link to='/services'>Услуги</Link> · {offer.title}
 					</>
 				}
+				facts={
+					<div className='offerPage__facts'>
+						<dl className='offerPage__badges'>
+							<div className='offerPage__badge'>
+								<dt>стоимость</dt>
+								<dd>{offer.priceFrom}</dd>
+							</div>
+							<div className='offerPage__badge'>
+								<dt>срок</dt>
+								<dd>{offer.term}</dd>
+							</div>
+						</dl>
+						{offer.priceDetail && <p className='offerPage__priceDetail'>{offer.priceDetail}</p>}
+					</div>
+				}
 				actions={
 					<>
 						<Button onClick={() => open(offer.title)}>{offer.cta}</Button>
@@ -122,14 +138,13 @@ export default function OfferPage() {
 					</>
 				}
 				aside={
-					<>
-						<div className='offerPage__stats'>
-							<Stat value={offer.priceFrom} label='стоимость' size='hero' />
-							<Stat value={offer.term} label='срок' size='hero' />
+					visual && (
+						<div className='offerPage__visual'>
+							<MiniUi variant={visual} loop />
 						</div>
-						{offer.priceDetail && <p className='offerPage__priceDetail'>{offer.priceDetail}</p>}
-					</>
+					)
 				}
+				asideWide
 			/>
 
 			<section className='section' id='fit'>
@@ -251,8 +266,6 @@ export default function OfferPage() {
 					</Reveal>
 				</div>
 			</section>
-
-			<CtaBlock cta={offer.cta} topic={offer.title} />
 		</article>
 	)
 }

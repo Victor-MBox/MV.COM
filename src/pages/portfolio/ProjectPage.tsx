@@ -11,7 +11,6 @@ import Reveal from '../../components/reveal/Reveal'
 import Gallery from '../../components/gallery/Gallery'
 import FlowScheme from '../../components/flowScheme/FlowScheme'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { getAdjacentProjects, getProject } from '../../data/projects'
 import type { Project } from '../../data/projects'
@@ -241,8 +240,6 @@ export default function ProjectPage() {
 					</div>
 				</section>
 			)}
-
-			<CtaBlock cta='Обсудить похожий проект' />
 		</article>
 	)
 }

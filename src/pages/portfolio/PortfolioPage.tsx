@@ -3,7 +3,6 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import PageHead from '../../components/pageHead/PageHead'
 import CaseCard from '../../components/caseCard/CaseCard'
 import Reveal from '../../components/reveal/Reveal'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { PROJECTS, PROJECT_CATEGORIES } from '../../data/projects'
 import './PortfolioPage.scss'
 
@@ -93,8 +92,6 @@ export default function PortfolioPage() {
 					)}
 				</div>
 			</section>
-
-			<CtaBlock cta='Обсудить проект' />
 		</div>
 	)
 }

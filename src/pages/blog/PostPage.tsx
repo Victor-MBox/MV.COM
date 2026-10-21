@@ -3,7 +3,6 @@ import PageHead from '../../components/pageHead/PageHead'
 import SectionHead from '../../components/sectionHead/SectionHead'
 import Reveal from '../../components/reveal/Reveal'
 import Chip from '../../components/chip/Chip'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { POSTS, formatDate, getPost } from '../../data/posts'
 import type { PostBlock } from '../../data/posts'
 import NotFoundPage from '../NotFoundPage'
@@ -96,8 +95,6 @@ export default function PostPage() {
 					</div>
 				</section>
 			)}
-
-			<CtaBlock />
 		</article>
 	)
 }

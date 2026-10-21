@@ -203,7 +203,10 @@
 // Лайтбокс: оверлей системы, кнопки и подпись на --box, чтобы читались в обеих темах
 .lightbox {
 	position: fixed;
-	inset: 0;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 100vw; // не right: 0 — при выходе вернётся полоса прокрутки, картинка не должна съехать (как .modal)
 	z-index: var(--z-modal);
 	display: flex;
 	align-items: center;

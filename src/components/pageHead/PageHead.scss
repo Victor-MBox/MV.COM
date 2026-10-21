@@ -33,6 +33,18 @@
 		text-align: right;
 	}
 
+	// Широкая колонка под иллюстрацию: 7/5 вместо 8/4, по высоте левой колонки, содержимое тянется на всю ширину
+	&--asideWide &__main {
+		grid-column: 1 / 8;
+	}
+
+	&--asideWide &__aside {
+		grid-column: 8 / -1;
+		align-self: stretch;
+		align-items: stretch;
+		text-align: left;
+	}
+
 	// SectionHead внутри шапки: без нижнего отступа, H1 шире H2
 	.pageHead__head {
 		margin-bottom: 0;

@@ -6,7 +6,8 @@ import './Logo.scss'
  * поэтому знак сам следует теме и цвету родителя. Геометрия (Black): высота букв 100, стойки 27, диагонали с наклоном 0,44
  * (перпендикулярно ≈ 27), V 112 и M 124 с одинаковым счётчиком 52 и плоскими вершинами 24, правый штрих V входит в левую
  * стойку M на 8, точка 32 (32 % высоты) с зазором 7 на базовой линии. Те же контуры — в public/favicon.svg, logo.svg,
- * logo-inverted.svg: при правке менять везде.
+ * logo-inverted.svg (там viewBox с запасом 4 по краям): при правке менять везде. overflow: visible в Logo.scss обязателен —
+ * Safari округляет auto-ширину svg и с overflow: hidden срезает правый край точки.
  */
 export default function Logo(props: SVGProps<SVGSVGElement>) {
 	return (

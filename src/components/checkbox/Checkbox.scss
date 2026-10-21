@@ -1,0 +1,76 @@
+// Чекбокс формы: квадрат 20px на --box-deep, по ховеру бордер ярче, отмечен — акцентная заливка и галочка-штрих
+.checkbox {
+	position: relative;
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 12px;
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--text-body);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+
+	input {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 20px;
+		height: 20px;
+		margin: 0;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	&__box {
+		position: relative;
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 20px;
+		height: 20px;
+		margin-top: 1px;
+		border: 1px solid var(--border-strong);
+		border-radius: 6px;
+		background: var(--box-deep);
+		transition: background-color var(--d-fast), border-color var(--d-fast);
+
+		svg {
+			width: 12px;
+			height: 12px;
+			stroke: var(--on-accent);
+			stroke-width: 1.8;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			stroke-dasharray: 12;
+			stroke-dashoffset: 12;
+			transition: stroke-dashoffset var(--d-mid) var(--ease-out);
+		}
+	}
+
+	&__label {
+		font: inherit;
+		color: inherit;
+	}
+
+	&:hover &__box {
+		border-color: var(--text-muted);
+	}
+
+	& input:focus-visible + &__box {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+
+	& input:checked + &__box {
+		border-color: var(--accent);
+		background: var(--accent);
+
+		svg {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	&.is-invalid &__box {
+		border-color: var(--error);
+	}
+}

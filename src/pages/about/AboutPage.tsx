@@ -2,7 +2,6 @@ import PageHead from '../../components/pageHead/PageHead'
 import SectionHead from '../../components/sectionHead/SectionHead'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import CaseCard from '../../components/caseCard/CaseCard'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import Reveal from '../../components/reveal/Reveal'
 import Button from '../../components/button/Button'
 import Chip from '../../components/chip/Chip'
@@ -11,7 +10,9 @@ import { EXPERIENCE, STACK_GROUPS } from '../../data/experience'
 import { PROJECTS } from '../../data/projects'
 import { CONTACT_LINKS } from '../../data/contacts'
 import { HR_BLOCK, HR_LINE } from '../../data/home'
-import avatar from '../../resources/avatar.webp'
+import portraitDark from '../../resources/victor-about.webp'
+import portraitLight from '../../resources/victor-about-light.webp'
+import { useTheme } from '../../hooks/useTheme'
 import './AboutPage.scss'
 
 /** Три абзаца о себе (content.md §4.6): первый — лид шапки, остальные — секция «О себе» */
@@ -48,6 +49,7 @@ const FEATURED = PROJECTS.find(p => p.featured)
  */
 export default function AboutPage() {
 	const { open } = useContactModal()
+	const { isLight } = useTheme()
 
 	const experience = EXPERIENCE.map((e, i) => ({
 		id: e.period,
@@ -89,7 +91,7 @@ export default function AboutPage() {
 				}
 				aside={
 					<div className='aboutPage__photo'>
-						<img src={avatar} alt='Виктор Мацаков' width={418} height={418} />
+						<img src={isLight ? portraitLight : portraitDark} alt='Виктор Мацаков' width={720} height={900} />
 						<p className='aboutPage__status'>
 							<i aria-hidden='true' />
 							{STATUS}
@@ -161,8 +163,6 @@ export default function AboutPage() {
 					</div>
 				</section>
 			)}
-
-			<CtaBlock cta='Написать' />
 		</div>
 	)
 }

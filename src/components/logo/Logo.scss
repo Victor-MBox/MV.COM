@@ -4,6 +4,7 @@
 	display: block;
 	width: auto;
 	height: 1em;
+	overflow: visible; // край точки лежит ровно на границе viewBox — не резать сглаживание
 	fill: currentColor;
 
 	&__dot {

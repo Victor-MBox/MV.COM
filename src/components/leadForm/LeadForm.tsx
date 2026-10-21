@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
 import { submitContact } from '../../api/contact'
 import { OFFERS } from '../../data/offers'
@@ -8,6 +8,7 @@ import type { IntentKey } from '../../data/leadForm'
 import { validateContact } from './validate'
 import type { ContactErrors } from './validate'
 import Button from '../button/Button'
+import Checkbox from '../checkbox/Checkbox'
 import './LeadForm.scss'
 
 type Props = {
@@ -35,6 +36,7 @@ export default function LeadForm({ initialTopic = '', onDone, compact = false }:
 	const [consent, setConsent] = useState(false)
 	const [errors, setErrors] = useState<ContactErrors>({})
 	const [status, setStatus] = useState<Status>('idle')
+	const consentErrorId = `${useId()}-consent`
 
 	const payloadTopic = () => {
 		if (intent === 'job') return `Вакансия: ${format}`
@@ -198,12 +200,20 @@ export default function LeadForm({ initialTopic = '', onDone, compact = false }:
 				/>
 			)}
 
-			<label className={`leadForm__check${errors.consent ? ' is-invalid' : ''}`}>
-				<input type='checkbox' checked={consent} onChange={e => setConsent(e.target.checked)} />
-				<span className='leadForm__box' aria-hidden='true' />
-				<span>Согласен на обработку персональных данных</span>
-			</label>
-			{errors.consent && <span className='leadForm__error'>{errors.consent}</span>}
+			<Checkbox
+				className='leadForm__check'
+				checked={consent}
+				onChange={setConsent}
+				invalid={!!errors.consent}
+				describedBy={errors.consent ? consentErrorId : undefined}
+			>
+				{FORM_COPY.consent}
+			</Checkbox>
+			{errors.consent && (
+				<span className='leadForm__error' id={consentErrorId}>
+					{errors.consent}
+				</span>
+			)}
 
 			{status === 'error' && (
 				<p className='leadForm__error' role='alert'>

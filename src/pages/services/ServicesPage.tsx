@@ -6,7 +6,6 @@ import SectionHead from '../../components/sectionHead/SectionHead'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import Reveal from '../../components/reveal/Reveal'
 import Button from '../../components/button/Button'
-import CtaBlock from '../../components/ctaBlock/CtaBlock'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { FAQ } from '../../data/faq'
 import './ServicesPage.scss'
@@ -52,8 +51,6 @@ export default function ServicesPage() {
 					</Reveal>
 				</div>
 			</section>
-
-			<CtaBlock cta='Обсудить задачу' />
 		</div>
 	)
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useContactModal } from './ContactModalContext'
+import { useScrollLock } from '../../hooks/useScrollLock'
 import LeadForm from '../leadForm/LeadForm'
 import './ContactModal.scss'
 
@@ -9,22 +10,20 @@ import './ContactModal.scss'
 export default function ContactModal() {
 	const { isOpen, topic, close } = useContactModal()
 	const dialogRef = useRef<HTMLDivElement>(null)
+	useScrollLock(isOpen)
 
-	// Esc закрывает, скролл страницы блокируется, фокус уходит в окно
+	// Esc закрывает, фокус уходит в окно; прокрутку страницы держит useScrollLock
 	useEffect(() => {
 		if (!isOpen) return
 		const onKey = (e: KeyboardEvent) => {
 			if (e.key === 'Escape') close()
 		}
 		document.addEventListener('keydown', onKey)
-		const prevOverflow = document.body.style.overflow
-		document.body.style.overflow = 'hidden'
 		const t = window.setTimeout(() => {
 			dialogRef.current?.querySelector<HTMLElement>('input, textarea, button')?.focus()
 		}, 50)
 		return () => {
 			document.removeEventListener('keydown', onKey)
-			document.body.style.overflow = prevOverflow
 			window.clearTimeout(t)
 		}
 	}, [isOpen, close])
