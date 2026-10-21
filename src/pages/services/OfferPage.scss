@@ -411,3 +411,53 @@
 		}
 	}
 }
+
+// Пакеты обслуживания (/services/support#packages): три карточки формата цены в ряд и условия списком с точками
+.offerPage__packages {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px;
+
+	> li {
+		display: flex;
+		min-width: 0;
+	}
+
+	@media (max-width: 992px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+// Условия — двумя колонками текста (не сеткой: в сетке строки выравнивались по самому длинному пункту и зияли)
+.offerPage__terms {
+	columns: 2;
+	column-gap: 48px;
+	margin-top: 32px;
+	padding-top: 24px;
+	border-top: 1px solid var(--border);
+
+	li {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 12px;
+		break-inside: avoid;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+
+		&::before {
+			content: '';
+			flex: none;
+			width: 6px;
+			height: 6px;
+			margin-top: 9px;
+			border-radius: 50%;
+			background: var(--accent);
+		}
+	}
+
+	@media (max-width: 768px) {
+		columns: 1;
+	}
+}

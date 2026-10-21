@@ -29,7 +29,8 @@ function App() {
 			<ContactModalProvider>
 				<ScrollToTop />
 				<TopHeader />
-				<main className='main'>
+				{/* Цель ссылки «К содержанию» на любой странице: фокус переходит сюда, рамка не нужна (_system.scss) */}
+				<main className='main' id='main' tabIndex={-1}>
 					<AnimatePresence mode='wait' initial={false}>
 						<motion.div
 							key={location.pathname}

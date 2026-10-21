@@ -7,21 +7,26 @@ import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import Reveal from '../../components/reveal/Reveal'
 import Button from '../../components/button/Button'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import { FAQ } from '../../data/faq'
+import { HEADER_CTA } from '../../data/home'
+import { SITE_META } from '../../data/meta'
 import './ServicesPage.scss'
 
-// TODO (владелец): H1 и лид страницы услуг (content.md §5.2); в H1 — одно выделение
+// Первый экран /services — тексты ТЗ от 21.10.2026, §7
 const HEAD = {
-	title: { text: 'Сайты, сервисы и интеграции с понятной ценой', muted: 'с понятной ценой' },
-	lead: 'Лендинги, магазины, личные кабинеты, CRM и поддержка. Один исполнитель на весь проект, смета и срок — до старта.',
+	title: { text: 'Разработка и доработка сайтов', accent: 'доработка' },
+	lead: 'Создаю сайты и веб-сервисы, подключаю внешние системы и развиваю существующие проекты. Выберите ближайшую задачу — на странице услуги описаны результат и условия работы.',
 }
 
 /**
- * Услуги (content.md §5.2; docs/design-spec.md §9): шапка → семь офферов карточками → «Сколько стоит» полностью →
- * процесс (общий компонент) → все вопросы аккордеоном (#faq, сюда ведёт «Все вопросы» с главной) → CTA
+ * Услуги (content.md §5.2; docs/design-spec.md §9): шапка → каталог из шести услуг и строки для агентств (тот же, что
+ * на главной, с мини-интерфейсами) → стоимость и условия полностью → процесс → все вопросы аккордеоном (#faq, сюда
+ * ведёт «Другие вопросы» с главной и /contacts)
  */
 export default function ServicesPage() {
 	const { open } = useContactModal()
+	useDocumentMeta(SITE_META.services)
 	const faq = FAQ.map(f => ({ id: f.key, title: f.q, content: <p>{f.a}</p> }))
 
 	return (
@@ -30,18 +35,18 @@ export default function ServicesPage() {
 				label='услуги'
 				title={HEAD.title}
 				lead={HEAD.lead}
-				actions={<Button onClick={() => open()}>Обсудить задачу</Button>}
+				actions={<Button onClick={() => open()}>{HEADER_CTA}</Button>}
 			/>
 
-			<section className='section' id='offers' aria-label='Офферы'>
+			<section className='section' id='offers' aria-label='Услуги'>
 				<div className='container'>
-					<OfferGrid />
+					<OfferGrid spacious />
 				</div>
 			</section>
 
 			<PricingBlock details />
 
-			<ProcessSteps withWhy={false} />
+			<ProcessSteps />
 
 			<section className='section' id='faq'>
 				<div className='container servicesPage__faq'>

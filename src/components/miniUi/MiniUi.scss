@@ -1,5 +1,70 @@
 // Мини-интерфейсы услуг (docs/design-spec.md §6.8; четыре варианта /home4 — docs/design-spec-home4.md §5.3).
-// Микроанимации запускает ховер карточки .box или контейнера .miniUiHost (витрина услуг)
+// Короткая сцена микроанимаций (2–3 с, без бесконечных повторов) играет: при появлении карточки на экране — класс
+// .is-playing на контейнере .miniUiHost (ставит OfferGrid и снимает после сцены или когда карточка ушла с экрана);
+// по ховеру карточки .box на устройствах с мышью; по фокусу карточки с клавиатуры. Сцена заканчивается исходной
+// композицией — она же неподвижный кадр при prefers-reduced-motion. Анимируются только transform, opacity и фон —
+// размеры карточки не меняются
+
+// $dash — повторы бегущего пунктира интеграций: при появлении и фокусе — два, по ховеру — пока курсор на карточке
+@mixin mini-ui-scene($dash: 2) {
+	.miniUi--web-service {
+		.miniUi__row {
+			animation: miniUiRow var(--d-base) var(--ease-out) both;
+			animation-delay: calc(var(--n) * var(--stagger));
+		}
+
+		.miniUi__status.is-accent {
+			animation: miniUiPulse 1.6s var(--ease-out) 2;
+		}
+	}
+
+	.miniUi--ecommerce {
+		.miniUi__button {
+			animation: miniUiPress var(--d-mid) var(--ease-out);
+		}
+
+		.miniUi__plus {
+			opacity: 1;
+			transform: none;
+			transition-delay: var(--d-mid);
+		}
+	}
+
+	.miniUi--integrations .miniUi__link {
+		animation: miniUiDash 1.2s linear $dash;
+	}
+
+	.miniUi--landing .miniUi__cta {
+		animation: miniUiPress var(--d-mid) var(--ease-out);
+	}
+
+	.miniUi--corporate .miniUi__card {
+		animation: miniUiRow var(--d-base) var(--ease-out) both;
+		animation-delay: calc(var(--n) * var(--stagger));
+	}
+
+	.miniUi--support .miniUi__state.is-accent {
+		animation: miniUiPulse 1.6s var(--ease-out) 2;
+	}
+
+	.miniUi--agencies .miniUi__arrow {
+		transform: translateX(4px);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.miniUiHost.is-playing,
+	.box:focus-visible {
+		@include mini-ui-scene;
+	}
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+	:is(.box, .miniUiHost):hover {
+		@include mini-ui-scene(infinite);
+	}
+}
+
 .miniUi {
 	display: flex;
 	gap: 12px;
@@ -108,11 +173,13 @@
 		}
 	}
 
+	// «Цена» товара — плотная короткая полоса цветом текста: читается как цена, но без цифр
 	&__price {
-		font-family: var(--font-mono);
-		font-size: 13px;
-		line-height: 1.4;
-		color: var(--text);
+		display: block;
+		width: 40%;
+		height: 8px;
+		border-radius: 4px;
+		background: var(--text-muted);
 	}
 
 	&__buy {
@@ -338,53 +405,6 @@
 		line-height: 1;
 		color: var(--accent);
 		transition: transform var(--d-mid) var(--ease-out);
-	}
-
-	// --- микроанимации по ховеру карточки (.box) или контейнера витрины (.miniUiHost) ---
-	@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-		:is(.box, .miniUiHost):hover &--web-service {
-			.miniUi__row {
-				animation: miniUiRow var(--d-base) var(--ease-out) both;
-				animation-delay: calc(var(--n) * var(--stagger));
-			}
-
-			.miniUi__status.is-accent {
-				animation: miniUiPulse 1.6s var(--ease-out) 2;
-			}
-		}
-
-		:is(.box, .miniUiHost):hover &--ecommerce {
-			.miniUi__button {
-				animation: miniUiPress var(--d-mid) var(--ease-out);
-			}
-
-			.miniUi__plus {
-				opacity: 1;
-				transform: none;
-				transition-delay: var(--d-mid);
-			}
-		}
-
-		:is(.box, .miniUiHost):hover &--integrations .miniUi__link {
-			animation: miniUiDash 1.2s linear infinite;
-		}
-
-		:is(.box, .miniUiHost):hover &--landing .miniUi__cta {
-			animation: miniUiPress var(--d-mid) var(--ease-out);
-		}
-
-		:is(.box, .miniUiHost):hover &--corporate .miniUi__card {
-			animation: miniUiRow var(--d-base) var(--ease-out) both;
-			animation-delay: calc(var(--n) * var(--stagger));
-		}
-
-		:is(.box, .miniUiHost):hover &--support .miniUi__state.is-accent {
-			animation: miniUiPulse 1.6s var(--ease-out) 2;
-		}
-
-		:is(.box, .miniUiHost):hover &--agencies .miniUi__arrow {
-			transform: translateX(4px);
-		}
 	}
 
 	// --- циклические сценарии (loop, шапка страницы оффера): те же движения, что по ховеру, но по кругу и связанные

@@ -1,27 +1,39 @@
-// Карточки офферов на /services: три колонки, мини-интерфейс на подложке, цена и круг со стрелкой как у WorkCard
+// Каталог услуг (главная и /services): шесть карточек, оговорка и строка для агентств. Цена и круг со стрелкой — как у WorkCard
 .offerGrid {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 24px;
+	&__list {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 24px;
 
-	> li {
-		display: flex;
-		min-width: 0;
+		> li {
+			display: flex;
+			min-width: 0;
+		}
 	}
 
 	&__card {
 		display: flex;
 		flex: 1;
 		flex-direction: column;
-		gap: 14px;
+		gap: 12px;
 		min-width: 0;
+	}
+
+	// /services: шире промежутки и поля карточек
+	&--spacious &__list {
+		gap: 32px;
+	}
+
+	&--spacious &__card {
+		gap: 14px;
+		padding: 36px;
 	}
 
 	&__slot {
 		display: grid;
 		place-items: center;
 		aspect-ratio: 16 / 9;
-		margin-bottom: 6px;
+		margin-bottom: 10px;
 		padding: 20px;
 		border-radius: var(--radius-field);
 		background: var(--box-deep);
@@ -34,23 +46,12 @@
 		}
 	}
 
-	&__meta {
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
+	&__num {
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.4;
 		letter-spacing: 0;
-		color: var(--text-muted);
-
-		span {
-			font-family: inherit;
-		}
-
-		span:last-child {
-			color: var(--accent-text);
-		}
+		color: var(--accent-text);
 	}
 
 	&__title {
@@ -60,6 +61,16 @@
 		line-height: 1.2;
 		letter-spacing: -0.02em;
 		color: var(--text);
+		text-wrap: balance;
+
+		span {
+			font-family: inherit;
+			font-weight: inherit;
+		}
+	}
+
+	&__nowrap {
+		white-space: nowrap;
 	}
 
 	&__line {
@@ -70,27 +81,36 @@
 		color: var(--text-body);
 	}
 
-	&__chips {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
+	// Без разделителя: высота блока цен у карточек разная, и линии в одном ряду стояли бы вразнобой
 	&__foot {
 		display: flex;
-		align-items: center;
+		align-items: flex-end;
 		justify-content: space-between;
 		gap: 16px;
 		margin-top: auto;
 		padding-top: 12px;
 	}
 
-	// Две цены (Offer.prices): подпись моно над ценой, строки друг под другом — на любой ширине карточки без переносов
-	// внутри строки; круг со стрелкой — по нижней цене
-	&__foot--prices {
-		align-items: flex-end;
+	&__price {
+		margin: 0;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.3;
+		letter-spacing: -0.02em;
+		color: var(--text);
 	}
 
+	// Срок — тише цены: ориентир, а не обещание
+	&__term {
+		font-family: var(--font-body);
+		font-weight: 400;
+		font-size: 15px;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+	}
+
+	// Несколько цен (Offer.prices): подпись над ценой, строки друг под другом, срок — последней строкой
 	&__prices {
 		display: flex;
 		flex-direction: column;
@@ -104,25 +124,21 @@
 		}
 
 		dt {
-			font-family: var(--font-mono);
-			font-size: 13px;
+			font-size: 14px;
 			line-height: 1.4;
-			letter-spacing: 0;
+			letter-spacing: -0.01em;
 			color: var(--text-muted);
 		}
 
 		dd {
 			margin: 0;
 		}
-	}
 
-	&__price {
-		font-family: var(--font-title);
-		font-weight: 500;
-		font-size: 20px;
-		line-height: 1.2;
-		letter-spacing: -0.02em;
-		color: var(--text);
+		dd.offerGrid__term {
+			font-size: 15px;
+			line-height: 1.4;
+			color: var(--text-body);
+		}
 	}
 
 	// Круг со стрелкой: по ховеру карточки заливается --text, стрелка — цветом фона
@@ -151,12 +167,55 @@
 		color: var(--bg);
 	}
 
+	&__note {
+		max-width: 64ch;
+		margin-top: 24px;
+		font-size: 15px;
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+	}
+
+	// Агентства — строка на разделителе, а не седьмая карточка
+	&__agencies {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px 32px;
+		margin-top: 32px;
+		padding-top: 24px;
+		border-top: 1px solid var(--border);
+
+		p {
+			max-width: 62ch;
+			font-size: 17px;
+			line-height: 1.5;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
 	@media (max-width: 1200px) {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		&__list {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 768px) {
+		&--spacious &__card {
+			padding: 24px;
+		}
 	}
 
 	@media (max-width: 640px) {
-		grid-template-columns: 1fr;
+		&__list {
+			grid-template-columns: 1fr;
+		}
+
+		&--spacious &__list {
+			gap: 24px;
+		}
 
 		&__slot {
 			display: none;

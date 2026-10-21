@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import Cursor from '../../components/cursor/Cursor'
 import { getLenis, useLenis } from '../../hooks/useLenis'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
+import { SITE_META } from '../../data/meta'
 import ProcessSteps from '../../components/processSteps/ProcessSteps'
 import PricingBlock from '../../components/pricingBlock/PricingBlock'
 import Hero from './sections/Hero'
+import Projects from './sections/Projects'
 import Services from './sections/Services'
-import Work from './sections/Work'
+import About from './sections/About'
 import Faq from './sections/Faq'
-import Hr from './sections/Hr'
-import Stats from './sections/Stats'
 import './HomePage.scss'
 
 /** Интро hero проигрывается один раз за сессию (docs/design-spec-home4.md §6.1) */
@@ -24,15 +25,17 @@ function readIntroPlayed() {
 }
 
 /**
- * Главная (docs/design-spec-home4.md, бывший /home4 — с 20.10.2026 единственная главная сайта): композиция Portilo,
- * навигация в верхней шапке (TopHeader в App). Секции в порядке §6; «Как работаю» и «Сколько стоит» — общие компоненты
- * ProcessSteps и PricingBlock (они же на /services). Класс `home-intro` на body — стаггер шапки
- * при первой загрузке. Lenis живёт, пока смонтирована страница.
+ * Главная (docs/design-spec-home4.md — композиция Portilo; структура по ТЗ от 21.10.2026 «содержание и коммерческая
+ * структура»): предложение → реальные проекты → шесть услуг → процесс → стоимость и условия → кратко о разработчике →
+ * пять вопросов; форма первого обращения — в общем футере. Процесс и цены — общие компоненты ProcessSteps и
+ * PricingBlock (они же на /services). Класс `home-intro` на body — стаггер шапки при первой загрузке.
+ * Lenis живёт, пока смонтирована страница.
  */
 export default function HomePage() {
 	const { isOpen } = useContactModal()
 	const [introPlayed] = useState(readIntroPlayed)
 	useLenis()
+	useDocumentMeta(SITE_META.home)
 
 	useEffect(() => {
 		if (!introPlayed) document.body.classList.add('home-intro')
@@ -55,13 +58,12 @@ export default function HomePage() {
 	return (
 		<div className='home'>
 			<Hero instant={introPlayed} />
-			<ProcessSteps />
+			<Projects />
 			<Services />
-			<Work />
+			<ProcessSteps />
 			<PricingBlock />
+			<About />
 			<Faq />
-			<Hr />
-			<Stats />
 			<Cursor />
 		</div>
 	)

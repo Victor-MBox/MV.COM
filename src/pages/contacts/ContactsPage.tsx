@@ -5,7 +5,8 @@ import LeadForm from '../../components/leadForm/LeadForm'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import Reveal from '../../components/reveal/Reveal'
 import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
-import { CONTACTS_FAQ_KEYS, FAQ, getFaq } from '../../data/faq'
+import { CONTACTS_FAQ_KEYS, getFaq } from '../../data/faq'
+import { FORM_COPY, FORM_ENABLED } from '../../data/leadForm'
 import './ContactsPage.scss'
 
 type Channel = {
@@ -43,33 +44,31 @@ const CHANNELS: Channel[] = [
 		copy: CONTACTS.phone,
 		hint: 'Для звонков',
 	},
-	{
-		key: 'github',
-		label: 'GitHub',
-		value: `github.com/${CONTACTS.github}`,
-		href: CONTACT_LINKS.github,
-		hint: 'Открытый код',
-	},
 ]
 
-// TODO (владелец): H1 и лид страницы контактов; «в течение рабочего дня» ушло из лида в H1, чтобы не повторяться
+// H1 и вступление — ТЗ от 21.10.2026, §7. Вступление зависит от готовности формы: пока её нет (публичная сборка до
+// обработчика и политики), про форму не пишем. Срок ответа (в течение рабочего дня) стоит под формой, как везде
 const HEAD = {
-	title: { text: 'Напишите — отвечу в течение рабочего дня', muted: 'в течение рабочего дня' },
-	lead: 'Напишите в любой удобный мессенджер или оставьте заявку через форму.',
+	title: { text: 'Обсудим вашу задачу', accent: 'вашу задачу' },
+	lead: FORM_ENABLED
+		? 'Напишите в Telegram или отправьте сообщение через форму. Если есть текущий сайт, макет или техническое задание, добавьте ссылку.'
+		: 'Напишите в Telegram или на почту. Если есть текущий сайт, макет или техническое задание, добавьте ссылку.',
 }
 
 // TODO (владелец): заголовки колонок и блока вопросов
 const H2 = {
 	channels: { text: 'Как связаться' },
-	form: { text: 'Оставить заявку' },
+	form: { text: FORM_COPY.title },
 	faq: { text: 'Вопросы до старта', muted: 'до старта' },
 }
 
 const COPIED_MS = 1600
 
 /**
- * Контакты (docs/design-spec.md §9): шапка со статусом → каналы строками (с копированием в буфер) и встроенная форма
- * в единственной панели страницы → четыре вопроса аккордеоном. CTA-блока нет — форма уже здесь
+ * Контакты (docs/design-spec.md §9; ТЗ от 21.10.2026, §14): шапка со статусом → каналы строками (Telegram — основной,
+ * почта и телефон — настоящие из contacts.ts, с копированием в буфер), под ними GitHub как ссылка на код, а не канал для
+ * заказа; справа форма первого обращения в единственной панели страницы → четыре вопроса аккордеоном. Футер здесь
+ * без формы — второй раз она не повторяется
  */
 export default function ContactsPage() {
 	const [copied, setCopied] = useState<string | null>(null)
@@ -159,10 +158,17 @@ export default function ContactsPage() {
 								)
 							})}
 						</Reveal>
+						<p className='contactsPage__code'>
+							Код —{'\u00a0'}
+							<a href={CONTACT_LINKS.github} target='_blank' rel='noopener noreferrer'>
+								github.com/{CONTACTS.github}
+								<span aria-hidden='true'> ↗</span>
+							</a>
+						</p>
 					</div>
 
 					<Reveal className='contactsPage__panel' delay={0.08}>
-						<SectionHead label='заявка' title={H2.form} className='contactsPage__panelHead' />
+						<SectionHead label='заявка' title={H2.form} lead={FORM_COPY.lead} className='contactsPage__panelHead' />
 						<LeadForm />
 					</Reveal>
 				</div>
@@ -170,7 +176,7 @@ export default function ContactsPage() {
 
 			<section className='section' id='faq'>
 				<div className='container contactsPage__faq'>
-					<SectionHead label='вопросы' title={H2.faq} action={{ label: `Все ${FAQ.length} вопросов`, to: '/services#faq' }} />
+					<SectionHead label='вопросы' title={H2.faq} action={{ label: 'Другие вопросы', to: '/services#faq' }} />
 					<Reveal>
 						<DimAccordion idPrefix='contacts-faq' items={faq} multiple />
 					</Reveal>

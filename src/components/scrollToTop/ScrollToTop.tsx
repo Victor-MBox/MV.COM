@@ -25,7 +25,10 @@ export default function ScrollToTop() {
 			if (el) {
 				const lenis = getLenis()
 				if (lenis) lenis.scrollTo(el as HTMLElement)
-				else el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+				else {
+					const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+					el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+				}
 				return
 			}
 			if (attempts++ < 12) timer = window.setTimeout(tryScroll, 80)

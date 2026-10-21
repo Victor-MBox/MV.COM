@@ -1,17 +1,17 @@
 import { Fragment } from 'react'
 import { useLocation } from 'react-router-dom'
 import { CONTACT_LINKS } from '../../data/contacts'
-import { FOOTER, FOOTER_META, STRIP } from '../../data/home'
+import { FOOTER, FOOTER_META } from '../../data/home'
+import { FORM_COPY } from '../../data/leadForm'
 import { getOffer } from '../../data/offers'
-import Marquee from '../marquee/Marquee'
 import SplitLines from '../splitLines/SplitLines'
 import Reveal from '../reveal/Reveal'
 import FooterForm from './FooterForm'
 import './SiteFooter.scss'
 
+// LinkedIn не выводится, пока в contacts.ts заглушка (code.md §11)
 const LINKS = [
 	{ label: 'GitHub', href: CONTACT_LINKS.github },
-	{ label: 'LinkedIn', href: CONTACT_LINKS.linkedin },
 	{ label: 'Telegram', href: CONTACT_LINKS.telegram },
 ]
 
@@ -22,9 +22,9 @@ function topicFor(pathname: string) {
 }
 
 /**
- * Футер-форма (макет «Футер - форма» от 20.10.2026) — финал каждой страницы вместо финала главной и CtaBlock:
- * инвертированная бегущая строка офферов с ✦, «Давайте работать вместе», слева «// новый проект» и ссылка в Telegram,
- * справа форма из трёх строк с чекбоксом согласия; внизу копирайт, мета-ряд и ссылки. На /contacts своя полная форма —
+ * Футер-форма (макет «Футер - форма» от 20.10.2026) — финал каждой страницы: «Давайте работать вместе», слева
+ * «// новый проект», «Расскажите, что нужно сделать» и лид формы первого обращения, справа сама форма; внизу копирайт,
+ * мета-ряд и ссылки. Бегущей строки офферов нет с 21.10.2026 (повторяла каталог услуг). На /contacts своя форма —
  * там только нижняя строка. Города и часов нет (решение владельца от 20.10.2026)
  */
 export default function SiteFooter() {
@@ -35,16 +35,6 @@ export default function SiteFooter() {
 		<footer className={`siteFooter${withForm ? '' : ' siteFooter--bare'}`} id={withForm ? 'contact' : undefined}>
 			{withForm && (
 				<>
-					<div className='siteFooter__strip'>
-						<Marquee duration={30} label='Услуги'>
-							{STRIP.map(title => (
-								<span key={title} className='siteFooter__stripItem'>
-									{title}
-									<i aria-hidden='true'>✦</i>
-								</span>
-							))}
-						</Marquee>
-					</div>
 					<div className='container siteFooter__main'>
 						<SplitLines as='h2' className='siteFooter__title' text={FOOTER.title} />
 						<div className='siteFooter__grid'>
@@ -52,15 +42,8 @@ export default function SiteFooter() {
 								<p className='siteFooter__label'>
 									<span aria-hidden='true'>//</span> {FOOTER.label}
 								</p>
-								<p className='siteFooter__heading'>{FOOTER.heading}</p>
-								<p className='siteFooter__text'>
-									{FOOTER.text}
-									{'\u00a0'}
-									<a href={CONTACT_LINKS.telegram} target='_blank' rel='noopener noreferrer'>
-										Telegram
-									</a>
-									.
-								</p>
+								<p className='siteFooter__heading'>{FORM_COPY.title}</p>
+								<p className='siteFooter__text'>{FORM_COPY.lead}</p>
 							</Reveal>
 							<Reveal className='siteFooter__form' delay={0.08}>
 								<FooterForm topic={topicFor(pathname)} />

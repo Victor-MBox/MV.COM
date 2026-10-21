@@ -4,6 +4,8 @@ import PageHead from '../../components/pageHead/PageHead'
 import CaseCard from '../../components/caseCard/CaseCard'
 import Reveal from '../../components/reveal/Reveal'
 import { PROJECTS, PROJECT_CATEGORIES } from '../../data/projects'
+import { SITE_META } from '../../data/meta'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import './PortfolioPage.scss'
 
 const ALL = 'Все'
@@ -11,10 +13,10 @@ const ALL = 'Все'
 const FILTERS_FROM = 8
 const EASE_OUT = [0.2, 0.7, 0.2, 1] as const
 
-// TODO (владелец): H1 портфолио; лид — с прежней версии страницы
+// H1 и лид — ТЗ от 21.10.2026, §6 (карточки ведут на внутренние кейсы, поэтому без обещания «ссылки на работающие сайты»)
 const HEAD = {
-	title: { text: 'Проекты с результатом в цифрах', accent: 'в цифрах' },
-	lead: 'Реальные проекты с результатом в цифрах. В кейсе — задача, моя роль и ссылка на работающий проект.',
+	title: { text: 'Проекты и моя роль в них', muted: 'и моя роль в них' },
+	lead: 'Что нужно было сделать, какие задачи я решал и что получилось в результате.',
 }
 
 /**
@@ -23,6 +25,7 @@ const HEAD = {
  */
 export default function PortfolioPage() {
 	const [category, setCategory] = useState(ALL)
+	useDocumentMeta(SITE_META.portfolio)
 	const showFilters = PROJECTS.length >= FILTERS_FROM
 
 	const projects = useMemo(

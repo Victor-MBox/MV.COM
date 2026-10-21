@@ -1,45 +1,21 @@
-// Футер-форма (макет «Футер - форма» от 20.10.2026): строка офферов, «Давайте работать вместе», интро и форма,
+// Футер-форма (макет «Футер - форма» от 20.10.2026): «Давайте работать вместе», интро и форма,
 // нижняя строка с копирайтом, мета-рядом и ссылками. Колонок города и часов нет (решение владельца от 20.10.2026)
 .siteFooter {
 	background: var(--bg);
 	overflow-x: clip;
 
-	// Инвертированная бегущая строка на всю ширину окна; без маски краёв — иначе края просвечивали бы фоном
-	&__strip {
-		display: flex;
-		align-items: center;
-		height: 48px;
-		margin-top: calc(var(--section-y) / 2);
-		background: var(--strip-bg);
-		color: var(--strip-text);
-
-		.marquee {
-			width: 100%;
-			mask-image: none;
-			-webkit-mask-image: none;
-		}
-	}
-
-	&__stripItem {
-		display: inline-flex;
-		align-items: center;
-		font-family: var(--font-body);
-		font-weight: 500;
-		font-size: 15px;
-		line-height: 1;
-		letter-spacing: -0.01em;
-		color: var(--strip-text);
-		white-space: nowrap;
-
-		i {
-			padding: 0 20px;
-			font-style: normal;
-			color: var(--accent);
-		}
-	}
-
+	// Бегущей строки больше нет: футер отделяет линия на месте её отступа (половина ритма секций). Линия — псевдоэлемент
+	// внутри контентной области, по ширине как разделители секций, а не контейнер вместе с гаттерами
 	&__main {
-		padding-top: clamp(48px, 6vw, 80px);
+		margin-top: calc(var(--section-y) / 2);
+
+		&::before {
+			content: '';
+			display: block;
+			height: 1px;
+			margin-bottom: clamp(48px, 6vw, 80px);
+			background: var(--border);
+		}
 	}
 
 	&__title {
@@ -91,7 +67,7 @@
 	}
 
 	&__text {
-		max-width: 360px;
+		max-width: 380px;
 		font-size: 16px;
 		line-height: 1.5;
 		letter-spacing: -0.01em;
@@ -214,9 +190,10 @@
 		}
 	}
 
+	// Номер и подпись — по первой строке поля (поле «задача» растёт вниз)
 	&__field {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 24px;
 		cursor: text;
 	}
@@ -224,6 +201,7 @@
 	&__num,
 	&__label {
 		flex: none;
+		padding-top: 7px; // (31px строки поля − 18px строки подписи) / 2
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.4;
@@ -236,9 +214,17 @@
 	}
 
 	&__label {
-		width: 120px;
+		width: 160px;
 		color: var(--text-muted);
 		transition: color var(--d-mid);
+	}
+
+	// «необязательно» второй строкой под подписью
+	&__hint {
+		display: block;
+		font-family: inherit;
+		color: var(--text-muted);
+		opacity: 0.7;
 	}
 
 	&__row:focus-within &__label {
@@ -262,6 +248,9 @@
 		letter-spacing: -0.01em;
 		color: var(--text);
 		appearance: none;
+		resize: none;
+		field-sizing: content; // textarea растёт по содержимому (Chromium); в остальных браузерах — две строки и прокрутка
+		min-height: 1lh;
 
 		&::placeholder {
 			color: var(--text-muted);
@@ -278,7 +267,7 @@
 	}
 
 	&__row &__error {
-		margin: 10px 0 0 calc(40px + 120px + 24px * 2); // под полем, мимо номера и подписи
+		margin: 10px 0 0 calc(40px + 160px + 24px * 2); // под полем, мимо номера и подписи
 	}
 
 	&__foot {
@@ -328,6 +317,61 @@
 		color: var(--text);
 	}
 
+	// Метка тестового режима (dev-сервер) и ссылка на политику — моно-строки под согласием
+	&__test {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--accent-text);
+	}
+
+	&__status &__test {
+		margin-left: 8px;
+		display: inline;
+	}
+
+	&__policy {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		color: var(--text-muted);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	// Замена формы до готовности обработчика: по верхней линии, как первая строка формы
+	&__fallback {
+		padding-top: 28px;
+		border-top: 1px solid var(--border);
+	}
+
+	// Срок ответа и прямой канал под формой — как в LeadForm
+	&__direct {
+		padding-top: 20px;
+		font-size: 15px;
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+
+		a {
+			border-bottom: 1px solid var(--border-strong);
+			color: var(--text);
+			transition: color var(--d-fast), border-color var(--d-fast);
+
+			&:hover {
+				border-color: var(--accent);
+				color: var(--accent);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 4px;
+			}
+		}
+	}
+
 	&__ok {
 		flex: none;
 		width: 8px;
@@ -349,6 +393,20 @@
 
 		&__num {
 			width: auto;
+		}
+
+		&__num,
+		&__label {
+			padding-top: 0;
+		}
+
+		&__label {
+			width: auto;
+		}
+
+		&__hint {
+			display: inline;
+			margin-left: 8px;
 		}
 
 		&__input {

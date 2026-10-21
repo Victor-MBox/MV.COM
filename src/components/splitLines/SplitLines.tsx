@@ -13,7 +13,7 @@ type Props = {
 	accent?: string
 	/** Подстрока text, которая станет <span class="muted"> — приглушённый хвост H2 (docs/design-spec-home4.md §3.2); не вместе с accent */
 	muted?: string
-	/** Ручная разбивка по строкам (девиз), измерение не нужно */
+	/** Ручная разбивка по строкам (H1 hero), измерение не нужно; accent / muted ищутся внутри строки */
 	lines?: string[]
 	as?: Tag
 	className?: string
@@ -24,8 +24,10 @@ type Props = {
 	delay?: number
 	/** Без анимации (интро уже проигрывалось в этой сессии) */
 	instant?: boolean
-	/** Длительность выезда строки, с (0.7 по §8.3; 0.36 у номера витрины услуг главной) */
+	/** Длительность выезда строки, с (0.7 по §8.3; 0.9 у H1 hero) */
 	duration?: number
+	/** Задержка между строками, с (0.08 по §8.3; 0.1 у H1 hero) */
+	stagger?: number
 }
 
 type Tone = 'accent' | 'muted'
@@ -54,7 +56,7 @@ function toWords(text: string, accent?: string, muted?: string): Word[] {
 /**
  * Разбивка заголовка по строкам с масками (docs/design-spec.md §8.3): строка выезжает y 110%→0 за 700 мс
  * с задержкой 80 мс на строку. Строки измеряются после document.fonts.ready и пересчитываются при смене ширины.
- * При reduced-motion — одно появление opacity за 240 мс. Только девиз и H2.
+ * При reduced-motion строки сразу на месте и видны, без масок и проявления. Только девиз и H2.
  */
 export default function SplitLines({
 	text = '',
@@ -68,12 +70,13 @@ export default function SplitLines({
 	delay = 0,
 	instant = false,
 	duration = 0.7,
+	stagger = LINE_STAGGER,
 }: Props) {
 	const reduced = useMediaQuery(MQ.reduced)
 	const ref = useRef<HTMLDivElement & HTMLHeadingElement & HTMLParagraphElement>(null)
 	const measuredWidth = useRef(0)
 	const [lines, setLines] = useState<Word[][] | null>(() =>
-		manualLines ? manualLines.map(l => toWords(l)) : null
+		manualLines ? manualLines.map(l => toWords(l, accent, muted)) : null
 	)
 	const inView = useInView(ref, { once: true, amount: 0.15, margin: '0px 0px -10% 0px' })
 	const Tag = TAGS[as]
@@ -142,25 +145,25 @@ export default function SplitLines({
 	return (
 		<Tag ref={ref} id={id} className={['splitLines', className ?? ''].join(' ').trim()} style={style}>
 			{lines.map((line, li) => (
-				<span key={li} className='splitLines__line'>
-					<motion.span
-						className='splitLines__inner'
-						initial={instant ? false : reduced ? { opacity: 0 } : { y: '110%' }}
-						animate={play === 'in' ? (reduced ? { opacity: 1 } : { y: 0 }) : undefined}
-						transition={
-							reduced
-								? { duration: 0.24 }
-								: { duration, ease: EASE_IN_OUT, delay: delay + li * LINE_STAGGER }
-						}
-					>
-						{line.map((w, wi) => (
-							<Fragment key={wi}>
-								{wi > 0 && ' '}
-								{w.tone ? <span className={w.tone}>{w.text}</span> : w.text}
-							</Fragment>
-						))}
-					</motion.span>
-				</span>
+				<Fragment key={li}>
+					{/* Пробел между блочными строками не виден, но текст заголовка (поиск, копирование) не склеивается */}
+					{li > 0 && ' '}
+					<span className='splitLines__line'>
+						<motion.span
+							className='splitLines__inner'
+							initial={instant || reduced ? false : { y: '110%' }}
+							animate={play === 'in' && !reduced ? { y: 0 } : undefined}
+							transition={{ duration, ease: EASE_IN_OUT, delay: delay + li * stagger }}
+						>
+							{line.map((w, wi) => (
+								<Fragment key={wi}>
+									{wi > 0 && ' '}
+									{w.tone ? <span className={w.tone}>{w.text}</span> : w.text}
+								</Fragment>
+							))}
+						</motion.span>
+					</span>
+				</Fragment>
 			))}
 		</Tag>
 	)

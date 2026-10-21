@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
-import { NAV, SOCIAL, WORDMARK } from '../../data/home'
+import { HEADER_CTA, NAV, SOCIAL, WORDMARK } from '../../data/home'
 import type { SocialKey } from '../../data/home'
 import { useContactModal } from '../contactModal/ContactModalContext'
 import { getLenis } from '../../hooks/useLenis'
@@ -121,7 +121,7 @@ export default function TopHeader() {
 
 	return (
 		<>
-			<a className='skipLink' href='#hero'>
+			<a className='skipLink' href='#main'>
 				К содержанию
 			</a>
 			<header className={cn}>
@@ -153,7 +153,7 @@ export default function TopHeader() {
 						</span>
 						<span className='topHeader__ctaWrap' {...intro(NAV.length + 2)}>
 							<Button variant='secondary' className='topHeader__cta' onClick={() => openModal()}>
-								Обсудить проект
+								{HEADER_CTA}
 							</Button>
 						</span>
 						<button

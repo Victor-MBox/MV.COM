@@ -7,6 +7,7 @@ import Chip from '../../components/chip/Chip'
 import Reveal from '../../components/reveal/Reveal'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import MiniUi from '../../components/miniUi/MiniUi'
+import { miniUiVariant } from '../../components/miniUi/variants'
 import WorkCard from '../../components/workCard/WorkCard'
 import type { WorkCardData } from '../../components/workCard/WorkCard'
 import ProcessSteps from '../../components/processSteps/ProcessSteps'
@@ -14,22 +15,28 @@ import { useContactModal } from '../../components/contactModal/ContactModalConte
 import { OFFERS, getOffer } from '../../data/offers'
 import { getService } from '../../data/services'
 import type { Service } from '../../data/services'
-import { AFTER_LAUNCH } from '../../data/pricing'
+import { AFTER_LAUNCH, PACKAGES_ANCHOR, PACKAGES_OFFER, SUPPORT_PACKAGES, SUPPORT_TERMS } from '../../data/pricing'
+import PriceCard from '../../components/priceCard/PriceCard'
 import { PROJECTS } from '../../data/projects'
+import { isPublic } from '../../data/projects'
 import type { Project, ProjectFact } from '../../data/projects'
-import { CASE_FACTS, SHOWCASE_ORDER } from '../../data/home'
+import { CASE_FACTS } from '../../data/home'
 import NotFoundPage from '../NotFoundPage'
 import './OfferPage.scss'
 
 // TODO (владелец): заголовки секций страницы оффера; в каждом — не больше одного выделения
-const H2: Record<'fit' | 'outcomes' | 'price' | 'examples' | 'faq' | 'tech', Headline> = {
+const H2: Record<'fit' | 'outcomes' | 'price' | 'packages' | 'examples' | 'faq' | 'tech', Headline> = {
 	fit: { text: 'Кому подходит, а кому нет', muted: 'а кому нет' },
 	outcomes: { text: 'Что получите' },
 	price: { text: 'Сколько стоит и от чего зависит', muted: 'и от чего зависит' },
+	packages: { text: 'Пакеты обслуживания', muted: 'обслуживания' },
 	examples: { text: 'Примеры из этого направления', muted: 'из этого направления' },
 	faq: { text: 'Вопросы по этой услуге', muted: 'по этой услуге' },
 	tech: { text: 'Как это устроено технически', muted: 'технически' },
 }
+
+/** Пакеты как карточки формата цены (PriceCard): цена в месяц, кнопка открывает заявку с названием пакета */
+const PACKAGE_CARDS = SUPPORT_PACKAGES.map(p => ({ ...p, price: `${p.price} / месяц`, cta: 'Обсудить пакет' }))
 
 /** Формат оплаты — общий для всех офферов (content.md §4.2, п. 4) */
 const PAYMENT = 'По смете с оплатой по этапам или по часам — зависит от того, насколько объём понятен до старта.'
@@ -41,16 +48,17 @@ const toWorkCard = (p: Project): WorkCardData => ({
 	client: p.client,
 	line: p.line,
 	cover: p.cover,
-	highlights: CASE_FACTS.map(i => p.highlights?.[i]).filter((h): h is ProjectFact => !!h),
+	highlights: CASE_FACTS.map(i => p.highlights?.[i]).filter((h): h is ProjectFact => !!h && isPublic(h)),
 })
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
 /**
- * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (цена и срок бейджами, справа мини-интерфейс оффера
- * в цикле — тот же, что на карточке /services) → кому подходит / не подходит →
- * что получите → сколько стоит и от чего зависит → примеры (если есть кейсы по категориям) → процесс → вопросы →
- * аккордеон «Стек и детали» (единственное место с названиями технологий) → CTA
+ * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (цены и срок бейджами — те же строки, что на карточке
+ * каталога; справа мини-интерфейс оффера в цикле) → кому подходит / не подходит → что получите → сколько стоит и от чего
+ * зависит → пакеты обслуживания (только у доработки и поддержки, #packages — сюда ведёт «Посмотреть пакеты» из блока
+ * цен) → примеры (если есть кейсы по категориям) → процесс (свой у интеграций, доработки и агентств — offer.process)
+ * → вопросы → аккордеон «Стек и детали» (единственное место с названиями технологий)
  */
 export default function OfferPage() {
 	const { offer: key } = useParams()
@@ -60,7 +68,8 @@ export default function OfferPage() {
 	if (!offer) return <NotFoundPage />
 
 	const number = pad(OFFERS.indexOf(offer) + 1)
-	const visual = SHOWCASE_ORDER.find(k => k === offer.key)
+	const visual = miniUiVariant(offer.key)
+	const prices = offer.prices ?? [{ label: 'стоимость', price: offer.priceFrom }]
 	const projects = PROJECTS.filter(p => p.categories.some(c => offer.categories.includes(c)))
 		.slice(0, 2)
 		.map(toWorkCard)
@@ -117,10 +126,12 @@ export default function OfferPage() {
 				facts={
 					<div className='offerPage__facts'>
 						<dl className='offerPage__badges'>
-							<div className='offerPage__badge'>
-								<dt>стоимость</dt>
-								<dd>{offer.priceFrom}</dd>
-							</div>
+							{prices.map(p => (
+								<div className='offerPage__badge' key={p.label}>
+									<dt>{p.label}</dt>
+									<dd>{p.price}</dd>
+								</div>
+							))}
 							<div className='offerPage__badge'>
 								<dt>срок</dt>
 								<dd>{offer.term}</dd>
@@ -232,6 +243,28 @@ export default function OfferPage() {
 				</div>
 			</section>
 
+			{offer.key === PACKAGES_OFFER && (
+				<section className='section' id={PACKAGES_ANCHOR}>
+					<div className='container'>
+						<SectionHead label='пакеты' title={H2.packages} />
+						<ul className='offerPage__packages'>
+							{PACKAGE_CARDS.map((p, i) => (
+								<Reveal as='li' key={p.key} index={i}>
+									<PriceCard model={p} onDiscuss={open} />
+								</Reveal>
+							))}
+						</ul>
+						<Reveal>
+							<ul className='offerPage__terms' aria-label='Условия пакетов'>
+								{SUPPORT_TERMS.map(t => (
+									<li key={t}>{t}</li>
+								))}
+							</ul>
+						</Reveal>
+					</div>
+				</section>
+			)}
+
 			{projects.length > 0 && (
 				<section className='section' id='examples'>
 					<div className='container'>
@@ -247,7 +280,7 @@ export default function OfferPage() {
 				</section>
 			)}
 
-			<ProcessSteps withWhy={false} />
+			<ProcessSteps steps={offer.process} />
 
 			<section className='section' id='faq'>
 				<div className='container offerPage__narrow'>

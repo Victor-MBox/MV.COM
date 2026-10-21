@@ -1,104 +1,80 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 import type { FormEvent } from 'react'
-import { submitContact } from '../../api/contact'
-import { FOOTER } from '../../data/home'
-import { FORM_COPY } from '../../data/leadForm'
-import { validateContact } from '../leadForm/validate'
-import type { ContactErrors } from '../leadForm/validate'
+import { CONTACT_LINKS } from '../../data/contacts'
+import { FORM_COPY, FORM_ENABLED, FORM_TEST_MODE, LEAD_FIELDS, PRIVACY_POLICY_URL } from '../../data/leadForm'
+import { useLeadForm } from '../leadForm/useLeadForm'
+import type { LeadStatus } from '../leadForm/useLeadForm'
 import Button from '../button/Button'
 import Checkbox from '../checkbox/Checkbox'
-
-type FieldKey = (typeof FOOTER.fields)[number]['key']
-type Status = 'idle' | 'sending' | 'sent' | 'error'
+import FormFallback from '../leadForm/FormFallback'
 
 type Props = {
-	/** Тема заявки: название оффера на его странице, иначе пусто */
+	/** Контекст обращения: название оффера на его странице, иначе пусто */
 	topic: string
 }
 
-const EMPTY: Record<FieldKey, string> = { name: '', contact: '', message: '' }
-const BUTTON_LABEL: Record<Status, string> = { idle: 'Отправить', error: 'Отправить', sending: 'Отправляю…', sent: 'Отправлено' }
+const BUTTON_LABEL: Record<LeadStatus, string> = {
+	idle: FORM_COPY.submit,
+	error: FORM_COPY.submit,
+	sending: FORM_COPY.sending,
+	sent: 'Отправлено',
+}
 
 /**
- * Форма футера (макет «Футер - форма»): три поля-строки «номер · подпись · поле» на разделителях, внизу согласие
- * чекбоксом и кнопка. Правила — общие с LeadForm (validate.ts), отправка — submitContact. После отправки поля очищаются,
- * вместо чекбокса — строка успеха; первая же правка возвращает форму в исходное состояние
+ * Форма футера (макет «Футер - форма»): поля первого обращения LEAD_FIELDS строками «номер · подпись · поле» на
+ * разделителях, внизу согласие чекбоксом и кнопка, под ними — срок ответа и Telegram. Состояние, проверка и отправка —
+ * useLeadForm, общий с LeadForm. После отправки поля очищаются, вместо чекбокса — строка успеха; первая же правка
+ * возвращает форму в исходное состояние. Пока нет обработчика и политики, в публичной сборке — FormFallback
  */
-export default function FooterForm({ topic }: Props) {
+export default function FooterForm(props: Props) {
+	return FORM_ENABLED ? <FooterFormFields {...props} /> : <FormFallback className='footerForm__fallback' />
+}
+
+function FooterFormFields({ topic }: Props) {
 	const uid = useId()
-	const [values, setValues] = useState(EMPTY)
-	const [consent, setConsent] = useState(false)
-	const [errors, setErrors] = useState<ContactErrors>({})
-	const [status, setStatus] = useState<Status>('idle')
-	const fieldId = (key: string) => `${uid}-${key}`
-
-	// Правка поля снимает его ошибку и выводит форму из «успеха» или «ошибки отправки»
-	const touch = (key: keyof ContactErrors) => {
-		setErrors(prev => {
-			if (!(key in prev)) return prev
-			const next = { ...prev }
-			delete next[key]
-			return next
-		})
-		if (status === 'sent' || status === 'error') setStatus('idle')
-	}
-
-	const update = (key: FieldKey, value: string) => {
-		setValues(v => ({ ...v, [key]: value }))
-		touch(key)
-	}
+	const id = (key: string) => `${uid}-${key}`
+	const { values, consent, errors, status, setField, setConsent, submit } = useLeadForm(topic)
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault()
-		const next = validateContact({ ...values, consent })
-		setErrors(next)
-		const firstInvalid = [...FOOTER.fields.map(f => f.key), 'consent'].find(key => key in next)
-		if (firstInvalid) {
-			document.getElementById(fieldId(firstInvalid))?.focus()
-			return
-		}
-		setStatus('sending')
-		try {
-			await submitContact({
-				name: values.name.trim(),
-				contact: values.contact.trim(),
-				topic,
-				message: values.message.trim(),
-			})
-			setValues(EMPTY)
-			setConsent(false)
-			setStatus('sent')
-		} catch {
-			setStatus('error')
-		}
+		const firstInvalid = await submit()
+		if (firstInvalid) document.getElementById(id(firstInvalid))?.focus()
 	}
 
 	return (
-		<form className='footerForm' onSubmit={handleSubmit} noValidate aria-label='Заявка'>
-			{FOOTER.fields.map((f, i) => {
-				const error = errors[f.key]
+		<form className='footerForm' onSubmit={handleSubmit} noValidate aria-label={FORM_COPY.title}>
+			{LEAD_FIELDS.map((f, i) => {
+				const error = f.key === 'name' ? undefined : errors[f.key]
+				const props = {
+					id: id(f.key),
+					className: 'footerForm__input',
+					name: f.key,
+					autoComplete: f.autoComplete,
+					placeholder: f.placeholder,
+					value: values[f.key],
+					'aria-required': f.required,
+					'aria-invalid': !!error,
+					'aria-describedby': error ? id(`${f.key}-error`) : undefined,
+				}
 				return (
 					<div key={f.key} className={`footerForm__row${error ? ' is-invalid' : ''}`}>
 						<label className='footerForm__field'>
 							<span className='footerForm__num' aria-hidden='true'>
 								{String(i + 1).padStart(2, '0')}
 							</span>
-							<span className='footerForm__label'>{f.label}</span>
-							<input
-								id={fieldId(f.key)}
-								className='footerForm__input'
-								type='text'
-								name={f.key}
-								autoComplete={f.autoComplete}
-								placeholder={f.placeholder}
-								value={values[f.key]}
-								onChange={e => update(f.key, e.target.value)}
-								aria-invalid={!!error}
-								aria-describedby={error ? fieldId(`${f.key}-error`) : undefined}
-							/>
+							<span className='footerForm__label'>
+								{f.label}
+								{!f.required && <span className='footerForm__hint'>{FORM_COPY.optional}</span>}
+							</span>
+							{f.key === 'message' ? (
+								// Задача может быть длиннее строки и со ссылками — поле растёт по содержимому
+								<textarea {...props} rows={2} onChange={e => setField(f.key, e.target.value)} />
+							) : (
+								<input {...props} type='text' onChange={e => setField(f.key, e.target.value)} />
+							)}
 						</label>
 						{error && (
-							<p className='footerForm__error' id={fieldId(`${f.key}-error`)}>
+							<p className='footerForm__error' id={id(`${f.key}-error`)}>
 								{error}
 							</p>
 						)}
@@ -110,31 +86,36 @@ export default function FooterForm({ topic }: Props) {
 				{status === 'sent' ? (
 					<p className='footerForm__status' role='status'>
 						<span className='footerForm__ok' aria-hidden='true' />
-						{FOOTER.success}
+						{FORM_COPY.success}
+						{FORM_TEST_MODE && <span className='footerForm__test'>{FORM_COPY.testMode}</span>}
 					</p>
 				) : (
 					<div className='footerForm__consent'>
 						<Checkbox
-							id={fieldId('consent')}
+							id={id('consent')}
 							className='footerForm__check'
+							required
 							checked={consent}
-							onChange={checked => {
-								setConsent(checked)
-								touch('consent')
-							}}
+							onChange={setConsent}
 							invalid={!!errors.consent}
-							describedBy={errors.consent ? fieldId('consent-error') : undefined}
+							describedBy={errors.consent ? id('consent-error') : undefined}
 						>
 							{FORM_COPY.consent}
 						</Checkbox>
 						{errors.consent && (
-							<p className='footerForm__error' id={fieldId('consent-error')}>
+							<p className='footerForm__error' id={id('consent-error')}>
 								{errors.consent}
 							</p>
 						)}
+						{PRIVACY_POLICY_URL && (
+							<a className='footerForm__policy' href={PRIVACY_POLICY_URL} target='_blank' rel='noopener noreferrer'>
+								{FORM_COPY.policy}
+							</a>
+						)}
+						{FORM_TEST_MODE && <p className='footerForm__test'>{FORM_COPY.testMode}</p>}
 						{status === 'error' && (
 							<p className='footerForm__error' role='alert'>
-								Не удалось отправить. Попробуйте ещё раз или напишите в Telegram.
+								{FORM_COPY.error}
 							</p>
 						)}
 					</div>
@@ -143,6 +124,15 @@ export default function FooterForm({ topic }: Props) {
 					{BUTTON_LABEL[status]}
 				</Button>
 			</div>
+
+			<p className='footerForm__direct'>
+				{FORM_COPY.reply} {FORM_COPY.direct}
+				{' '}
+				<a href={CONTACT_LINKS.telegram} target='_blank' rel='noopener noreferrer'>
+					Telegram
+				</a>
+				.
+			</p>
 		</form>
 	)
 }

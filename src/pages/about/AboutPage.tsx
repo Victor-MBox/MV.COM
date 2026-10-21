@@ -15,12 +15,18 @@ import portraitLight from '../../resources/victor-about-light.webp'
 import { useTheme } from '../../hooks/useTheme'
 import './AboutPage.scss'
 
-/** Три абзаца о себе (content.md §4.6): первый — лид шапки, остальные — секция «О себе» */
+/**
+ * Три абзаца о себе (content.md §4.6): первый — лид шапки (с 21.10.2026 — коммерческий абзац ТЗ без перечня технологий
+ * и стажа), остальные — секция «О себе»
+ */
 const ABOUT = [
-	'Восемь лет делаю сайты и веб-сервисы: от лендингов на WordPress до продуктов на Laravel и React. Беру проект целиком — структура, дизайн, фронтенд, бэкенд, запуск и поддержка — и отвечаю за результат, а не за отдельный слой.',
+	'Я Виктор Мацаков, веб-разработчик. Работаю с новыми и существующими проектами: от структуры и интерфейса до разработки, интеграций и запуска. Со мной можно обсудить как отдельную доработку, так и проект целиком.',
 	'Лучше всего получается собрать систему из многих частей и довести её до живых пользователей. Пример — NoRandoms, собственная платформа для подбора напарников по играм: спроектировал, написал и вывел в поиск в одиночку, от схемы базы и WebSockets до SEO-ядра из тысяч страниц.',
 	'Работаю удалённо, по договору, с еженедельными версиями на тестовом домене. Открыт к проектной работе, контракту и part-time. Код пишу так, чтобы следующий разработчик разобрался без меня.',
 ]
+
+/** Подтверждено владельцем 21.10.2026 (ТЗ «доработать содержание и услуги») — лид секции «Опыт» */
+const EXPERIENCE_LEAD = 'За годы работы участвовал в разработке более 20 веб-проектов. В портфолио собраны избранные работы.'
 
 const PRINCIPLES = [
 	'Скорость загрузки — часть дизайна, а не оптимизация «потом».',
@@ -39,13 +45,15 @@ const H2 = {
 	experience: { text: 'Где и что делал', muted: 'и что делал' },
 	principles: { text: 'Четыре правила, которых держусь', muted: 'которых держусь' },
 	work: { text: 'Главный кейс' },
+	hire: { text: HR_BLOCK.title, muted: 'и работодателей' },
 }
 
 const FEATURED = PROJECTS.find(p => p.featured)
 
 /**
- * «Обо мне» — страница для найма (content.md §4.6; docs/design-spec.md §9): шапка с фото, резюме и GitHub →
- * о себе → стек группами → опыт аккордеоном → принципы → главный кейс → CTA
+ * «Обо мне» — страница для найма (content.md §4.6; docs/design-spec.md §9): шапка с фото, GitHub и «Написать» →
+ * о себе → стек группами → опыт аккордеоном → для команд и работодателей (бывший блок «Для HR» главной) → принципы →
+ * главный кейс. Кнопки «Скачать резюме» появляются, только когда в HR_BLOCK.cv указан настоящий файл
  */
 export default function AboutPage() {
 	const { open } = useContactModal()
@@ -78,9 +86,11 @@ export default function AboutPage() {
 				asideFirst
 				actions={
 					<>
-						<Button href={HR_BLOCK.cv} download>
-							Скачать резюме
-						</Button>
+						{HR_BLOCK.cv && (
+							<Button href={HR_BLOCK.cv} download>
+								Скачать резюме
+							</Button>
+						)}
 						<Button variant='secondary' href={CONTACT_LINKS.github} arrow arrowGlyph='↗'>
 							GitHub
 						</Button>
@@ -133,9 +143,28 @@ export default function AboutPage() {
 
 			<section className='section' id='experience'>
 				<div className='container'>
-					<SectionHead label='опыт' title={H2.experience} />
+					<SectionHead label='опыт' title={H2.experience} lead={EXPERIENCE_LEAD} />
 					<Reveal>
 						<DimAccordion idPrefix='exp' items={experience} defaultOpen={[experience[0].id]} />
+					</Reveal>
+				</div>
+			</section>
+
+			<section className='section' id='hire'>
+				<div className='container'>
+					<SectionHead label='для команд' title={H2.hire} lead={HR_BLOCK.cv ? HR_BLOCK.text : HR_BLOCK.textNoCv} />
+					<Reveal className='aboutPage__hireActions'>
+						{HR_BLOCK.cv && (
+							<Button variant='secondary' href={HR_BLOCK.cv} download>
+								Скачать резюме
+							</Button>
+						)}
+						<Button variant='secondary' href={CONTACT_LINKS.github} arrow arrowGlyph='↗'>
+							GitHub
+						</Button>
+						<Button variant='text' onClick={() => open()}>
+							Связаться
+						</Button>
 					</Reveal>
 				</div>
 			</section>

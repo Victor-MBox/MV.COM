@@ -11,6 +11,8 @@ type Props = {
 	invalid?: boolean
 	/** id текста ошибки под чекбоксом */
 	describedBy?: string
+	/** Обязательное согласие — aria-required для экранных дикторов (форма с noValidate) */
+	required?: boolean
 	className?: string
 }
 
@@ -18,7 +20,7 @@ type Props = {
  * Чекбокс формы (согласие в LeadForm и футере): нативный input остаётся в DOM и в порядке фокуса, рисуется квадрат 20px
  * с галочкой-SVG; акцентная заливка только в отмеченном состоянии. Подпись — дети, кликабельна вся строка
  */
-export default function Checkbox({ checked, onChange, children, name, id, invalid, describedBy, className }: Props) {
+export default function Checkbox({ checked, onChange, children, name, id, invalid, describedBy, required, className }: Props) {
 	const cn = ['checkbox', invalid ? 'is-invalid' : '', className ?? ''].filter(Boolean).join(' ')
 	return (
 		<label className={cn}>
@@ -29,6 +31,7 @@ export default function Checkbox({ checked, onChange, children, name, id, invali
 				checked={checked}
 				onChange={e => onChange(e.target.checked)}
 				aria-invalid={invalid || undefined}
+				aria-required={required || undefined}
 				aria-describedby={describedBy}
 			/>
 			<span className='checkbox__box' aria-hidden='true'>

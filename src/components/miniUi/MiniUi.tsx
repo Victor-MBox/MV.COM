@@ -1,7 +1,5 @@
+import type { MiniUiVariant } from './variants'
 import './MiniUi.scss'
-
-/** Три варианта 1.0 (§6.8) плюс четыре для витрины /home4 (docs/design-spec-home4.md §5.3) — ключи офферов */
-export type MiniUiVariant = 'web-service' | 'ecommerce' | 'integrations' | 'landing' | 'corporate' | 'support' | 'agencies'
 
 type Props = {
 	variant: MiniUiVariant
@@ -15,7 +13,7 @@ const n = (i: number) => ({ '--n': i }) as React.CSSProperties
 /**
  * Мини-интерфейс услуги из HTML-элементов (docs/design-spec.md §6.8): подложка --box-deep, «текст» полосами,
  * ровно один элемент залит акцентом. Микроанимации запускает ховер родительской карточки (.box:hover)
- * или любого контейнера с классом .miniUiHost (витрина услуг главной); с `loop` — бесконечный сценарий без ховера.
+ * или любого контейнера с классом .miniUiHost (карточки /services); с `loop` — бесконечный сценарий без ховера.
  * `--n` — индекс элемента для задержек по очереди.
  */
 export default function MiniUi({ variant, loop, className }: Props) {
@@ -51,7 +49,8 @@ export default function MiniUi({ variant, loop, className }: Props) {
 					<div className='miniUi__info'>
 						<i className='miniUi__bar' />
 						<i className='miniUi__bar miniUi__bar--short' />
-						<span className='miniUi__price'>12 900 ₽</span>
+						{/* Цена товара — полосой, без цифр: число на карточке услуги читалось бы как стоимость разработки */}
+						<i className='miniUi__price' />
 						<span className='miniUi__buy'>
 							<b className='miniUi__button'>В корзину</b>
 							<span className='miniUi__plus'>+1</span>

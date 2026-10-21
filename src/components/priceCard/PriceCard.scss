@@ -23,11 +23,17 @@
 	&__price {
 		font-family: var(--font-title);
 		font-weight: 500;
-		font-size: clamp(28px, 2.6vw, 36px);
+		font-size: clamp(26px, 2vw, 32px); // «от 3 000 ₽ / месяц» в одну строку в колонке трёх карточек
 		line-height: 1;
 		letter-spacing: -0.02em;
 		font-variant-numeric: tabular-nums;
 		color: var(--text);
+	}
+
+	// Цена словами: кегль заголовка карточки, а не цифры
+	&__price--verbal {
+		font-size: clamp(20px, 1.8vw, 24px);
+		line-height: 1.2;
 	}
 
 	&__text {

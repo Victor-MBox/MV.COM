@@ -1,4 +1,5 @@
-// Сколько стоит (docs/design-spec-home4.md §6.5): три карточки формата, панель «что входит / что влияет», полная версия для /services
+// Стоимость и условия (docs/design-spec-home4.md §6.5, ТЗ от 21.10.2026 §9): три карточки формата, панель «что согласуем /
+// что влияет», строка «после запуска»; полная версия для /services
 .pricingBlock {
 	&__cards {
 		display: grid;
@@ -47,24 +48,15 @@
 		}
 	}
 
-	// Оговорка под списком «что входит»: моно приглушённым, как уточнение цены на странице оффера
-	&__note {
-		max-width: 46ch;
-		margin-top: 20px;
-		font-family: var(--font-mono);
-		font-size: 13px;
-		line-height: 1.5;
-		letter-spacing: 0;
-		color: var(--text-muted);
-	}
-
-	// Галочки акцентные (иконки либо акцентные, либо никакие); номера — моно
-	&__check {
+	// «Что согласуем» — вопросы, а не состав цены: точки-маркеры акцентом вместо галочек «входит»
+	&__list--dots li::before {
+		content: '';
 		flex: none;
-		width: 16px;
-		height: 16px;
-		margin-top: 4px;
-		color: var(--accent);
+		width: 6px;
+		height: 6px;
+		margin-top: 9px;
+		border-radius: 50%;
+		background: var(--accent);
 	}
 
 	&__num {
@@ -81,7 +73,7 @@
 
 	// Полная версия: строки «подпись моно → содержимое» с разделителями, без второй панели (карточка в карточке запрещена)
 	&__details {
-		margin-top: 48px;
+		margin-top: 32px;
 
 		dl {
 			border-top: 1px solid var(--border);

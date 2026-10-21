@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import PageHead from '../../components/pageHead/PageHead'
@@ -12,7 +13,7 @@ import Gallery from '../../components/gallery/Gallery'
 import FlowScheme from '../../components/flowScheme/FlowScheme'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
-import { getAdjacentProjects, getProject } from '../../data/projects'
+import { getAdjacentProjects, getProject, isPublic } from '../../data/projects'
 import type { Project } from '../../data/projects'
 import NotFoundPage from '../NotFoundPage'
 import './ProjectPage.scss'
@@ -51,9 +52,9 @@ function Neighbor({ project, dir }: { project: Project; dir: 'prev' | 'next' }) 
 }
 
 /**
- * Страница кейса (docs/design-spec.md §9; content.md §4.7): шапка с крошкой, фактами и кнопками → обложка на всю
- * ширину контейнера → четыре счётчика → «Коротко» в три колонки → скриншоты → стек и аккордеон
- * «Как это устроено технически» (что внутри, путь пользователя, этапы) → соседние кейсы → CTA
+ * Страница кейса (docs/design-spec.md §9; content.md §4.7): шапка с крошкой, фактами, ролью и кнопками → обложка на всю
+ * ширину контейнера → счётчики (только подтверждённые) → «Коротко» в три колонки → скриншоты → аккордеон
+ * «Как это устроено технически» (стек, что внутри, путь пользователя, этапы) → соседние кейсы
  */
 export default function ProjectPage() {
 	const { slug } = useParams()
@@ -63,10 +64,13 @@ export default function ProjectPage() {
 	if (!project) return <NotFoundPage />
 
 	const { prev, next } = getAdjacentProjects(project.slug)
+	// Неподтверждённые показатели (hidden в projects.ts) остаются в данных, но на странице не выводятся
+	const metrics = project.metrics.filter(isPublic)
+	const hasStack = project.stack.length > 0
 	const hasFeatures = !!project.features?.length
 	const hasScheme = !!project.scheme?.length
 	const hasProcess = !!project.process?.length
-	const hasTech = hasFeatures || hasScheme || hasProcess
+	const hasTech = hasStack || hasFeatures || hasScheme || hasProcess
 
 	const meta = (
 		<>
@@ -82,12 +86,25 @@ export default function ProjectPage() {
 					</>
 				)}
 			</span>
-			<span className='projectPage__role'>роль: {lower(project.role)}</span>
+			<span className='projectPage__role'>Моя роль: {lower(project.role)}.</span>
 		</>
 	)
 
 	const tech = (
 		<div className='projectPage__tech'>
+			{hasStack && (
+				<div className='projectPage__techBlock'>
+					<h3>Стек</h3>
+					<ul className='projectPage__stack' aria-label='Стек проекта'>
+						{project.stack.map(s => (
+							<Chip as='li' key={s}>
+								{s}
+							</Chip>
+						))}
+					</ul>
+				</div>
+			)}
+
 			{hasFeatures && (
 				<div className='projectPage__techBlock'>
 					<h3>Что внутри</h3>
@@ -158,9 +175,9 @@ export default function ProjectPage() {
 						<img src={project.cover} alt={`Обложка проекта ${project.title}`} width={1680} height={720} fetchPriority='high' />
 					</motion.div>
 
-					{project.metrics.length > 0 && (
-						<Reveal as='ul' className='projectPage__metrics'>
-							{project.metrics.map(m => (
+					{metrics.length > 0 && (
+						<Reveal as='ul' className='projectPage__metrics' style={{ '--count': metrics.length } as CSSProperties}>
+							{metrics.map(m => (
 								<li key={m.label}>
 									{/* У Stat нет префикса: с ним значение уходит строкой без счётчика */}
 									<Stat
@@ -200,24 +217,14 @@ export default function ProjectPage() {
 				</section>
 			)}
 
-			{(project.stack.length > 0 || hasTech) && (
+			{/* Техника вторична: стек, модули, путь пользователя и этапы — внутри закрытого аккордеона в конце кейса */}
+			{hasTech && (
 				<section className='section' id='tech'>
 					<div className='container'>
-						<SectionHead label='стек' title={H2.stack} />
-						{project.stack.length > 0 && (
-							<Reveal as='ul' className='projectPage__stack' aria-label='Стек проекта'>
-								{project.stack.map(s => (
-									<Chip as='li' key={s}>
-										{s}
-									</Chip>
-								))}
-							</Reveal>
-						)}
-						{hasTech && (
-							<Reveal className='projectPage__accordion' delay={0.08}>
-								<DimAccordion idPrefix='project' items={[{ id: 'tech', title: 'Как это устроено технически', content: tech }]} wide />
-							</Reveal>
-						)}
+						<SectionHead label='техника' title={H2.stack} />
+						<Reveal className='projectPage__accordion'>
+							<DimAccordion idPrefix='project' items={[{ id: 'tech', title: 'Как это устроено технически', content: tech }]} wide />
+						</Reveal>
 					</div>
 				</section>
 			)}

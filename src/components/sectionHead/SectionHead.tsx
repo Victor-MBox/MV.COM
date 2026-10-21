@@ -18,10 +18,12 @@ type Props = {
 	divided?: boolean
 	className?: string
 	as?: 'h2' | 'h1'
+	/** id заголовка — для aria-labelledby секции */
+	titleId?: string
 }
 
 /** Метка секции и шапка (docs/design-spec.md §5.4, §6.4): // слово, действие справа, H2 с одним акцентом, лид до 56ch */
-export default function SectionHead({ label, title, lead, action, divided, className, as = 'h2' }: Props) {
+export default function SectionHead({ label, title, lead, action, divided, className, as = 'h2', titleId }: Props) {
 	const cn = ['sectionHead', divided ? 'sectionHead--divided' : '', className ?? ''].filter(Boolean).join(' ')
 	const actionNode = action
 		? (() => {
@@ -67,7 +69,7 @@ export default function SectionHead({ label, title, lead, action, divided, class
 				{actionNode}
 			</div>
 			<div className='sectionHead__titleRow'>
-				<SplitLines as={as} className='sectionHead__title' text={title.text} accent={title.accent} muted={title.muted} />
+				<SplitLines as={as} id={titleId} className='sectionHead__title' text={title.text} accent={title.accent} muted={title.muted} />
 			</div>
 			{lead && <p className='sectionHead__lead'>{lead}</p>}
 		</div>

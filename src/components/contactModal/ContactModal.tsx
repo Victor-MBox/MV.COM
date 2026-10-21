@@ -4,27 +4,53 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useContactModal } from './ContactModalContext'
 import { useScrollLock } from '../../hooks/useScrollLock'
 import LeadForm from '../leadForm/LeadForm'
+import { FORM_COPY } from '../../data/leadForm'
 import './ContactModal.scss'
 
-/** Модалка заявки (docs/design-spec.md §6.13): форма с намерениями LeadForm на всех страницах */
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+/**
+ * Модалка первого обращения (docs/design-spec.md §6.13): одна на сайт, форма LeadForm. Esc закрывает, Tab ходит по кругу
+ * внутри окна, после закрытия фокус возвращается на кнопку, которая окно открыла
+ */
 export default function ContactModal() {
 	const { isOpen, topic, close } = useContactModal()
 	const dialogRef = useRef<HTMLDivElement>(null)
 	useScrollLock(isOpen)
 
-	// Esc закрывает, фокус уходит в окно; прокрутку страницы держит useScrollLock
+	// Esc закрывает, фокус уходит в первое поле и не выходит из окна; прокрутку страницы держит useScrollLock
 	useEffect(() => {
 		if (!isOpen) return
+		const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
 		const onKey = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') close()
+			if (e.key === 'Escape') {
+				close()
+				return
+			}
+			if (e.key !== 'Tab' || !dialogRef.current) return
+			const ring = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE))
+			if (!ring.length) return
+			const first = ring[0]
+			const last = ring[ring.length - 1]
+			const inside = dialogRef.current.contains(document.activeElement)
+			if (e.shiftKey && (document.activeElement === first || !inside)) {
+				e.preventDefault()
+				last.focus()
+			} else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+				e.preventDefault()
+				first.focus()
+			}
 		}
 		document.addEventListener('keydown', onKey)
+		// Первое поле формы, а пока формы нет (публичная сборка) — ссылка «Написать в Telegram»
 		const t = window.setTimeout(() => {
-			dialogRef.current?.querySelector<HTMLElement>('input, textarea, button')?.focus()
+			dialogRef.current?.querySelector<HTMLElement>('input, textarea, a[href]')?.focus()
 		}, 50)
 		return () => {
 			document.removeEventListener('keydown', onKey)
 			window.clearTimeout(t)
+			// Возврат фокуса без прокрутки: кнопка-открыватель и так на экране (а под Lenis прыжок был бы заметен)
+			opener?.focus({ preventScroll: true })
 		}
 	}, [isOpen, close])
 
@@ -70,14 +96,12 @@ export default function ContactModal() {
 
 						<div className='modal__head'>
 							<h2 id='contact-modal-title' className='modal__title'>
-								Обсудим проект?
+								{FORM_COPY.title}
 							</h2>
-							<p className='modal__subtitle'>
-								Опишите задачу в двух словах — отвечу в течение рабочего дня.
-							</p>
+							<p className='modal__subtitle'>{FORM_COPY.lead}</p>
 						</div>
 
-						<LeadForm key={topic} initialTopic={topic} onDone={close} compact />
+						<LeadForm key={topic} topic={topic} onDone={close} compact />
 					</motion.div>
 				</motion.div>
 			)}

@@ -1,4 +1,4 @@
-import { PRICING, PRICING_MODELS } from '../../data/pricing'
+import { AFTER_LAUNCH, PRICING, PRICING_MODELS } from '../../data/pricing'
 import { H2, PRICING_PANEL } from '../../data/home'
 import { useContactModal } from '../contactModal/ContactModalContext'
 import SectionHead from '../sectionHead/SectionHead'
@@ -10,25 +10,24 @@ import './PricingBlock.scss'
 type Props = {
 	label?: string
 	title?: Headline
-	/** Полная версия /services (content.md §4.3): под панелью — как читать цифры, условия, пример поддержки, чем не занимаюсь */
+	/** Полная версия /services (content.md §4.3): под панелью — как читать цифры и чем не занимаюсь */
 	details?: boolean
 	id?: string
 }
 
 /** Строки полной версии: подпись моно слева, содержимое справа */
 const DETAIL_ROWS = (): { label: string; items: string[] }[] => [
-	{ label: 'оценка', items: [PRICING.estimate] },
 	{ label: 'как читать цифры', items: PRICING.reading },
-	{ label: 'фиксируем до старта', items: PRICING.terms },
-	{ label: 'поддержка, пример', items: [PRICING.supportExample] },
 	{ label: 'чем не занимаюсь', items: PRICING.notDoing },
 ]
 
 /**
- * Сколько стоит (docs/design-spec-home4.md §6.5; content.md §4.3): три формата PriceCard и широкая панель «что входит /
- * что влияет». На главной — без details (estimate не выводится: «30 минут» и «два дня» уже в тексте шага 01), на /services — полная версия
+ * Стоимость и условия работы (ТЗ от 21.10.2026, §9): три формата PriceCard, панель «Что согласуем перед началом работ /
+ * Что влияет на цену» и строка «после запуска» — исправление своих ошибок отдельно от новых задач. Третий формат —
+ * «Техническое обслуживание» со ссылкой на пакеты /services/support#packages. На /services с `details` — ещё строки
+ * «как читать цифры» и «чем не занимаюсь» (пример «8 часов × 3 500 ₽» снят: его заменили пакеты)
  */
-export default function PricingBlock({ label = 'цены', title = H2.pricing, details = false, id = 'pricing' }: Props) {
+export default function PricingBlock({ label = 'стоимость', title = H2.pricing, details = false, id = 'pricing' }: Props) {
 	const { open } = useContactModal()
 
 	return (
@@ -44,18 +43,12 @@ export default function PricingBlock({ label = 'цены', title = H2.pricing, d
 				</ul>
 				<Reveal className='pricingBlock__panel'>
 					<div>
-						<h3 className='pricingBlock__h'>{PRICING_PANEL.included}</h3>
-						<ul className='pricingBlock__list'>
-							{PRICING.included.map(item => (
-								<li key={item}>
-									<svg className='pricingBlock__check' viewBox='0 0 16 16' aria-hidden='true'>
-										<path d='M3 8.5l3 3 7-7' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round' />
-									</svg>
-									{item}
-								</li>
+						<h3 className='pricingBlock__h'>{PRICING_PANEL.agree}</h3>
+						<ul className='pricingBlock__list pricingBlock__list--dots'>
+							{PRICING.agree.map(item => (
+								<li key={item}>{item}</li>
 							))}
 						</ul>
-						<p className='pricingBlock__note'>{PRICING_PANEL.includedNote}</p>
 					</div>
 					<div>
 						<h3 className='pricingBlock__h'>{PRICING_PANEL.factors}</h3>
@@ -69,10 +62,16 @@ export default function PricingBlock({ label = 'цены', title = H2.pricing, d
 						</ol>
 					</div>
 				</Reveal>
-				{details && (
-					<Reveal as='div' className='pricingBlock__details'>
-						<dl>
-							{DETAIL_ROWS().map(row => (
+				<Reveal as='div' className='pricingBlock__details'>
+					<dl>
+						<div>
+							<dt>{PRICING_PANEL.after}</dt>
+							<dd>
+								<p>{AFTER_LAUNCH}</p>
+							</dd>
+						</div>
+						{details &&
+							DETAIL_ROWS().map(row => (
 								<div key={row.label}>
 									<dt>{row.label}</dt>
 									<dd>
@@ -88,9 +87,8 @@ export default function PricingBlock({ label = 'цены', title = H2.pricing, d
 									</dd>
 								</div>
 							))}
-						</dl>
-					</Reveal>
-				)}
+					</dl>
+				</Reveal>
 			</div>
 		</section>
 	)

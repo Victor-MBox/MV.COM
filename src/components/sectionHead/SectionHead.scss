@@ -67,6 +67,7 @@
 		letter-spacing: -0.02em;
 		color: var(--text);
 		max-width: 20ch;
+		text-wrap: balance; // без висячего последнего слова («…роль в / них»); строки SplitLines меряются уже по балансу
 	}
 
 	h1.sectionHead__title {

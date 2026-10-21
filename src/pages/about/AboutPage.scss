@@ -224,3 +224,11 @@
 		}
 	}
 }
+
+// «Для команд и работодателей»: кнопки строкой под лидом
+.aboutPage__hireActions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 16px;
+}
