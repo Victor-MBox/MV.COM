@@ -85,6 +85,37 @@
 		padding-top: 12px;
 	}
 
+	// Две цены (Offer.prices): подпись моно над ценой, строки друг под другом — на любой ширине карточки без переносов
+	// внутри строки; круг со стрелкой — по нижней цене
+	&__foot--prices {
+		align-items: flex-end;
+	}
+
+	&__prices {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+
+		> div {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		dt {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.4;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		dd {
+			margin: 0;
+		}
+	}
+
 	&__price {
 		font-family: var(--font-title);
 		font-weight: 500;

@@ -47,6 +47,17 @@
 		}
 	}
 
+	// Оговорка под списком «что входит»: моно приглушённым, как уточнение цены на странице оффера
+	&__note {
+		max-width: 46ch;
+		margin-top: 20px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.5;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
 	// Галочки акцентные (иконки либо акцентные, либо никакие); номера — моно
 	&__check {
 		flex: none;

@@ -25,6 +25,7 @@ import { OFFERS, offerPath } from '../data/offers'
 import { PROCESS } from '../data/experience'
 import { PROJECTS } from '../data/projects'
 import { CONTACTS, CONTACT_LINKS } from '../data/contacts'
+import { FORM_COPY } from '../data/leadForm'
 import { ROUTE_PATHS } from '../app/routes'
 
 describe('главная: Portilo, меню в шапке', () => {
@@ -107,5 +108,20 @@ describe('главная: Portilo, меню в шапке', () => {
 		NAV.forEach(n => expect(paths).toContain(n.to))
 		expect(new Set(NAV.map(n => n.to)).size).toBe(NAV.length)
 		SOCIAL.forEach(key => expect(CONTACT_LINKS[key]).toMatch(/^https?:/))
+	})
+
+	it('контакты настоящие: без example и нулевых номеров, телефон для показа — те же цифры', () => {
+		expect(CONTACTS.email).not.toMatch(/example/)
+		expect(CONTACTS.phone).toMatch(/^\+7\d{10}$/)
+		expect(CONTACTS.phoneLabel.replace(/[^\d+]/g, '')).toBe(CONTACTS.phone)
+		expect(CONTACT_LINKS.phone).toBe(`tel:${CONTACTS.phone}`)
+	})
+
+	it('срок ответа везде один — «в течение рабочего дня»', () => {
+		const strings = [FORM_COPY.lead, FORM_COPY.success, FORM_COPY.next[0], FOOTER.text, FOOTER.success]
+		strings.forEach(s => {
+			expect(s).toMatch(/в течение рабочего дня/)
+			expect(s).not.toMatch(/дву[хм]|2 рабочих/)
+		})
 	})
 })

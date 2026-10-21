@@ -44,6 +44,17 @@ describe('offers', () => {
 		})
 	})
 
+	it('у оффера с несколькими ценами первая совпадает с priceFrom, остальные не ниже', () => {
+		const rub = (s: string) => Number(s.replace(/\D/g, ''))
+		OFFERS.filter(o => o.prices).forEach(o => {
+			const prices = o.prices ?? []
+			expect(prices.length).toBeGreaterThanOrEqual(2)
+			expect(prices[0].price).toBe(o.priceFrom)
+			prices.forEach(p => expect(rub(p.price)).toBeGreaterThanOrEqual(rub(o.priceFrom)))
+		})
+		expect(getOffer('web-service')?.prices?.map(p => p.price)).toEqual(['от 150 000 ₽', 'от 300 000 ₽'])
+	})
+
 	it('1С-Битрикс упоминается только внутри оффера поддержки, отдельного оффера нет', () => {
 		expect(OFFERS.some(o => /битрикс/i.test(o.title))).toBe(false)
 		const support = getOffer('support')

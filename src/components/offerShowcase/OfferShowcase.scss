@@ -141,6 +141,11 @@
 		}
 	}
 
+	// Цены частей оффера (Offer.prices) — каждая своей строкой
+	&__price {
+		display: block;
+	}
+
 	&__chips {
 		display: flex;
 		flex-wrap: wrap;

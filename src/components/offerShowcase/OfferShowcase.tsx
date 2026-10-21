@@ -134,7 +134,15 @@ export default function OfferShowcase({ items, initial }: Props) {
 							</div>
 							<div>
 								<dt>цена</dt>
-								<dd>{current.offer.priceFrom}</dd>
+								<dd>
+									{current.offer.prices
+										? current.offer.prices.map(p => (
+												<span key={p.label} className='offerShowcase__price'>
+													{p.label} — {p.price}
+												</span>
+											))
+										: current.offer.priceFrom}
+								</dd>
 							</div>
 							<div>
 								<dt>для кого</dt>

@@ -36,12 +36,12 @@ const CHANNELS: Channel[] = [
 		hint: 'Для подробных брифов',
 	},
 	{
-		key: 'whatsapp',
-		label: 'WhatsApp',
-		value: `+${CONTACTS.whatsapp}`,
-		href: CONTACT_LINKS.whatsapp,
-		copy: `+${CONTACTS.whatsapp}`,
-		hint: 'Звонки и голосовые',
+		key: 'phone',
+		label: 'Телефон',
+		value: CONTACTS.phoneLabel,
+		href: CONTACT_LINKS.phone,
+		copy: CONTACTS.phone,
+		hint: 'Для звонков',
 	},
 	{
 		key: 'github',

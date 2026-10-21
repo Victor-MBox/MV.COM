@@ -38,8 +38,19 @@ export default function OfferGrid() {
 								</Chip>
 							))}
 						</ul>
-						<div className='offerGrid__foot'>
-							<span className='offerGrid__price'>{offer.priceFrom}</span>
+						<div className={`offerGrid__foot${offer.prices ? ' offerGrid__foot--prices' : ''}`}>
+							{offer.prices ? (
+								<dl className='offerGrid__prices'>
+									{offer.prices.map(p => (
+										<div key={p.label}>
+											<dt>{p.label}</dt>
+											<dd className='offerGrid__price'>{p.price}</dd>
+										</div>
+									))}
+								</dl>
+							) : (
+								<span className='offerGrid__price'>{offer.priceFrom}</span>
+							)}
 							<span className='offerGrid__arrow' aria-hidden='true'>
 								↗
 							</span>

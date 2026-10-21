@@ -55,6 +55,7 @@ export default function PricingBlock({ label = 'цены', title = H2.pricing, d
 								</li>
 							))}
 						</ul>
+						<p className='pricingBlock__note'>{PRICING_PANEL.includedNote}</p>
 					</div>
 					<div>
 						<h3 className='pricingBlock__h'>{PRICING_PANEL.factors}</h3>
