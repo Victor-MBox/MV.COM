@@ -116,7 +116,7 @@
 		color: var(--text-muted);
 	}
 
-	// Чипы стека и «что не входит»
+	// Чипы стека в аккордеоне «Стек и детали»
 	&__chips {
 		display: flex;
 		flex-wrap: wrap;
@@ -199,7 +199,43 @@
 		}
 	}
 
-	// ---------- Сколько стоит: строки «подпись моно → содержимое», как .pricingBlock__details ----------
+	// ---------- Стоимость и дополнительные работы: строки «подпись моно → содержимое», как .pricingBlock__details ----------
+	// Стартовая цена — кеглем бейджа шапки (подпись моно над ценой, если строк несколько), под ней одно пояснение
+	&__start {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px 48px;
+		margin-bottom: 12px;
+
+		li {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		span {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.5;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		strong {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 24px;
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			font-variant-numeric: tabular-nums;
+			color: var(--text);
+		}
+	}
+
+	&__estimate {
+		margin-bottom: 12px;
+	}
+
 	&__price {
 		dl {
 			border-top: 1px solid var(--border);
@@ -312,7 +348,7 @@
 		}
 	}
 
-	// Хостинг и передача: строки с пригашённой точкой
+	// Хостинг и передача, «не входит в стоимость»: строки с пригашённой точкой
 	&__notes {
 		display: flex;
 		flex-direction: column;

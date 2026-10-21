@@ -23,7 +23,8 @@ function topicFor(pathname: string) {
 
 /**
  * Футер-форма (макет «Футер - форма» от 20.10.2026) — финал каждой страницы: «Давайте работать вместе», слева
- * «// новый проект», «Расскажите, что нужно сделать» и лид формы первого обращения, справа сама форма; внизу копирайт,
+ * «// новый проект» и «Расскажите, что нужно сделать» (инструкция FORM_COPY.lead с 21.10.2026 — только в окне обращения
+ * и на /contacts, здесь не повторяется), справа сама форма; внизу копирайт,
  * мета-ряд и ссылки. Бегущей строки офферов нет с 21.10.2026 (повторяла каталог услуг). На /contacts своя форма —
  * там только нижняя строка. Города и часов нет (решение владельца от 20.10.2026)
  */
@@ -43,7 +44,6 @@ export default function SiteFooter() {
 									<span aria-hidden='true'>//</span> {FOOTER.label}
 								</p>
 								<p className='siteFooter__heading'>{FORM_COPY.title}</p>
-								<p className='siteFooter__text'>{FORM_COPY.lead}</p>
 							</Reveal>
 							<Reveal className='siteFooter__form' delay={0.08}>
 								<FooterForm topic={topicFor(pathname)} />

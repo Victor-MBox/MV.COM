@@ -7,6 +7,8 @@ import Reveal from '../../components/reveal/Reveal'
 import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
 import { CONTACTS_FAQ_KEYS, getFaq } from '../../data/faq'
 import { FORM_COPY, FORM_ENABLED } from '../../data/leadForm'
+import { SITE_META } from '../../data/meta'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import './ContactsPage.scss'
 
 type Channel = {
@@ -34,7 +36,7 @@ const CHANNELS: Channel[] = [
 		value: CONTACTS.email,
 		href: CONTACT_LINKS.email,
 		copy: CONTACTS.email,
-		hint: 'Для подробных брифов',
+		hint: 'Для описания задачи и материалов',
 	},
 	{
 		key: 'phone',
@@ -47,12 +49,11 @@ const CHANNELS: Channel[] = [
 ]
 
 // H1 и вступление — ТЗ от 21.10.2026, §7. Вступление зависит от готовности формы: пока её нет (публичная сборка до
-// обработчика и политики), про форму не пишем. Срок ответа (в течение рабочего дня) стоит под формой, как везде
+// обработчика и политики), про форму не пишем. Что прислать — одна инструкция FORM_COPY.lead в панели заявки ниже
+// (ТЗ по текстам и SEO от 21.10.2026), здесь не повторяется. Срок ответа стоит под формой, как везде
 const HEAD = {
 	title: { text: 'Обсудим вашу задачу', accent: 'вашу задачу' },
-	lead: FORM_ENABLED
-		? 'Напишите в Telegram или отправьте сообщение через форму. Если есть текущий сайт, макет или техническое задание, добавьте ссылку.'
-		: 'Напишите в Telegram или на почту. Если есть текущий сайт, макет или техническое задание, добавьте ссылку.',
+	lead: FORM_ENABLED ? 'Напишите в Telegram или отправьте сообщение через форму.' : 'Напишите в Telegram или на почту.',
 }
 
 // TODO (владелец): заголовки колонок и блока вопросов
@@ -72,6 +73,7 @@ const COPIED_MS = 1600
  */
 export default function ContactsPage() {
 	const [copied, setCopied] = useState<string | null>(null)
+	useDocumentMeta(SITE_META.contacts)
 	const faq = getFaq(CONTACTS_FAQ_KEYS).map(f => ({ id: f.key, title: f.q, content: <p>{f.a}</p> }))
 
 	const copy = async (ch: Channel) => {

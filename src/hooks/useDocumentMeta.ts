@@ -1,64 +1,88 @@
 import { useEffect } from 'react'
+import { SITE_URL, canonicalUrl } from '../data/meta'
+import type { PageMeta } from '../data/meta'
 
-type Meta = {
-	title: string
-	description: string
+type Meta = PageMeta & {
 	/** Путь к картинке для соцсетей (импорт из resources) — станет абсолютным URL */
 	image?: string
 }
 
-function setMeta(attr: 'name' | 'property', key: string, content: string) {
-	let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)
-	const created = !el
-	if (!el) {
-		el = document.createElement('meta')
-		el.setAttribute(attr, key)
-		document.head.appendChild(el)
+/**
+ * Ставит элемент head с атрибутом `attr` = value: находит по селектору или создаёт; value = undefined — убирает
+ * найденный элемент. Возвращает откат к прежнему состоянию
+ */
+function setHead(selector: string, create: () => HTMLElement, attr: string, value: string | undefined) {
+	const found = document.head.querySelector<HTMLElement>(selector)
+	if (value === undefined) {
+		if (!found) return () => {}
+		const next = found.nextSibling
+		found.remove()
+		return () => {
+			document.head.insertBefore(found, next?.parentNode === document.head ? next : null)
+		}
 	}
-	const prev = el.getAttribute('content')
-	el.setAttribute('content', content)
-	const node = el
+	const el = found ?? create()
+	const prev = el.getAttribute(attr)
+	el.setAttribute(attr, value)
+	if (!found) document.head.appendChild(el)
 	return () => {
-		if (created) node.remove()
-		else if (prev !== null) node.setAttribute('content', prev)
+		if (!found) el.remove()
+		else if (prev !== null) el.setAttribute(attr, prev)
 	}
 }
 
+function meta(attr: 'name' | 'property', key: string, content: string | undefined) {
+	const create = () => {
+		const el = document.createElement('meta')
+		el.setAttribute(attr, key)
+		return el
+	}
+	return setHead(`meta[${attr}="${key}"]`, create, 'content', content)
+}
+
+function canonical(href: string | undefined) {
+	const create = () => {
+		const el = document.createElement('link')
+		el.rel = 'canonical'
+		return el
+	}
+	return setHead('link[rel="canonical"]', create, 'href', href)
+}
+
 /**
- * Title, description, Open Graph и canonical страницы (ТЗ §18). Дефолты для всего сайта лежат в index.html;
- * хук переопределяет их, пока страница смонтирована, и возвращает прежние значения при уходе.
- * Пререндера нет: поисковики, исполняющие JavaScript, увидят эти теги, остальные — дефолты из index.html.
+ * Title, description, Open Graph, canonical и robots страницы — единственный механизм управления head на сайте.
+ * Дефолты для всего сайта лежат в index.html (= мета главной); хук переопределяет их, пока страница смонтирована,
+ * и возвращает прежние значения при уходе — переходы по ссылкам и назад/вперёд меняют мету вместе со страницей
+ * (страницы перемонтируются по pathname, AnimatePresence mode='wait'). canonical и og:url — только на публичном
+ * домене SITE_URL; пока он не задан, их нет. `null` — страница меты не ставит (оффер не найден: мету ставит
+ * NotFoundPage внутри). Пререндера нет: в исходном HTML любого адреса — дефолты из index.html, эти теги видят
+ * поисковики, исполняющие JavaScript
  */
-export function useDocumentMeta({ title, description, image }: Meta) {
+export function useDocumentMeta(page: Meta | null) {
+	const title = page?.title
+	const description = page?.description
+	const image = page?.image
+	const noindex = !!page?.noindex
+
 	useEffect(() => {
-		const url = window.location.origin + window.location.pathname
+		if (!title || !description) return
+		const url = noindex ? undefined : canonicalUrl(window.location.pathname, SITE_URL)
 		const prevTitle = document.title
 		document.title = title
 
 		const undo = [
-			setMeta('name', 'description', description),
-			setMeta('property', 'og:title', title),
-			setMeta('property', 'og:description', description),
-			setMeta('property', 'og:url', url),
+			meta('name', 'description', description),
+			meta('property', 'og:title', title),
+			meta('property', 'og:description', description),
+			meta('property', 'og:url', url),
+			canonical(url),
 		]
-		if (image) undo.push(setMeta('property', 'og:image', new URL(image, window.location.origin).href))
-
-		let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
-		const hadLink = !!link
-		if (!link) {
-			link = document.createElement('link')
-			link.rel = 'canonical'
-			document.head.appendChild(link)
-		}
-		const prevHref = link.getAttribute('href')
-		link.setAttribute('href', url)
-		const canonical = link
+		if (image) undo.push(meta('property', 'og:image', new URL(image, SITE_URL ?? window.location.origin).href))
+		if (noindex) undo.push(meta('name', 'robots', 'noindex'))
 
 		return () => {
 			document.title = prevTitle
-			undo.forEach(fn => fn())
-			if (hadLink && prevHref !== null) canonical.setAttribute('href', prevHref)
-			else canonical.remove()
+			undo.reverse().forEach(fn => fn())
 		}
-	}, [title, description, image])
+	}, [title, description, image, noindex])
 }

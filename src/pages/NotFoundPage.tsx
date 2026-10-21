@@ -1,10 +1,16 @@
 import SplitLines from '../components/splitLines/SplitLines'
 import Reveal from '../components/reveal/Reveal'
 import Button from '../components/button/Button'
+import { useDocumentMeta } from '../hooks/useDocumentMeta'
+import { SITE_META } from '../data/meta'
 import './NotFoundPage.scss'
 
-/** 404 (docs/design-spec.md §9): девиз «Страницы нет.» кеглем финала главной, строка текста и две текстовые ссылки */
+/**
+ * 404 (docs/design-spec.md §9): девиз «Страницы нет.» кеглем финала главной, строка текста и две текстовые ссылки.
+ * Мета — «Страница не найдена» с noindex и без canonical; HTTP-статус 404 отдаёт хостинг, не приложение
+ */
 export default function NotFoundPage() {
+	useDocumentMeta(SITE_META.notFound)
 	return (
 		<section className='section notFound'>
 			<div className='container notFound__in'>

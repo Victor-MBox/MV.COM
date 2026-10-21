@@ -13,6 +13,8 @@ import { HR_BLOCK, HR_LINE } from '../../data/home'
 import portraitDark from '../../resources/victor-about.webp'
 import portraitLight from '../../resources/victor-about-light.webp'
 import { useTheme } from '../../hooks/useTheme'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
+import { SITE_META } from '../../data/meta'
 import './AboutPage.scss'
 
 /**
@@ -58,6 +60,7 @@ const FEATURED = PROJECTS.find(p => p.featured)
 export default function AboutPage() {
 	const { open } = useContactModal()
 	const { isLight } = useTheme()
+	useDocumentMeta(SITE_META.about)
 
 	const experience = EXPERIENCE.map((e, i) => ({
 		id: e.period,

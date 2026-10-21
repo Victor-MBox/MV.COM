@@ -12,10 +12,20 @@ import WorkCard from '../../components/workCard/WorkCard'
 import type { WorkCardData } from '../../components/workCard/WorkCard'
 import ProcessSteps from '../../components/processSteps/ProcessSteps'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
-import { OFFERS, getOffer } from '../../data/offers'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
+import { AGENCIES_KEY, OFFERS, getOffer } from '../../data/offers'
+import { OFFER_META } from '../../data/meta'
 import { getService } from '../../data/services'
 import type { Service } from '../../data/services'
-import { AFTER_LAUNCH, PACKAGES_ANCHOR, PACKAGES_OFFER, SUPPORT_PACKAGES, SUPPORT_TERMS } from '../../data/pricing'
+import {
+	AFTER_LAUNCH,
+	PACKAGES_ANCHOR,
+	PACKAGES_OFFER,
+	PRICE_NOTE,
+	PRICING_MODELS,
+	SUPPORT_PACKAGES,
+	SUPPORT_TERMS,
+} from '../../data/pricing'
 import PriceCard from '../../components/priceCard/PriceCard'
 import { PROJECTS } from '../../data/projects'
 import { isPublic } from '../../data/projects'
@@ -24,19 +34,24 @@ import { CASE_FACTS } from '../../data/home'
 import NotFoundPage from '../NotFoundPage'
 import './OfferPage.scss'
 
-// TODO (владелец): заголовки секций страницы оффера; в каждом — не больше одного выделения
-const H2: Record<'fit' | 'outcomes' | 'price' | 'packages' | 'examples' | 'faq' | 'tech', Headline> = {
-	fit: { text: 'Кому подходит, а кому нет', muted: 'а кому нет' },
-	outcomes: { text: 'Что получите' },
-	price: { text: 'Сколько стоит и от чего зависит', muted: 'и от чего зависит' },
+// Заголовки разделов страницы услуги — ТЗ по текстам и SEO от 21.10.2026; в каждом — не больше одного выделения.
+// «Состав работ» у доработки и свой заголовок процесса у интеграций и доработки — Offer.headings
+const H2: Record<'fit' | 'outcomes' | 'price' | 'packages' | 'examples' | 'process' | 'faq' | 'tech', Headline> = {
+	fit: { text: 'Для каких задач подходит', muted: 'подходит' },
+	outcomes: { text: 'Состав проекта', muted: 'проекта' },
+	price: { text: 'Стоимость и дополнительные работы', muted: 'и дополнительные работы' },
 	packages: { text: 'Пакеты обслуживания', muted: 'обслуживания' },
 	examples: { text: 'Примеры из этого направления', muted: 'из этого направления' },
-	faq: { text: 'Вопросы по этой услуге', muted: 'по этой услуге' },
+	process: { text: 'Как проходит разработка', muted: 'разработка' },
+	faq: { text: 'Вопросы перед заказом', muted: 'перед заказом' },
 	tech: { text: 'Как это устроено технически', muted: 'технически' },
 }
 
 /** Пакеты как карточки формата цены (PriceCard): цена в месяц, кнопка открывает заявку с названием пакета */
 const PACKAGE_CARDS = SUPPORT_PACKAGES.map(p => ({ ...p, price: `${p.price} / месяц`, cta: 'Обсудить пакет' }))
+
+/** Обслуживание в блоке стоимости доработки — та же строка, что формат «Техническое обслуживание» в блоке цен */
+const MAINTENANCE = PRICING_MODELS.filter(m => m.key === 'maintenance').map(m => ({ label: m.label, price: m.price }))
 
 /** Формат оплаты — общий для всех офферов (content.md §4.2, п. 4) */
 const PAYMENT = 'По смете с оплатой по этапам или по часам — зависит от того, насколько объём понятен до старта.'
@@ -54,22 +69,32 @@ const toWorkCard = (p: Project): WorkCardData => ({
 const pad = (n: number) => String(n).padStart(2, '0')
 
 /**
- * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (цены и срок бейджами — те же строки, что на карточке
- * каталога; справа мини-интерфейс оффера в цикле) → кому подходит / не подходит → что получите → сколько стоит и от чего
- * зависит → пакеты обслуживания (только у доработки и поддержки, #packages — сюда ведёт «Посмотреть пакеты» из блока
- * цен) → примеры (если есть кейсы по категориям) → процесс (свой у интеграций, доработки и агентств — offer.process)
- * → вопросы → аккордеон «Стек и детали» (единственное место с названиями технологий)
+ * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (H1 — offer.heading, цены и срок бейджами — те же
+ * строки, что на карточке каталога; справа мини-интерфейс оффера в цикле) → для каких задач подходит → состав проекта
+ * → стоимость и дополнительные работы (стартовая цена с одним пояснением PRICE_NOTE, что нужно для оценки, что не
+ * входит, оплата, после запуска) → пакеты обслуживания (только у доработки и поддержки, #packages — сюда ведёт
+ * «Посмотреть пакеты» из блока цен) → примеры (если есть кейсы по категориям) → процесс (свой у интеграций, доработки
+ * и агентств — offer.process; без вводного текста и условия — они повторяли блок стоимости) → вопросы перед заказом →
+ * аккордеон «Стек и детали» (единственное место с названиями технологий)
  */
 export default function OfferPage() {
 	const { offer: key } = useParams()
 	const offer = getOffer(key)
 	const { open } = useContactModal()
+	// Оффера нет — мету ставит NotFoundPage (noindex), страница свою не ставит
+	useDocumentMeta(offer ? OFFER_META[offer.key] : null)
 
 	if (!offer) return <NotFoundPage />
 
 	const number = pad(OFFERS.indexOf(offer) + 1)
 	const visual = miniUiVariant(offer.key)
 	const prices = offer.prices ?? [{ label: 'стоимость', price: offer.priceFrom }]
+	// Ставка агентств — не стартовая цена: вместо PRICE_NOTE уточнение «или по смете»
+	const isRate = offer.key === AGENCIES_KEY
+	const startPrices = [
+		...(offer.prices ?? [{ label: '', price: offer.priceFrom }]),
+		...(offer.key === PACKAGES_OFFER ? MAINTENANCE : []),
+	]
 	const projects = PROJECTS.filter(p => p.categories.some(c => offer.categories.includes(c)))
 		.slice(0, 2)
 		.map(toWorkCard)
@@ -116,7 +141,7 @@ export default function OfferPage() {
 		<article className='offerPage' key={offer.key}>
 			<PageHead
 				label={`услуга ${number}`}
-				title={{ text: offer.title }}
+				title={{ text: offer.heading }}
 				lead={offer.line}
 				meta={
 					<>
@@ -184,7 +209,7 @@ export default function OfferPage() {
 
 			<section className='section' id='outcomes'>
 				<div className='container'>
-					<SectionHead label='результат' title={H2.outcomes} />
+					<SectionHead label='состав' title={offer.headings?.outcomes ?? H2.outcomes} lead={offer.outcomesLead} />
 					<Reveal as='ol' className='offerPage__outcomes'>
 						{offer.outcomes.map((o, i) => (
 							<li key={o}>
@@ -198,12 +223,27 @@ export default function OfferPage() {
 
 			<section className='section' id='price'>
 				<div className='container'>
-					<SectionHead label='цена' title={H2.price} />
+					<SectionHead label='стоимость' title={H2.price} />
 					<Reveal as='div' className='offerPage__price'>
 						<dl>
 							<div>
-								<dt>от чего зависит цена</dt>
+								<dt>{isRate ? 'ставка' : 'стартовая стоимость'}</dt>
 								<dd>
+									<ul className='offerPage__start'>
+										{startPrices.map(p => (
+											<li key={p.price}>
+												{p.label && <span>{p.label}</span>}
+												<strong>{p.price}</strong>
+											</li>
+										))}
+									</ul>
+									<p>{isRate ? offer.priceDetail : PRICE_NOTE}</p>
+								</dd>
+							</div>
+							<div>
+								<dt>от чего зависит оценка</dt>
+								<dd>
+									{offer.estimate && <p className='offerPage__estimate'>{offer.estimate}</p>}
 									<ol className='offerPage__factors'>
 										{offer.priceFactors.map((f, i) => (
 											<li key={f}>
@@ -215,21 +255,19 @@ export default function OfferPage() {
 								</dd>
 							</div>
 							<div>
-								<dt>формат оплаты</dt>
+								<dt>не входит в стоимость</dt>
 								<dd>
-									<p>{PAYMENT}</p>
+									<ul className='offerPage__notes'>
+										{offer.notIncluded.map(n => (
+											<li key={n}>{n}</li>
+										))}
+									</ul>
 								</dd>
 							</div>
 							<div>
-								<dt>что не входит</dt>
+								<dt>формат оплаты</dt>
 								<dd>
-									<ul className='offerPage__chips' aria-label='Что не входит'>
-										{offer.notIncluded.map(n => (
-											<Chip as='li' key={n}>
-												{n}
-											</Chip>
-										))}
-									</ul>
+									<p>{PAYMENT}</p>
 								</dd>
 							</div>
 							<div>
@@ -280,7 +318,7 @@ export default function OfferPage() {
 				</section>
 			)}
 
-			<ProcessSteps steps={offer.process} />
+			<ProcessSteps steps={offer.process} title={offer.headings?.process ?? H2.process} lead={null} note={null} />
 
 			<section className='section' id='faq'>
 				<div className='container offerPage__narrow'>

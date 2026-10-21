@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { OFFERS, getOffer, offerPath } from '../data/offers'
 import { SERVICES } from '../data/services'
-import { AFTER_LAUNCH, PACKAGES_ANCHOR, PACKAGES_OFFER, PACKAGES_PATH, PRICING, PRICING_MODELS, SUPPORT_PACKAGES, SUPPORT_TERMS } from '../data/pricing'
+import { FAQ } from '../data/faq'
+import {
+	AFTER_LAUNCH,
+	PACKAGES_ANCHOR,
+	PACKAGES_OFFER,
+	PACKAGES_PATH,
+	PRICE_NOTE,
+	PRICING,
+	PRICING_MODELS,
+	SUPPORT_PACKAGES,
+	SUPPORT_TERMS,
+} from '../data/pricing'
 
 describe('offers', () => {
 	it('ровно семь офферов с уникальными URL-ключами', () => {
@@ -99,6 +110,40 @@ describe('offers', () => {
 		expect(support?.outcomes.some(t => /1С-Битрикс/.test(t))).toBe(true)
 	})
 
+	it('состав и стоимость: что нужно для оценки — у пяти разработок, без неподтверждённых границ «по часам» и числа страниц', () => {
+		const estimates = {
+			corporate: 'Типы страниц и объём наполнения определим перед оценкой проекта.',
+			landing: 'Перед оценкой согласуем структуру страницы, подготовку материалов и необходимые подключения.',
+			ecommerce: 'Подключения оплаты, доставки, CRM и учётной системы согласуем перед оценкой проекта.',
+			'web-service': 'Стоимость зависит от того, кто будет пользоваться сервисом, какие действия и подключения нужны.',
+			integrations: 'Для оценки нужны названия систем, перечень передаваемых данных и доступная документация по подключению.',
+		}
+		Object.entries(estimates).forEach(([key, text]) => expect(getOffer(key)?.estimate).toBe(text))
+		OFFERS.forEach(o => {
+			o.notIncluded.forEach(n => expect(n).not.toMatch(/по часам|десяти страниц|базовой выгрузки/))
+			;[...o.outcomes, ...o.priceFactors].forEach(t => expect(t).not.toMatch(/всё включено|уникальных шаблонов|Логи каждого/i))
+		})
+	})
+
+	it('обслуживание: контент не исключён целиком, размещение готовых материалов — в пакете с часами', () => {
+		const support = getOffer('support')
+		expect(support?.notIncluded).not.toContain('Контент и продвижение')
+		expect(support?.notIncluded).toContain(
+			'Написание текстов, подготовка изображений и продвижение. Размещение готовых материалов — в рамках пакета с часами работ.'
+		)
+		expect(support?.headings?.outcomes?.text).toBe('Состав работ')
+		expect(support?.headings?.process?.text).toBe('Как начинается работа')
+		expect(getOffer('integrations')?.headings?.process?.text).toBe('Как проходит подключение')
+	})
+
+	it('кто готовит тексты — один ответ владельца из общего FAQ', () => {
+		const owner = FAQ.find(f => f.key === 'texts')
+		;['corporate', 'landing'].forEach(key => {
+			const item = getOffer(key)?.faq.find(f => /тексты/i.test(f.q))
+			expect(item).toEqual({ q: owner?.q, a: owner?.a })
+		})
+	})
+
 	it('getOffer и offerPath', () => {
 		expect(getOffer('landing')?.title).toBe('Лендинг')
 		expect(getOffer('nope')).toBeUndefined()
@@ -140,6 +185,17 @@ describe('pricing', () => {
 		const support = getOffer('support')
 		const texts = [...PRICING_MODELS.map(m => m.price), support?.priceDetail ?? '', ...(support?.outcomes ?? []), support?.afterLaunch ?? '']
 		texts.forEach(t => expect(t).not.toMatch(/25 000/))
+	})
+
+	it('формулировки пакетов по ТЗ и одно пояснение к стартовой цене', () => {
+		expect(SUPPORT_PACKAGES[0].text).toMatch(/до 30 минут планового обслуживания в месяц/)
+		expect(SUPPORT_TERMS).toContain(
+			'Часы на доработки — сверх времени базового обслуживания. Диагностика расходует эти часы. Превышение — 3 500 ₽/час после согласования.'
+		)
+		;[...SUPPORT_PACKAGES.map(p => p.text), ...SUPPORT_TERMS, ...PRICING.factors].forEach(t =>
+			expect(t).not.toMatch(/ручных регламентных|базовому регламенту|уникальных/)
+		)
+		expect(PRICE_NOTE).toBe('Указана стартовая стоимость. Состав работ, сроки и итоговую цену согласуем до начала разработки.')
 	})
 
 	it('гарантийное исправление ошибок не подменено пакетом', () => {
