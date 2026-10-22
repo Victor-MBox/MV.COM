@@ -25,4 +25,14 @@ export default tseslint.config(
       ],
     },
   },
+  // Обработчик формы (server/): Node.js, ESM, без React — типы проверяет tsc по server/tsconfig.json (checkJs)
+  {
+    extends: [js.configs.recommended],
+    files: ['server/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: globals.node,
+    },
+  },
 )

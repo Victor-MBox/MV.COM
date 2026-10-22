@@ -1,0 +1,19 @@
+{
+	"name": "mv-com-contact",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"description": "Обработчик формы matsakov-victor.com: POST /api/contact → Telegram и почта. Запуск: node contact.js (переменные — .env.example)",
+	"engines": {
+		"node": ">=20.6"
+	},
+	"scripts": {
+		"start": "node contact.js"
+	},
+	"dependencies": {
+		"nodemailer": "^10.2.0"
+	},
+	"devDependencies": {
+		"@types/nodemailer": "^8.0.2"
+	}
+}

@@ -1,0 +1,87 @@
+// Портфолио (docs/design-spec.md §9): главный кейс широкой карточкой CaseCard, остальные — сетка в две колонки;
+// фильтры-чипы в стиле Chip (§6.7) появляются от восьми проектов
+.portfolioPage {
+	&__filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 40px;
+	}
+
+	// Кнопка-чип: моно 13px на --box-deep; активная — бордер --accent и текст --text
+	&__filter {
+		display: inline-flex;
+		align-items: center;
+		min-height: 36px;
+		padding: 8px 12px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-field);
+		background: var(--box-deep);
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+		white-space: nowrap;
+		transition:
+			color var(--d-mid) var(--ease-out),
+			border-color var(--d-mid) var(--ease-out);
+
+		&:hover {
+			color: var(--text);
+			border-color: var(--border-strong);
+		}
+
+		&.is-active {
+			color: var(--text);
+			border-color: var(--accent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	&__featured {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	&__featured + &__grid {
+		margin-top: 24px;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+
+		> li {
+			display: grid;
+			min-width: 0;
+		}
+	}
+
+	@media (max-width: 992px) {
+		&__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__filters {
+			margin-bottom: 32px;
+		}
+
+		&__featured,
+		&__grid {
+			gap: 16px;
+		}
+
+		&__featured + &__grid {
+			margin-top: 16px;
+		}
+	}
+}

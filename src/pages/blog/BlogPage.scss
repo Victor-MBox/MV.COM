@@ -1,0 +1,20 @@
+// Блог (docs/design-spec.md §9): список статей в две колонки; карточка — PostCard
+.blogPage {
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+
+	&__item {
+		display: flex;
+		min-width: 0;
+	}
+
+	@media (max-width: 768px) {
+		&__grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+	}
+}

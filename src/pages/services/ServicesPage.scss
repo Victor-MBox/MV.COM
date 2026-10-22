@@ -1,0 +1,12 @@
+// Услуги (content.md §5.2): раскладка страницы; карточки — OfferGrid, цены — PricingBlock, процесс — ProcessSteps
+.servicesPage {
+	&__faq {
+		max-width: calc(var(--container) * 10 / 12);
+	}
+
+	@media (max-width: 1200px) {
+		&__faq {
+			max-width: none;
+		}
+	}
+}

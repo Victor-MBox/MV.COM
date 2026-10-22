@@ -1,0 +1,13 @@
+// Монограмма «VM.»: размер задаёт родитель через height, ширина — по viewBox (2,405 : 1)
+
+.logo {
+	display: block;
+	width: auto;
+	height: 1em;
+	overflow: visible; // край точки лежит ровно на границе viewBox — не резать сглаживание
+	fill: currentColor;
+
+	&__dot {
+		fill: var(--accent);
+	}
+}

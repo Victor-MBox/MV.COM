@@ -1,0 +1,115 @@
+// Шапка внутренней страницы (docs/design-spec.md §9)
+.pageHead {
+	padding-top: calc(var(--header-h) + 56px);
+
+	&__in {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 24px;
+		align-items: end;
+		padding-bottom: 40px;
+		border-bottom: 1px solid var(--border);
+	}
+
+	&__main {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		min-width: 0;
+	}
+
+	&--aside &__main {
+		grid-column: 1 / 9;
+	}
+
+	&__aside {
+		grid-column: 9 / -1;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 16px;
+		min-width: 0;
+		text-align: right;
+	}
+
+	// Широкая колонка под иллюстрацию: 7/5 вместо 8/4, по высоте левой колонки, содержимое тянется на всю ширину
+	&--asideWide &__main {
+		grid-column: 1 / 8;
+	}
+
+	&--asideWide &__aside {
+		grid-column: 8 / -1;
+		align-self: stretch;
+		align-items: stretch;
+		text-align: left;
+	}
+
+	// SectionHead внутри шапки: без нижнего отступа, H1 шире H2
+	.pageHead__head {
+		margin-bottom: 0;
+
+		.sectionHead__title {
+			max-width: 18ch;
+		}
+	}
+
+	// Потомки (ссылка-крошка, time) не должны терять моно из-за глобального `* { font-family: var(--font-body) }`
+	&__meta {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		* {
+			font-family: inherit;
+		}
+
+		a {
+			color: inherit;
+			transition: color var(--d-fast);
+
+			&:hover {
+				color: var(--text);
+			}
+		}
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 16px;
+	}
+
+	@media (max-width: 992px) {
+		padding-top: calc(var(--header-h) + 40px);
+
+		&__in {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 24px;
+			padding-bottom: 32px;
+		}
+
+		&__aside {
+			align-items: flex-start;
+			text-align: left;
+		}
+
+		// asideFirst: фото под заголовком, кнопки ниже — main и aside меняются местами, кнопки уходят в конец
+		&--asideFirst &__main {
+			display: contents;
+		}
+
+		&--asideFirst &__head {
+			order: -2;
+		}
+
+		&--asideFirst &__aside {
+			order: -1;
+		}
+	}
+}

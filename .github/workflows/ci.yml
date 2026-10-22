@@ -1,0 +1,37 @@
+# Проверки для рабочих веток и pull request в main: то же, что `npm run type-check && npm run lint && npm test && npm run build`.
+# Зависимости ставятся и для сайта, и для обработчика формы (server/, свой package-lock.json) — его типы и тесты входят в проверки.
+# Публикации здесь нет — она в deploy.yml и срабатывает только на push в main.
+name: CI
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Типы, линт, тесты, сборка
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix server
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build

@@ -5,33 +5,36 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"server": "node --env-file-if-exists=server/.env server/contact.js",
 		"build": "vite build",
 		"preview": "vite preview",
-		"lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
-		"test": "vitest",
-		"type-check": "tsc --noEmit"
+		"lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"server/**/*.js\" --max-warnings=0",
+		"test": "vitest run",
+		"type-check": "tsc --noEmit -p tsconfig.app.json && tsc -p server/tsconfig.json"
 	},
 	"dependencies": {
 		"clsx": "^2.1.1",
-		"framer-motion": "^12.12.1",
+		"framer-motion": "^12.43.0",
 		"gsap": "^3.12.5",
-		"motion": "^12.23.12",
+		"lenis": "^1.3.27",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"react-router-dom": "^7.6.0"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.19",
+		"@eslint/js": "^9.39.5",
+		"@types/node": "^22.20.5",
 		"@types/react": "^19.1.0",
 		"@types/react-dom": "^19.1.0",
 		"@vitejs/plugin-react-swc": "^3.9.0",
-		"autoprefixer": "^10.4.21",
 		"eslint": "^9.1.0",
-		"postcss": "^8.4.35",
+		"eslint-plugin-react-hooks": "^7.1.1",
+		"eslint-plugin-react-refresh": "^0.5.7",
+		"globals": "^17.13.0",
 		"sass": "^1.72.0",
-		"tailwindcss": "^3.4.4",
 		"typescript": "^5.4.4",
-		"vite": "^6.3.5",
-		"vitest": "^1.5.0"
+		"typescript-eslint": "^8.71.2",
+		"vite": "^6.4.4",
+		"vitest": "^5.0.5"
 	}
 }

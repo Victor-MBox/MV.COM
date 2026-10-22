@@ -1,0 +1,171 @@
+// Аккордеон с пригашиванием соседей (docs/design-spec.md §6.10)
+.dimAcc {
+	border-top: 1px solid var(--border);
+
+	&__item {
+		border-bottom: 1px solid var(--border);
+	}
+
+	&__head {
+		margin: 0;
+	}
+
+	&__btn {
+		display: grid;
+		grid-template-columns: 40px 1fr 24px;
+		align-items: center;
+		gap: 24px;
+		width: 100%;
+		padding: 28px 0;
+		text-align: left;
+		color: var(--text);
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+	}
+
+	&__num {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 16px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__title {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(24px, 2.4vw, 36px);
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+		color: var(--text);
+		transition: color var(--d-undim) var(--ease-out);
+	}
+
+	// meta: заголовок и строка моно под ним одной колонкой; номер и иконка — по центру строки заголовка, а не всего блока
+	&__btn--meta {
+		--title-line: calc(clamp(24px, 2.4vw, 36px) * 1.1);
+		align-items: start;
+	}
+
+	&__btn--meta &__num {
+		margin-top: calc((var(--title-line) - 16px) / 2);
+	}
+
+	&__btn--meta &__icon {
+		margin-top: calc((var(--title-line) - 24px) / 2);
+	}
+
+	&__label {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	&__meta {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		* {
+			font-family: inherit;
+		}
+	}
+
+	&__icon {
+		position: relative;
+		width: 24px;
+		height: 24px;
+		transition: transform var(--d-mid) var(--ease-out);
+
+		i {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: 16px;
+			height: 2px;
+			background: var(--text);
+			transform: translate(-50%, -50%);
+
+			&:last-child {
+				transform: translate(-50%, -50%) rotate(90deg);
+			}
+		}
+	}
+
+	&__item.is-open &__icon {
+		transform: rotate(45deg);
+	}
+
+	&__panel {
+		overflow: hidden;
+	}
+
+	&__body {
+		max-width: 56ch;
+		padding: 0 0 28px 64px;
+		font-size: 17px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	// wide: тело без ограничения ширины — внутри колонки, чипы, списки подуслуг
+	&--wide &__body {
+		max-width: none;
+	}
+
+	// Пригашивание: открыт или наведён хотя бы один — остальные гаснут за 800 мс, активный возвращается за 300 мс
+	&[data-dimmed='true'] &__title {
+		color: var(--text-dim);
+		transition-duration: var(--d-dim);
+	}
+
+	&[data-dimmed='true'] &__item.is-open &__title,
+	&[data-dimmed='true'] &__item:hover &__title {
+		color: var(--text);
+		transition-duration: var(--d-cursor);
+	}
+
+	&--plain &__btn {
+		grid-template-columns: 1fr 24px;
+	}
+
+	&--plain &__body {
+		padding-left: 0;
+	}
+
+	@media (max-width: 768px) {
+		&__btn {
+			grid-template-columns: 32px 1fr 24px;
+			gap: 16px;
+			padding: 20px 0;
+		}
+
+		&__body {
+			padding: 0 0 20px 48px;
+			font-size: 16px;
+		}
+	}
+
+	@media (max-width: 560px) {
+		&__btn {
+			grid-template-columns: 1fr 24px;
+		}
+
+		&__num {
+			display: none;
+		}
+
+		&__body {
+			padding-left: 0;
+		}
+	}
+}

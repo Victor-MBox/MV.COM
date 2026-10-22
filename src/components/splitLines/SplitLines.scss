@@ -1,0 +1,37 @@
+// Маски строк заголовков (docs/design-spec.md §8.3)
+.splitLines {
+	&--measuring {
+		opacity: 0;
+	}
+
+	&__line {
+		display: block;
+		overflow: hidden;
+		// запас под выносные элементы: при line-height ≤ 1.05 нижние выносы иначе режутся маской
+		padding-bottom: 0.1em;
+		margin-bottom: -0.1em;
+	}
+
+	&__inner {
+		display: block;
+		will-change: transform;
+	}
+
+	.accent,
+	.muted,
+	&__w,
+	&__inner {
+		font-family: inherit;
+		font-weight: inherit;
+	}
+
+	// Слово при измерении не рвётся на дефисе («веб-/сервисы»): переносится целиком на следующую строку
+	&__w {
+		white-space: nowrap;
+	}
+
+	// Приглушённый хвост H2 (docs/design-spec-home4.md §3.2) — второй вид выделения рядом с .accent, никогда вместе
+	.muted {
+		color: var(--text-muted);
+	}
+}

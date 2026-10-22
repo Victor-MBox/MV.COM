@@ -3,12 +3,44 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Разработка сайтов</title>
+  <!-- Дефолты = мета главной (src/data/meta.ts): страницы без useDocumentMeta показывают их -->
+  <meta name="description" content="Частный веб-разработчик Виктор Мацаков. Сайты компаний, интернет-магазины, личные кабинеты, интеграции и доработка существующих проектов. Работа напрямую." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:site_name" content="Виктор Мацаков" />
+  <meta property="og:title" content="Разработка сайтов и веб-сервисов — Виктор Мацаков" />
+  <meta property="og:description" content="Частный веб-разработчик Виктор Мацаков. Сайты компаний, интернет-магазины, личные кабинеты, интеграции и доработка существующих проектов. Работа напрямую." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Geologica:wght@300..700&family=Golos+Text:wght@400..600&family=JetBrains+Mono:wght@400;500&display=swap"
+  />
+  <title>Разработка сайтов и веб-сервисов — Виктор Мацаков</title>
 </head>
 
-<body class="smooth">
+<body>
+  <script>
+    // Тема до первой отрисовки, без вспышки: сохранённый выбор, иначе системная.
+    // Те же правила и ключ localStorage — в src/hooks/useTheme.ts
+    ;(function () {
+      var theme = null
+      try {
+        theme = localStorage.getItem('theme')
+      } catch (e) {
+        theme = null
+      }
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+      document.body.classList.add(theme)
+      document.documentElement.style.colorScheme = theme
+    })()
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

@@ -1,0 +1,150 @@
+// Стоимость и условия (docs/design-spec-home4.md §6.5, ТЗ от 21.10.2026 §9): три карточки формата, панель «что согласуем /
+// что влияет», строка «после запуска»; полная версия для /services
+.pricingBlock {
+	&__cards {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 24px;
+		margin-bottom: 24px;
+
+		> li {
+			display: flex;
+			min-width: 0;
+		}
+	}
+
+	&__panel {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 48px;
+		padding: 32px;
+		border-radius: var(--radius-card);
+		background: var(--box);
+	}
+
+	&__h {
+		margin-bottom: 20px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+		color: var(--text);
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	// «Что согласуем» — вопросы, а не состав цены: точки-маркеры акцентом вместо галочек «входит»
+	&__list--dots li::before {
+		content: '';
+		flex: none;
+		width: 6px;
+		height: 6px;
+		margin-top: 9px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+
+	&__num {
+		flex: none;
+		min-width: 2ch;
+		padding-top: 3px;
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Полная версия: строки «подпись моно → содержимое» с разделителями, без второй панели (карточка в карточке запрещена)
+	&__details {
+		margin-top: 32px;
+
+		dl {
+			border-top: 1px solid var(--border);
+		}
+
+		dl > div {
+			display: grid;
+			grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+			gap: 24px;
+			padding: 20px 0;
+			border-bottom: 1px solid var(--border);
+		}
+
+		dt {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.6;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		dd {
+			margin: 0;
+		}
+
+		p,
+		li {
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		li {
+			display: flex;
+			gap: 12px;
+
+			&::before {
+				content: '';
+				flex: none;
+				width: 6px;
+				height: 6px;
+				margin-top: 9px;
+				border-radius: 50%;
+				background: var(--text-dim);
+			}
+		}
+	}
+
+	@media (max-width: 992px) {
+		&__cards {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__panel {
+			grid-template-columns: 1fr;
+			gap: 32px;
+			padding: 24px;
+		}
+
+		&__details dl > div {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
+	}
+}

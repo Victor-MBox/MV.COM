@@ -1,0 +1,499 @@
+// Страница оффера (content.md §4.2; docs/design-spec.md §9) на дизайн-системе 1.0: шапка — PageHead с двумя цифрами справа,
+// секции — строки с разделителями без рамок (карточка в карточке запрещена), процесс и CTA — общие компоненты
+.offerPage {
+	// ---------- Шапка ----------
+	// Цена и срок — бейджи в одну строку перед кнопками: подпись моно + значение кеглем цены карточки (20px).
+	// Уточнение цены (priceDetail) — моно-строкой рядом, переносится под бейджи, когда не помещается
+	&__facts {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+	}
+
+	&__badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__badge {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 10px;
+		padding: 11px 20px 12px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--box);
+
+		dt {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.4;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		dd {
+			margin: 0;
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 20px;
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+			color: var(--text);
+		}
+	}
+
+	&__priceDetail {
+		max-width: 30ch;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.5;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Иллюстрация справа: мини-интерфейс оффера в цикле на панели --box со свечением в правом верхнем углу
+	// (как Box glow, но без ховера — .box запускал бы ховер-анимации MiniUi поверх цикла). Панель по высоте левой
+	// колонки (PageHead asideWide), мини-интерфейс по центру, увеличен zoom — пропорции композиций те же, что в карточках
+	&__visual {
+		position: relative;
+		display: grid;
+		flex: 1;
+		place-items: center;
+		min-height: 320px;
+		padding: 40px;
+		border-radius: var(--radius-card);
+		background: var(--box);
+		overflow: hidden;
+		isolation: isolate;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			pointer-events: none;
+			background: radial-gradient(60% 50% at 100% 0%, var(--accent-soft), transparent 70%);
+			opacity: var(--glow-rest);
+		}
+
+		// display: flex — перебивает скрытие мини-интерфейса на ≤560 (там он декоративный слот карточки, здесь — иллюстрация)
+		.miniUi {
+			display: flex;
+			width: 100%;
+			max-width: 440px;
+			height: 200px;
+			padding: 16px;
+			zoom: 1.25;
+		}
+	}
+
+	// Заголовок группы внутри секции или аккордеона (H3 по шкале, h4 в DOM под h3 аккордеона)
+	&__h3 {
+		margin-bottom: 16px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+		color: var(--text);
+	}
+
+	// Номер строки: моно 13px, как в панели «что влияет» PricingBlock
+	&__num {
+		flex: none;
+		min-width: 2ch;
+		padding-top: 4px;
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Чипы стека в аккордеоне «Стек и детали»
+	&__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+
+		.uiChip {
+			white-space: normal;
+		}
+	}
+
+	// ---------- Кому подходит / не подходит ----------
+	&__fit {
+		display: grid;
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		gap: 48px;
+		align-items: start;
+	}
+
+	&__colLabel {
+		margin-bottom: 12px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// Строки с точками: подходит — точка --accent (роль «точки-маркеры»), не подходит — --text-dim
+	&__rows {
+		border-top: 1px solid var(--border);
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 16px;
+			padding: 16px 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 16px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text);
+
+			&::before {
+				content: '';
+				flex: none;
+				width: 8px;
+				height: 8px;
+				margin-top: 9px;
+				border-radius: 50%;
+				background: var(--accent);
+			}
+		}
+
+		&--no li {
+			color: var(--text-body);
+
+			&::before {
+				background: var(--text-dim);
+			}
+		}
+	}
+
+	// ---------- Что получите ----------
+	&__outcomes {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 48px;
+		border-top: 1px solid var(--border);
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 16px;
+			padding: 16px 0;
+			border-bottom: 1px solid var(--border);
+			font-size: 16px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+	}
+
+	// ---------- Стоимость и дополнительные работы: строки «подпись моно → содержимое», как .pricingBlock__details ----------
+	// Стартовая цена — кеглем бейджа шапки (подпись моно над ценой, если строк несколько), под ней одно пояснение
+	&__start {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px 48px;
+		margin-bottom: 12px;
+
+		li {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		span {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.5;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		strong {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 24px;
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			font-variant-numeric: tabular-nums;
+			color: var(--text);
+		}
+	}
+
+	&__estimate {
+		margin-bottom: 12px;
+	}
+
+	&__price {
+		dl {
+			border-top: 1px solid var(--border);
+		}
+
+		dl > div {
+			display: grid;
+			grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+			gap: 24px;
+			padding: 20px 0;
+			border-bottom: 1px solid var(--border);
+		}
+
+		dt {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.6;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+
+		dd {
+			margin: 0;
+		}
+
+		p {
+			max-width: 64ch;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	&__factors {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+
+		.offerPage__num {
+			padding-top: 3px;
+		}
+	}
+
+	// ---------- Примеры: карточки работ не шире 512px ----------
+	&__examples {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 512px));
+		gap: 24px;
+
+		> li {
+			display: flex;
+			min-width: 0;
+		}
+
+		.workCard {
+			width: 100%;
+		}
+	}
+
+	// ---------- Вопросы и техника: колонка 10/12, как FAQ на /services ----------
+	&__narrow {
+		max-width: calc(var(--container) * 10 / 12);
+	}
+
+	// Аккордеон «Стек и детали»: содержимое шире 56ch ответа FAQ — внутри списки и чипы
+
+	&__tech {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+		padding-top: 4px;
+	}
+
+	// Подуслуги направления: строки «название → строка» с разделителями
+	&__subservices {
+		border-top: 1px solid var(--border);
+
+		li {
+			display: grid;
+			grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+			gap: 24px;
+			padding: 14px 0;
+			border-bottom: 1px solid var(--border);
+		}
+
+		strong {
+			font-weight: 500;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+
+		span {
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	// Хостинг и передача, «не входит в стоимость»: строки с пригашённой точкой
+	&__notes {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+
+		li {
+			display: flex;
+			gap: 12px;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+
+			&::before {
+				content: '';
+				flex: none;
+				width: 6px;
+				height: 6px;
+				margin-top: 9px;
+				border-radius: 50%;
+				background: var(--text-dim);
+			}
+		}
+	}
+
+	// ---------- Адаптив ----------
+	@media (max-width: 1200px) {
+		&__narrow {
+			max-width: none;
+		}
+	}
+
+	// Под кнопками панель по высоте мини-интерфейса, а не по высоте колонки
+	@media (max-width: 992px) {
+		&__visual {
+			min-height: 0;
+		}
+
+		&__fit {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+
+		&__examples {
+			grid-template-columns: minmax(0, 512px);
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__visual {
+			padding: 24px;
+
+			.miniUi {
+				zoom: 1;
+			}
+		}
+
+		&__outcomes {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+
+		&__price dl > div {
+			grid-template-columns: 1fr;
+			gap: 8px;
+		}
+
+		&__subservices li {
+			grid-template-columns: 1fr;
+			gap: 4px;
+		}
+
+		&__tech {
+			gap: 32px;
+		}
+	}
+
+	// Телефон: два бейджа в одну строку равными колонками, подпись над значением, длинная цена переносится внутри
+	@media (max-width: 560px) {
+		&__badges {
+			display: grid;
+			flex: 1 1 100%;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		&__badge {
+			flex-direction: column;
+			gap: 2px;
+			padding: 10px 16px 11px;
+			border-radius: var(--radius-field);
+
+			dd {
+				font-size: 18px;
+				white-space: normal;
+			}
+		}
+	}
+}
+
+// Пакеты обслуживания (/services/support#packages): три карточки формата цены в ряд и условия списком с точками
+.offerPage__packages {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px;
+
+	> li {
+		display: flex;
+		min-width: 0;
+	}
+
+	@media (max-width: 992px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+// Условия — двумя колонками текста (не сеткой: в сетке строки выравнивались по самому длинному пункту и зияли)
+.offerPage__terms {
+	columns: 2;
+	column-gap: 48px;
+	margin-top: 32px;
+	padding-top: 24px;
+	border-top: 1px solid var(--border);
+
+	li {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 12px;
+		break-inside: avoid;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+
+		&::before {
+			content: '';
+			flex: none;
+			width: 6px;
+			height: 6px;
+			margin-top: 9px;
+			border-radius: 50%;
+			background: var(--accent);
+		}
+	}
+
+	@media (max-width: 768px) {
+		columns: 1;
+	}
+}

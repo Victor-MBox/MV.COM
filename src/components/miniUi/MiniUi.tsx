@@ -1,0 +1,151 @@
+import type { MiniUiVariant } from './variants'
+import './MiniUi.scss'
+
+type Props = {
+	variant: MiniUiVariant
+	/** Анимация по кругу без ховера — шапка страницы оффера */
+	loop?: boolean
+	className?: string
+}
+
+const n = (i: number) => ({ '--n': i }) as React.CSSProperties
+
+/**
+ * Мини-интерфейс услуги из HTML-элементов (docs/design-spec.md §6.8): подложка --box-deep, «текст» полосами,
+ * ровно один элемент залит акцентом. Микроанимации запускает ховер родительской карточки (.box:hover)
+ * или любого контейнера с классом .miniUiHost (карточки /services); с `loop` — бесконечный сценарий без ховера.
+ * `--n` — индекс элемента для задержек по очереди.
+ */
+export default function MiniUi({ variant, loop, className }: Props) {
+	const cn = ['miniUi', `miniUi--${variant}`, loop ? 'miniUi--loop' : '', className ?? ''].filter(Boolean).join(' ')
+
+	if (variant === 'web-service') {
+		return (
+			<div className={cn} aria-hidden='true'>
+				<div className='miniUi__side'>
+					<i className='miniUi__bar miniUi__bar--short' />
+					<i className='miniUi__bar miniUi__bar--short' />
+					<i className='miniUi__bar miniUi__bar--short' />
+					<i className='miniUi__bar miniUi__bar--short' />
+				</div>
+				<div className='miniUi__table'>
+					{[0, 1, 2].map(i => (
+						<div className='miniUi__row' key={i} style={n(i)}>
+							<i className='miniUi__bar' />
+							<i className='miniUi__bar miniUi__bar--short' />
+							<b className={`miniUi__status${i === 0 ? ' is-accent' : ''}`} />
+						</div>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	if (variant === 'ecommerce') {
+		return (
+			<div className={cn} aria-hidden='true'>
+				<div className='miniUi__product'>
+					<i className='miniUi__photo' />
+					<div className='miniUi__info'>
+						<i className='miniUi__bar' />
+						<i className='miniUi__bar miniUi__bar--short' />
+						{/* Цена товара — полосой, без цифр: число на карточке услуги читалось бы как стоимость разработки */}
+						<i className='miniUi__price' />
+						<span className='miniUi__buy'>
+							<b className='miniUi__button'>В корзину</b>
+							<span className='miniUi__plus'>+1</span>
+						</span>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	if (variant === 'landing') {
+		return (
+			<div className={cn} aria-hidden='true'>
+				<div className='miniUi__copy'>
+					<i className='miniUi__bar' />
+					<i className='miniUi__bar miniUi__bar--mid' />
+					<i className='miniUi__bar miniUi__bar--short' />
+					<b className='miniUi__cta' />
+				</div>
+				<div className='miniUi__form'>
+					<i className='miniUi__field' />
+					<i className='miniUi__field' />
+					<b className='miniUi__submit' />
+				</div>
+			</div>
+		)
+	}
+
+	if (variant === 'corporate') {
+		return (
+			<div className={cn} aria-hidden='true'>
+				<div className='miniUi__nav'>
+					{[0, 1, 2, 3].map(i => (
+						<i key={i} className={`miniUi__navItem${i === 0 ? ' is-accent' : ''}`} style={n(i)} />
+					))}
+				</div>
+				<div className='miniUi__cards'>
+					{[0, 1, 2].map(i => (
+						<div className='miniUi__card' key={i} style={n(i)}>
+							<i className='miniUi__thumb' />
+							<i className='miniUi__bar' />
+							<i className='miniUi__bar miniUi__bar--short' />
+						</div>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	if (variant === 'support') {
+		return (
+			<div className={cn} aria-hidden='true'>
+				{[0, 1, 2].map(i => (
+					<div className='miniUi__task' key={i} style={n(i)}>
+						<i className={`miniUi__bar${i === 1 ? ' miniUi__bar--mid' : ''}`} />
+						<b className={`miniUi__state${i === 0 ? ' is-accent' : ''}`} />
+					</div>
+				))}
+			</div>
+		)
+	}
+
+	if (variant === 'agencies') {
+		return (
+			<div className={cn} aria-hidden='true'>
+				<div className='miniUi__col'>
+					<span className='miniUi__colLabel'>вы</span>
+					<i className='miniUi__bar' />
+					<i className='miniUi__bar miniUi__bar--short' />
+					<i className='miniUi__bar miniUi__bar--mid' />
+				</div>
+				<span className='miniUi__arrow'>→</span>
+				<div className='miniUi__col'>
+					<span className='miniUi__colLabel'>я</span>
+					<i className='miniUi__bar miniUi__bar--mid' />
+					<i className='miniUi__bar' />
+					<i className='miniUi__bar miniUi__bar--short' />
+				</div>
+			</div>
+		)
+	}
+
+	return (
+		<div className={cn} aria-hidden='true'>
+			<span className='miniUi__node' style={n(0)}>
+				Форма
+			</span>
+			<i className='miniUi__link' />
+			<span className='miniUi__node' style={n(1)}>
+				CRM
+			</span>
+			<i className='miniUi__link' />
+			<span className='miniUi__node' style={n(2)}>
+				Telegram
+			</span>
+		</div>
+	)
+}

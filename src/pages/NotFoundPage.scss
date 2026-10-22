@@ -1,0 +1,50 @@
+// 404 (docs/design-spec.md §9): всё по центру, заголовок кеглем «Давайте работать вместе» футера (.siteFooter__title)
+.notFound {
+	display: flex;
+	align-items: center;
+	min-height: 70vh;
+	padding-top: calc(var(--header-h) + var(--section-y)); // шапка прозрачная поверх страницы
+
+	&__in {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 28px;
+		text-align: center;
+	}
+
+	&__title {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(56px, 9vw, 120px);
+		line-height: 0.95;
+		letter-spacing: -0.03em;
+		color: var(--text);
+	}
+
+	&__text p {
+		max-width: 44ch;
+		font-size: 17px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 16px 28px;
+	}
+
+	@media (max-width: 768px) {
+		&__in {
+			gap: 24px;
+		}
+
+		&__text p {
+			font-size: 16px;
+		}
+	}
+}

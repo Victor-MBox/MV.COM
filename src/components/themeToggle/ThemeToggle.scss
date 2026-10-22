@@ -1,0 +1,53 @@
+// Переключатель темы в шапке: круг на стекле, одна иконка, поворот при смене
+.themeToggle {
+	position: relative;
+	flex: none;
+	width: 40px;
+	height: 40px;
+	border: 1px solid var(--glass-border);
+	border-radius: 50%;
+	background: var(--glass);
+	color: var(--text);
+	transition:
+		border-color var(--d-mid) var(--ease-out),
+		background-color var(--d-mid) var(--ease-out);
+
+	&:hover {
+		border-color: var(--border-strong);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+
+	&__icon {
+		position: absolute;
+		inset: 0;
+		width: 18px;
+		height: 18px;
+		margin: auto;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		opacity: 0;
+		transform: rotate(-90deg) scale(0.6);
+		transition:
+			opacity var(--d-mid) var(--ease-out),
+			transform var(--d-base) var(--ease-out);
+	}
+
+	&__icon--moon {
+		fill: currentColor;
+		stroke: none;
+	}
+
+	// В тёмной теме — солнце (действие «включить светлую»), в светлой — луна
+	&[data-theme='dark'] &__icon--sun,
+	&[data-theme='light'] &__icon--moon {
+		opacity: 1;
+		transform: none;
+	}
+}

@@ -1,0 +1,224 @@
+// Каталог услуг (главная и /services): шесть карточек, оговорка и строка для агентств. Цена и круг со стрелкой — как у WorkCard
+.offerGrid {
+	&__list {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 24px;
+
+		> li {
+			display: flex;
+			min-width: 0;
+		}
+	}
+
+	&__card {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 12px;
+		min-width: 0;
+	}
+
+	// /services: шире промежутки и поля карточек
+	&--spacious &__list {
+		gap: 32px;
+	}
+
+	&--spacious &__card {
+		gap: 14px;
+		padding: 36px;
+	}
+
+	&__slot {
+		display: grid;
+		place-items: center;
+		aspect-ratio: 16 / 9;
+		margin-bottom: 10px;
+		padding: 20px;
+		border-radius: var(--radius-field);
+		background: var(--box-deep);
+		overflow: hidden;
+
+		.miniUi {
+			width: 100%;
+			height: min(100%, 160px);
+			padding: 12px;
+		}
+	}
+
+	&__num {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--accent-text);
+	}
+
+	&__title {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 22px;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--text);
+		text-wrap: balance;
+
+		span {
+			font-family: inherit;
+			font-weight: inherit;
+		}
+	}
+
+	&__nowrap {
+		white-space: nowrap;
+	}
+
+	&__line {
+		flex: 1;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	// Без разделителя: высота блока цен у карточек разная, и линии в одном ряду стояли бы вразнобой
+	&__foot {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: auto;
+		padding-top: 12px;
+	}
+
+	&__price {
+		margin: 0;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.3;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	// Срок — тише цены: ориентир, а не обещание
+	&__term {
+		font-family: var(--font-body);
+		font-weight: 400;
+		font-size: 15px;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+	}
+
+	// Несколько цен (Offer.prices): подпись над ценой, строки друг под другом, срок — последней строкой
+	&__prices {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+
+		> div {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		dt {
+			font-size: 14px;
+			line-height: 1.4;
+			letter-spacing: -0.01em;
+			color: var(--text-muted);
+		}
+
+		dd {
+			margin: 0;
+		}
+
+		dd.offerGrid__term {
+			font-size: 15px;
+			line-height: 1.4;
+			color: var(--text-body);
+		}
+	}
+
+	// Круг со стрелкой: по ховеру карточки заливается --text, стрелка — цветом фона
+	&__arrow {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: none;
+		width: 40px;
+		height: 40px;
+		border: 1px solid var(--border-strong);
+		border-radius: 50%;
+		font-family: var(--font-mono);
+		font-size: 16px;
+		line-height: 1;
+		color: var(--text);
+		transition:
+			background-color var(--d-mid) var(--ease-out),
+			border-color var(--d-mid) var(--ease-out),
+			color var(--d-mid) var(--ease-out);
+	}
+
+	&__card:hover &__arrow {
+		background: var(--text);
+		border-color: var(--text);
+		color: var(--bg);
+	}
+
+	&__note {
+		max-width: 64ch;
+		margin-top: 24px;
+		font-size: 15px;
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+	}
+
+	// Агентства — строка на разделителе, а не седьмая карточка
+	&__agencies {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px 32px;
+		margin-top: 32px;
+		padding-top: 24px;
+		border-top: 1px solid var(--border);
+
+		p {
+			max-width: 62ch;
+			font-size: 17px;
+			line-height: 1.5;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	@media (max-width: 1200px) {
+		&__list {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 768px) {
+		&--spacious &__card {
+			padding: 24px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		&__list {
+			grid-template-columns: 1fr;
+		}
+
+		&--spacious &__list {
+			gap: 24px;
+		}
+
+		&__slot {
+			display: none;
+		}
+	}
+}

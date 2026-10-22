@@ -1,0 +1,178 @@
+// Статья (docs/design-spec.md §9): шапка с крошкой и тегами, тело в колонке 68ch (8/12 сетки), «Ещё в блоге» двумя карточками
+.postPage {
+	// Заголовок статьи длиннее обычного H1 — колонка шире 18ch шапки
+	&__head .sectionHead__title {
+		max-width: 24ch;
+	}
+
+	// Крошка и дата в шапке: обёртка и потомки наследуют моно от .pageHead__meta (глобальное `*` ставит шрифт текста)
+	&__meta,
+	&__meta * {
+		font-family: inherit;
+	}
+
+	&__tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 24px;
+	}
+
+	// Тело статьи: 8/12 сетки, но не шире 68ch
+	&__body {
+		grid-column: 1 / 9;
+		max-width: 68ch;
+		min-width: 0;
+		font-size: 17px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+
+		> * + * {
+			margin-top: 20px;
+		}
+
+		p {
+			color: var(--text-body);
+		}
+
+		a {
+			color: var(--text);
+			text-decoration: underline;
+			text-decoration-color: var(--border-strong);
+			text-underline-offset: 3px;
+			transition: text-decoration-color var(--d-fast);
+
+			&:hover {
+				text-decoration-color: var(--text);
+			}
+		}
+
+		strong,
+		b {
+			font-weight: 500;
+			color: var(--text);
+		}
+
+		h2 {
+			margin-top: 40px;
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 28px;
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			color: var(--text);
+
+			& + * {
+				margin-top: 16px;
+			}
+		}
+
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			list-style: none;
+			padding: 0;
+		}
+
+		li {
+			position: relative;
+			padding-left: 20px;
+
+			&::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0.65em;
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: var(--accent);
+			}
+		}
+
+		blockquote {
+			margin: 28px 0;
+			padding-left: 24px;
+			border-left: 2px solid var(--accent);
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 20px;
+			line-height: 1.35;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+
+		pre {
+			padding: 20px 24px;
+			border: 1px solid var(--border);
+			border-radius: var(--radius-field);
+			background: var(--box-deep);
+			overflow-x: auto;
+			font-family: var(--font-mono);
+			font-size: 14px;
+			line-height: 1.55;
+			letter-spacing: 0;
+			color: var(--text);
+			tab-size: 2;
+
+			code {
+				font-family: inherit;
+				font-size: inherit;
+				color: inherit;
+			}
+		}
+	}
+
+	&__more {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+
+	&__moreItem {
+		display: flex;
+		min-width: 0;
+	}
+
+	@media (max-width: 992px) {
+		&__grid {
+			display: block;
+		}
+
+		&__body {
+			max-width: 68ch;
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__body {
+			font-size: 16px;
+
+			h2 {
+				margin-top: 32px;
+				font-size: 24px;
+			}
+
+			blockquote {
+				font-size: 18px;
+				padding-left: 20px;
+			}
+
+			pre {
+				padding: 16px;
+			}
+		}
+
+		&__more {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+	}
+}

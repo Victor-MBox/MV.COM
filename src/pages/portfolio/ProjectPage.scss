@@ -1,0 +1,373 @@
+// Страница кейса (docs/design-spec.md §9; content.md §4.7): обложка с единственной тенью системы, счётчики по центру
+// как в секции «Цифры» главной, «Коротко» в три колонки с разделителями, техника в DimAccordion без карточек внутри
+.projectPage {
+	overflow-x: clip; // слайды галереи въезжают сбоку на 60px — не должны давать горизонтальной прокрутки
+
+	// ---------- Шапка: факты моно в две строки и статус с точкой --ok ----------
+	&__facts,
+	&__role {
+		display: block;
+		font-family: inherit;
+	}
+
+	&__role {
+		margin-top: 6px;
+	}
+
+	&__status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-family: inherit;
+		color: var(--text);
+
+		i {
+			display: block;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: var(--ok);
+		}
+	}
+
+	// ---------- Обложка на всю ширину контейнера ----------
+	&__cover {
+		border-radius: var(--radius-card);
+		overflow: hidden;
+		background: var(--box-deep);
+		box-shadow: var(--shadow-cover);
+
+		img {
+			display: block;
+			width: 100%;
+			height: auto;
+			aspect-ratio: 21 / 9;
+			object-fit: cover;
+			object-position: center top;
+		}
+	}
+
+	// ---------- Четыре счётчика по центру без разделителей (как .homeStats на главной) ----------
+	// Колонок столько, сколько подтверждённых счётчиков (--count ставит ProjectPage)
+	&__metrics {
+		display: grid;
+		grid-template-columns: repeat(var(--count, 4), minmax(0, 1fr));
+		gap: 32px;
+		margin-top: 80px;
+		text-align: center;
+
+		li {
+			display: flex;
+			justify-content: center;
+			min-width: 0;
+		}
+
+		.stat {
+			align-items: center;
+		}
+
+		.stat__num {
+			font-size: clamp(48px, 5vw, 72px);
+		}
+	}
+
+	// ---------- «Коротко»: три колонки с линиями сверху ----------
+	&__brief {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 32px;
+
+		li {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			padding-top: 20px;
+			border-top: 1px solid var(--border);
+			min-width: 0;
+		}
+
+		p {
+			font-size: 17px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	&__briefLabel {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// ---------- Стек и аккордеон техники ----------
+	&__stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__accordion {
+
+		// Внутри один пункт с блоками в две колонки — ограничение 56ch тела аккордеона здесь не нужно
+	}
+
+	&__tech {
+		display: flex;
+		flex-direction: column;
+		gap: 48px;
+		padding-top: 4px;
+	}
+
+	&__techBlock {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+
+		> h3 {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 20px;
+			line-height: 1.3;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+	}
+
+	// «Что внутри»: модули в две колонки, строки с разделителями, без рамок
+	&__features {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 48px;
+
+		li {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			padding: 16px 0;
+			border-top: 1px solid var(--border);
+			min-width: 0;
+		}
+
+		h4 {
+			font-family: var(--font-body);
+			font-weight: 500;
+			font-size: 16px;
+			line-height: 1.4;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+
+		p {
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	// «Этапы работы»: номер моно слева, заголовок и текст справа
+	&__steps {
+		display: flex;
+		flex-direction: column;
+
+		li {
+			display: grid;
+			grid-template-columns: 40px minmax(0, 1fr);
+			gap: 6px 24px;
+			align-items: baseline;
+			padding: 16px 0;
+			border-top: 1px solid var(--border);
+		}
+
+		h4 {
+			font-family: var(--font-body);
+			font-weight: 500;
+			font-size: 16px;
+			line-height: 1.4;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+
+		p {
+			grid-column: 2;
+			max-width: 64ch;
+			font-size: 15px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+	}
+
+	&__stepNum {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// ---------- Соседние кейсы: две карточки-ссылки с миниатюрой обложки ----------
+	&__nav {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+
+		li {
+			display: grid;
+			min-width: 0;
+		}
+
+		// Единственный сосед «Следующий» встаёт в правую колонку
+		li:only-child.projectPage__navItem--next {
+			grid-column: 2;
+		}
+	}
+
+	&__navLink {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+		padding: 24px;
+
+		&--next {
+			flex-direction: row-reverse;
+			text-align: right;
+		}
+	}
+
+	&__navCover {
+		display: block;
+		flex: 0 0 160px;
+		aspect-ratio: 16 / 10;
+		border-radius: var(--radius-field);
+		overflow: hidden;
+		background: var(--box-deep);
+
+		img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: left top;
+			transition: scale var(--d-slow) var(--ease-out);
+		}
+	}
+
+	&__navLink:hover &__navCover img {
+		scale: 1.04;
+	}
+
+	&__navText {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	&__navDir {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__navTitle {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(22px, 2vw, 28px);
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	// ---------- Адаптив ----------
+	@media (max-width: 992px) {
+		&__brief {
+			grid-template-columns: 1fr;
+			gap: 0;
+
+			li {
+				padding: 20px 0;
+			}
+
+			li:last-child {
+				border-bottom: 1px solid var(--border);
+			}
+		}
+
+		&__features {
+			grid-template-columns: 1fr;
+		}
+
+		&__nav {
+			grid-template-columns: 1fr;
+			gap: 16px;
+
+			li:only-child.projectPage__navItem--next {
+				grid-column: auto;
+			}
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__cover img {
+			aspect-ratio: 16 / 10;
+		}
+
+		&__metrics {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 40px 24px;
+			margin-top: 56px;
+		}
+
+		&__tech {
+			gap: 40px;
+		}
+
+		&__brief p,
+		&__features p,
+		&__steps p {
+			font-size: 16px;
+		}
+
+		&__navLink {
+			gap: 16px;
+		}
+
+		&__navCover {
+			flex-basis: 120px;
+		}
+	}
+
+	@media (max-width: 560px) {
+		&__metrics {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+
+		&__steps li {
+			grid-template-columns: 1fr;
+			gap: 4px;
+		}
+
+		&__steps p {
+			grid-column: auto;
+		}
+
+		&__navLink,
+		&__navLink--next {
+			flex-direction: column;
+			align-items: stretch;
+			text-align: left;
+		}
+
+		&__navCover {
+			flex-basis: auto;
+		}
+	}
+}

@@ -1,0 +1,121 @@
+# Публикация matsakov-victor.com: push в main (или запуск вручную) → проверки → `vite build` → по SSH на облачный сервер Beget:
+# обработчик формы (server/) rsync в /var/www/matsakov-victor.com/server + `npm ci` + перезапуск службы mvcom-contact,
+# затем dist/ в releases/<sha> → атомарное переключение симлинка current → nginx отдаёт новую сборку.
+# Сервер готовится один раз скриптом deploy/server-setup.sh (ключ deploy, конфиг nginx, служба systemd обработчика). Подробности — code.md §13.
+#
+# Что должно быть задано в репозитории (Settings → Secrets and variables → Actions):
+#   secret DEPLOY_SSH_KEY     — приватный ключ деплоя (пара к ключу в authorized_keys пользователя deploy)
+#   variable DEPLOY_HOST      — IP или хост сервера
+#   variable DEPLOY_KNOWN_HOSTS — строка(и) `ssh-keyscan -t ed25519 <host>`: отпечаток сервера, чтобы не доверять вслепую
+# Токен бота и SMTP в GitHub не нужны: они лежат на сервере в /etc/matsakov-victor.com/contact.env (server-setup.sh).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Деплои не параллелятся и не отменяются на полпути
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  DEPLOY_USER: deploy
+  DEPLOY_PATH: /var/www/matsakov-victor.com
+  SITE_URL: https://matsakov-victor.com
+  CONTACT_SERVICE: mvcom-contact
+
+jobs:
+  deploy:
+    name: Сборка и публикация
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://matsakov-victor.com
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+
+      - run: npm ci
+      - run: npm ci --prefix server
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test
+      # VITE_SITE_URL берётся из .env.production (в git)
+      - run: npm run build
+
+      - name: Настроить SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ vars.DEPLOY_HOST }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          test -n "$SSH_KEY"     || { echo "::error::Не задан секрет DEPLOY_SSH_KEY"; exit 1; }
+          test -n "$HOST"        || { echo "::error::Не задана переменная DEPLOY_HOST"; exit 1; }
+          test -n "$KNOWN_HOSTS" || { echo "::error::Не задана переменная DEPLOY_KNOWN_HOSTS"; exit 1; }
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host prod
+            HostName $HOST
+            User $DEPLOY_USER
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+          EOF
+          chmod 600 ~/.ssh/config
+
+      # Сначала обработчик, потом сайт: новая сборка никогда не говорит со старым обработчиком.
+      # node_modules и .env на сервере не трогаем (исключены и из передачи, и из удаления)
+      - name: Загрузить обработчик формы в server/
+        run: rsync -az --delete --exclude node_modules --exclude .env --chmod=D755,F644 server/ "prod:$DEPLOY_PATH/server/"
+
+      - name: Установить зависимости обработчика и перезапустить службу
+        run: |
+          ssh prod bash -s <<EOF
+          set -e
+          cd "$DEPLOY_PATH/server"
+          npm ci --omit=dev --no-audit --no-fund
+          sudo -n /usr/bin/systemctl restart "$CONTACT_SERVICE.service"
+          systemctl is-active "$CONTACT_SERVICE.service"
+          EOF
+
+      - name: Загрузить сборку в releases/${{ github.sha }}
+        run: rsync -az --delete --chmod=D755,F644 dist/ "prod:$DEPLOY_PATH/releases/${{ github.sha }}/"
+
+      - name: Переключить current, оставить 5 последних релизов
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          ssh prod bash -s <<EOF
+          set -e
+          cd "$DEPLOY_PATH"
+          ln -sfn "releases/$SHA" current.tmp
+          mv -Tf current.tmp current
+          ls -1dt releases/*/ | tail -n +6 | xargs -r rm -rf
+          echo "current -> \$(readlink current)"
+          EOF
+
+      - name: Проверить, что сервер отдаёт сайт и обработчик формы
+        env:
+          HOST: ${{ vars.DEPLOY_HOST }}
+        run: |
+          # Через IP с заголовком Host — не зависит от DNS; после certbot --redirect здесь 301, это нормально
+          curl -sS -o /dev/null -w 'сайт по IP: HTTP %{http_code}\n' --retry 3 --retry-delay 2 -H 'Host: matsakov-victor.com' "http://$HOST/"
+          curl -sS -o /dev/null -w 'обработчик по IP: HTTP %{http_code}\n' --retry 3 --retry-delay 2 -H 'Host: matsakov-victor.com' "http://$HOST/api/contact/health"
+          curl -fsS -o /dev/null -w 'сайт по домену: HTTP %{http_code}\n' "$SITE_URL/" \
+            || echo "::warning::$SITE_URL не отвечает — DNS ещё не указывает на сервер или не выпущен сертификат (certbot)"
+          # {ok:true, telegram:true, mail:true} — оба канала настроены в /etc/matsakov-victor.com/contact.env; false — канал отключён
+          curl -fsS -w '\n' "$SITE_URL/api/contact/health" \
+            || echo "::warning::$SITE_URL/api/contact/health не отвечает — см. journalctl -u $CONTACT_SERVICE на сервере"

@@ -1,0 +1,89 @@
+import type { MouseEventHandler, ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+import './Button.scss'
+
+export type ButtonVariant = 'primary' | 'secondary' | 'text'
+
+type Props = {
+	children: ReactNode
+	variant?: ButtonVariant
+	className?: string
+	/** Внутренняя ссылка */
+	to?: string
+	/** Внешняя ссылка или файл */
+	href?: string
+	download?: boolean
+	/** Открыть `href` в новой вкладке (внешние http-ссылки открываются в новой и без него) — например, PDF из public/ */
+	newTab?: boolean
+	type?: 'button' | 'submit'
+	disabled?: boolean
+	/** На всю ширину контейнера */
+	full?: boolean
+	/** Стрелка справа (по умолчанию только у варианта text) */
+	arrow?: boolean
+	/** Символ стрелки: «→» (сдвиг вправо по ховеру), «↗» (по диагонали), «↓» (вниз) */
+	arrowGlyph?: '→' | '↗' | '↓'
+	onClick?: MouseEventHandler<HTMLElement>
+	'aria-label'?: string
+}
+
+/** Кнопки системы (docs/design-spec.md §6.2): primary — пилюля с акцентом, secondary — стекло, text — текст со стрелкой */
+export default function Button({
+	children,
+	variant = 'primary',
+	className,
+	to,
+	href,
+	download,
+	newTab,
+	type = 'button',
+	disabled,
+	full,
+	arrow,
+	arrowGlyph = '→',
+	onClick,
+	'aria-label': ariaLabel,
+}: Props) {
+	const showArrow = arrow ?? variant === 'text'
+	const arrowDir = arrowGlyph === '↗' ? 'ne' : arrowGlyph === '↓' ? 'down' : 'right'
+	const cn = ['button', `button--${variant}`, full ? 'button--full' : '', className ?? ''].filter(Boolean).join(' ')
+	const inner = (
+		<>
+			<span className='button__label'>{children}</span>
+			{showArrow && (
+				<span className='button__arrow' data-dir={arrowDir} aria-hidden='true'>
+					{arrowGlyph}
+				</span>
+			)}
+		</>
+	)
+
+	if (to) {
+		return (
+			<Link to={to} className={cn} onClick={onClick} aria-label={ariaLabel}>
+				{inner}
+			</Link>
+		)
+	}
+	if (href) {
+		const external = newTab || /^https?:/.test(href)
+		return (
+			<a
+				href={href}
+				className={cn}
+				download={download}
+				target={external ? '_blank' : undefined}
+				rel={external ? 'noopener noreferrer' : undefined}
+				onClick={onClick}
+				aria-label={ariaLabel}
+			>
+				{inner}
+			</a>
+		)
+	}
+	return (
+		<button type={type} className={cn} disabled={disabled} onClick={onClick} aria-label={ariaLabel}>
+			{inner}
+		</button>
+	)
+}
