@@ -1,5 +1,11 @@
 import { FORM_DELIVERY_READY, FORM_TEST_MODE } from '../data/leadForm'
 
+/**
+ * Адрес обработчика (server/contact.js). Относительный, тот же origin: на боевом сервере за прокси nginx
+ * (deploy/nginx, location /api/), на dev-сервере — за прокси Vite (vite.config.ts → 127.0.0.1:3001, `npm run server`)
+ */
+export const CONTACT_ENDPOINT = '/api/contact'
+
 export type ContactPayload = {
 	/** Как обращаться — необязательно, пустая строка допустима */
 	name: string
@@ -11,6 +17,11 @@ export type ContactPayload = {
 	 * пустая строка — общее обращение
 	 */
 	topic: string
+	/**
+	 * Ловушка для ботов (TrapField): скрытое поле, человек его не видит и не заполняет. Непустое — сервер отвечает
+	 * успехом, но заявку отбрасывает
+	 */
+	website?: string
 }
 
 /** Ключ localStorage, которым в тестовом режиме имитируется сбой отправки: `localStorage.setItem(MOCK_KEY, 'fail')` */
@@ -24,13 +35,17 @@ function mockShouldFail() {
 	}
 }
 
+function confirmsDelivery(data: unknown) {
+	return typeof data === 'object' && data !== null && (data as { ok?: unknown }).ok === true
+}
+
 /**
- * Отправка заявки. Обработчика доставки пока нет (FORM_DELIVERY_READY = false):
- * - тестовый режим (dev-сервер, FORM_TEST_MODE) — имитация: задержка 900 мс и console.info с payload; сбой — через MOCK_KEY;
- * - иначе — ошибка: успех без подтверждения сервера не показывается. В публичной сборке форма до готовности и не
- *   выводится (FORM_ENABLED), вместо неё — «Написать в Telegram».
- * Для боевого режима: fetch к своему endpoint с проверкой res.ok здесь, затем FORM_DELIVERY_READY = true; серверную
- * проверку полей и защиту от спама держит обработчик. Интерфейс ContactPayload сохранить
+ * Отправка заявки:
+ * - боевой режим (FORM_DELIVERY_READY) — POST JSON на CONTACT_ENDPOINT; успех только при HTTP 2xx и `{ ok: true }`
+ *   в ответе, иначе исключение — форма показывает FORM_COPY.error и сохраняет введённое. Проверку полей на сервере
+ *   и защиту от спама (лимит по IP, ловушка `website`) держит обработчик, см. server/lib.js;
+ * - тестовый режим (dev-сервер при выключенном FORM_DELIVERY_READY, FORM_TEST_MODE) — имитация: задержка 900 мс
+ *   и console.info с payload; сбой — через MOCK_KEY
  */
 export async function submitContact(payload: ContactPayload): Promise<void> {
 	if (FORM_TEST_MODE) {
@@ -39,6 +54,13 @@ export async function submitContact(payload: ContactPayload): Promise<void> {
 		console.info('[contact] тестовый режим, заявка не отправлена:', payload)
 		return
 	}
-	if (!FORM_DELIVERY_READY) throw new Error('Отправка заявок не подключена: нужен обработчик, см. code.md §8')
-	throw new Error('Обработчик доставки отмечен готовым, но запрос к нему не реализован в submitContact')
+	if (!FORM_DELIVERY_READY) throw new Error('Отправка заявок отключена (FORM_DELIVERY_READY), см. code.md §8')
+
+	const res = await fetch(CONTACT_ENDPOINT, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(payload),
+	})
+	const data: unknown = await res.json().catch(() => null)
+	if (!res.ok || !confirmsDelivery(data)) throw new Error(`Обработчик не подтвердил доставку: HTTP ${res.status}`)
 }

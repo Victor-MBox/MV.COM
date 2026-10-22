@@ -13,6 +13,8 @@ type Props = {
 	/** Внешняя ссылка или файл */
 	href?: string
 	download?: boolean
+	/** Открыть `href` в новой вкладке (внешние http-ссылки открываются в новой и без него) — например, PDF из public/ */
+	newTab?: boolean
 	type?: 'button' | 'submit'
 	disabled?: boolean
 	/** На всю ширину контейнера */
@@ -33,6 +35,7 @@ export default function Button({
 	to,
 	href,
 	download,
+	newTab,
 	type = 'button',
 	disabled,
 	full,
@@ -63,7 +66,7 @@ export default function Button({
 		)
 	}
 	if (href) {
-		const external = /^https?:/.test(href)
+		const external = newTab || /^https?:/.test(href)
 		return (
 			<a
 				href={href}

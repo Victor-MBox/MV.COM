@@ -7,11 +7,12 @@
 export type LeadFieldKey = 'name' | 'contact' | 'message'
 
 // ---------- Готовность формы ----------
-// Политика и обработчик доставки появятся позже (ТЗ владельца от 21.10.2026, §7). Пока они не готовы, в публичной сборке
-// вместо формы — кнопка «Написать в Telegram»; на dev-сервере форма видна в тестовом режиме, и это подписано в ней.
+// Обработчик доставки подключён 22.10.2026 (server/contact.js: Telegram + почта). Политика обработки данных появится
+// позже (ТЗ владельца от 21.10.2026, §7): пока её нет, в публичной сборке вместо формы — кнопка «Написать в Telegram».
+// На dev-сервере форма видна всегда: с обработчиком отправляет по-настоящему через прокси Vite (`npm run server`).
 
-/** Обработчик доставки подключён: api/contact.ts отправляет на настоящий endpoint и ждёт подтверждения сервера */
-export const FORM_DELIVERY_READY: boolean = false
+/** Обработчик доставки подключён: api/contact.ts шлёт POST /api/contact (server/contact.js) и ждёт подтверждения сервера */
+export const FORM_DELIVERY_READY: boolean = true
 
 /** Страница политики обработки персональных данных — ссылка у чекбокса согласия. Документа пока нет */
 export const PRIVACY_POLICY_URL: string | undefined = undefined
@@ -19,11 +20,11 @@ export const PRIVACY_POLICY_URL: string | undefined = undefined
 /** Форма работает по-настоящему: есть и обработчик, и политика */
 export const FORM_LIVE = FORM_DELIVERY_READY && !!PRIVACY_POLICY_URL
 
-/** Тестовый режим: только dev-сервер и только пока форма не настоящая; отправка имитируется */
-export const FORM_TEST_MODE = import.meta.env.DEV && !FORM_LIVE
+/** Тестовый режим: dev-сервер при выключенном обработчике — отправка имитируется, в форме метка FORM_COPY.testMode */
+export const FORM_TEST_MODE = import.meta.env.DEV && !FORM_DELIVERY_READY
 
-/** Показывать форму (иначе — «Написать в Telegram») */
-export const FORM_ENABLED = FORM_LIVE || FORM_TEST_MODE
+/** Показывать форму (иначе — «Написать в Telegram»): в публичной сборке — только настоящую, на dev-сервере — всегда */
+export const FORM_ENABLED = FORM_LIVE || import.meta.env.DEV
 
 export const LEAD_FIELDS: {
 	key: LeadFieldKey
@@ -64,7 +65,7 @@ export const FORM_COPY = {
 	error: 'Не удалось отправить сообщение. Попробуйте ещё раз или напишите в Telegram.',
 	/** Метка тестового режима над кнопкой и под сообщением об успехе */
 	testMode: 'Тестовый режим: заявка никуда не отправляется',
-	/** Вместо формы, пока она не готова (FORM_ENABLED = false): кнопка в Telegram и почта строкой */
+	/** Вместо формы, пока нет политики (FORM_ENABLED = false в публичной сборке): кнопка в Telegram и почта строкой */
 	fallback: {
 		telegram: 'Написать в Telegram',
 		email: 'или на почту',

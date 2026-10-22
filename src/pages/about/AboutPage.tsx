@@ -59,8 +59,8 @@ export default function AboutPage() {
 				asideFirst
 				actions={
 					<>
-						<Button arrow onClick={() => open()}>
-							{ABOUT_INTRO.cta}
+						<Button href={ABOUT_INTRO.resume.href} newTab arrow arrowGlyph='↗'>
+							{ABOUT_INTRO.resume.label}
 						</Button>
 						<Button variant='secondary' to={ABOUT_INTRO.works.to}>
 							{ABOUT_INTRO.works.label}
@@ -134,11 +134,6 @@ export default function AboutPage() {
 						<Button variant='text' to={ABOUT_TEAMS.agencies.to}>
 							{ABOUT_TEAMS.agencies.label}
 						</Button>
-						{ABOUT_TEAMS.cv && (
-							<Button variant='text' href={ABOUT_TEAMS.cv} download arrowGlyph='↓'>
-								{ABOUT_TEAMS.cvLabel}
-							</Button>
-						)}
 					</Reveal>
 				</div>
 			</section>

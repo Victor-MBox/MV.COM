@@ -13,11 +13,13 @@ const ORDER = ['contact', 'message', 'consent'] as const
 /**
  * Состояние, проверка и отправка формы первого обращения — общие для LeadForm (модалка, /contacts) и формы футера.
  * Правка поля снимает его ошибку и выводит форму из «отправлено» / «ошибка отправки». Успех ставится только после
- * того, как submitContact не бросил исключение
+ * того, как submitContact не бросил исключение. `trap` — скрытое поле-ловушка для ботов (TrapField), уходит
+ * в ContactPayload.website и не проверяется
  */
 export function useLeadForm(topic: string) {
 	const [values, setValues] = useState(EMPTY)
 	const [consent, setConsentValue] = useState(false)
+	const [trap, setTrap] = useState('')
 	const [errors, setErrors] = useState<ContactErrors>({})
 	const [status, setStatus] = useState<LeadStatus>('idle')
 
@@ -54,9 +56,11 @@ export function useLeadForm(topic: string) {
 				contact: values.contact.trim(),
 				message: values.message.trim(),
 				topic,
+				website: trap,
 			})
 			setValues(EMPTY)
 			setConsentValue(false)
+			setTrap('')
 			setStatus('sent')
 		} catch {
 			setStatus('error')
@@ -64,5 +68,5 @@ export function useLeadForm(topic: string) {
 		return null
 	}
 
-	return { values, consent, errors, status, setField, setConsent, submit }
+	return { values, consent, trap, errors, status, setField, setConsent, setTrap, submit }
 }

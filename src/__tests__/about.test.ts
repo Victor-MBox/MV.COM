@@ -41,10 +41,8 @@ describe('«Обо мне»: опыт по резюме (ТЗ от 21.10.2026)',
 	})
 
 	it('ссылка на резюме — только на существующий PDF в public/', () => {
-		// Публичной версии резюме нет — ссылки нет; когда владелец положит файл, указать путь в ABOUT_TEAMS.cv
-		const cv = ABOUT_TEAMS.cv
-		if (cv === undefined) return
-		expect(cv).toMatch(/^\/[\w.-]+\.pdf$/)
-		expect(existsSync(resolve(process.cwd(), 'public', cv.slice(1)))).toBe(true)
+		const { href } = ABOUT_INTRO.resume
+		expect(href).toMatch(/^\/[\w.-]+\.pdf$/)
+		expect(existsSync(resolve(process.cwd(), 'public', href.slice(1)))).toBe(true)
 	})
 })

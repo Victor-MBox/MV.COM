@@ -29,8 +29,8 @@ export function normalizeSiteUrl(raw: string | undefined): string | undefined {
 
 /**
  * Единственная настройка публичного адреса для canonical и og:url — переменная сборки VITE_SITE_URL
- * (`.env.production` или переменные окружения хостинга, см. `.env.example`). Домен владелец ещё не подтвердил, поэтому
- * по умолчанию адреса нет и canonical / og:url не выводятся: фиктивный или локальный canonical хуже, чем никакого.
+ * (`.env.production` — https://matsakov-victor.com, подтверждён владельцем 22.10.2026; пример — `.env.example`). Без переменной
+ * (dev, тесты) адреса нет и canonical / og:url не выводятся: фиктивный или локальный canonical хуже, чем никакого.
  * Адрес не выводится из почты и не берётся из location — на dev и preview это localhost
  */
 export const SITE_URL = normalizeSiteUrl(import.meta.env.VITE_SITE_URL)
