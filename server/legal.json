@@ -1,0 +1,14 @@
+{
+  "consent": {
+    "version": "1.0",
+    "sha256": "1c8bd8908100e85fce86d94c9988105a46b7e6e598c75eda074bbc0aa4c0cd6b"
+  },
+  "policy": {
+    "version": "1.0",
+    "sha256": "eea67dac2738ad121303e40298129378252d1878eb0c9a66fe7d9406573242a8"
+  },
+  "cookies": {
+    "version": "1.0",
+    "sha256": "6360a73049665d49ebe0a8ed4deac1d77cb32591287b976f9a61aae8b0785aaf"
+  }
+}

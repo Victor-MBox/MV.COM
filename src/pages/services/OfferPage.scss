@@ -47,8 +47,9 @@
 		}
 	}
 
+	// Условия базового объёма рядом с ценой: до 48ch, чтобы «Одна платформа, готовый дизайн и существующий API…» не стоял столбиком
 	&__priceDetail {
-		max-width: 30ch;
+		max-width: 48ch;
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.5;
@@ -135,6 +136,11 @@
 		align-items: start;
 	}
 
+	// Без колонки «не подходит» (новые услуги от 22.10.2026): один список в ширину 8/12
+	&__fit--single {
+		grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+	}
+
 	&__colLabel {
 		margin-bottom: 12px;
 		font-family: var(--font-mono);
@@ -199,7 +205,78 @@
 		}
 	}
 
+	// Подпись под составом: границы стартового объёма, «событие — не продажа»
+	&__outcomesNote {
+		max-width: 64ch;
+		margin-top: 24px;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
+	}
+
+	// Дополнительный раздел абзацем (видимость в нейросетях, пример промо-игры) и подпись моно под ним
+	&__extraText {
+		max-width: 64ch;
+		font-size: 17px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__extraNote {
+		margin-top: 16px;
+		margin-bottom: 0;
+	}
+
 	// ---------- Стоимость и дополнительные работы: строки «подпись моно → содержимое», как .pricingBlock__details ----------
+	// Форматы работы (аудит / продвижение, настройка / ведение): строки с разделителями — название, цена кеглем бейджа, условия
+	&__formats {
+		margin-bottom: 16px;
+
+		> li {
+			padding: 16px 0;
+			border-top: 1px solid var(--border);
+
+			&:first-child {
+				padding-top: 0;
+				border-top: 0;
+			}
+		}
+
+		p {
+			margin-top: 8px;
+		}
+	}
+
+	&__formatHead {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 4px 24px;
+
+		h3 {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 18px;
+			line-height: 1.3;
+			letter-spacing: -0.01em;
+			color: var(--text);
+		}
+
+		strong {
+			font-family: var(--font-title);
+			font-weight: 500;
+			font-size: 24px;
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+			color: var(--text);
+		}
+	}
+
 	// Стартовая цена — кеглем бейджа шапки (подпись моно над ценой, если строк несколько), под ней одно пояснение
 	&__start {
 		display: flex;
@@ -267,6 +344,11 @@
 			line-height: 1.6;
 			letter-spacing: -0.01em;
 			color: var(--text-body);
+		}
+
+		// Второй абзац под ценой (formatsNote) — через отступ от пояснения
+		p + p {
+			margin-top: 8px;
 		}
 	}
 
@@ -387,7 +469,8 @@
 			min-height: 0;
 		}
 
-		&__fit {
+		&__fit,
+		&__fit--single {
 			grid-template-columns: 1fr;
 			gap: 40px;
 		}

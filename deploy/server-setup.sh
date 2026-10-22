@@ -97,13 +97,17 @@ if [[ ! -f "$CONTACT_ENV" ]]; then
 # Telegram: токен от @BotFather; chat_id — https://api.telegram.org/bot<ТОКЕН>/getUpdates после /start боту
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
-# Почта (дубль заявки): SMTP ящика на домене (Beget: smtp.beget.com, 465, логин — полный адрес). Пусто — только Telegram
+# Что уходит в Telegram: notice (по умолчанию) — только номер заявки, время и тема; full — полный текст заявки
+# (тогда Telegram нужно вписать в получатели данных в документах сайта, src/data/legal.ts)
+TELEGRAM_CONTENT=notice
+# Почта — основной канал: SMTP ящика на домене (Beget: smtp.beget.com, 465, логин — полный адрес). Без неё форма получает 503
 SMTP_HOST=
 SMTP_PORT=465
 SMTP_USER=
 SMTP_PASS=
 MAIL_FROM=
 MAIL_TO=
+# Записи о согласии пишутся в StateDirectory службы (/var/lib/mvcom-contact) — отдельной переменной не нужно
 # Порт службы — тот же, что в proxy_pass nginx-конфига сайта
 PORT=$CONTACT_PORT
 ENV
@@ -153,7 +157,8 @@ systemctl reload nginx
 cat <<MSG
 
 Готово: nginx отдаёт заглушку $DOMAIN из $SITE_DIR/current (sites-enabled/$ENABLED_NAME), у пользователя $DEPLOY_USER добавлен ключ деплоя,
-служба $CONTACT_SERVICE включена и стартует первым деплоем.
+служба $CONTACT_SERVICE включена и стартует первым деплоем. Повторный запуск обновляет конфиг nginx и юнит службы из папки deploy/
+(после обновления юнита: sudo systemctl restart $CONTACT_SERVICE).
 Проверка:  curl -sI -H 'Host: $DOMAIN' http://127.0.0.1/ | head -1   → HTTP/1.1 200 OK
 
 Дальше:

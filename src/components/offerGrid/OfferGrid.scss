@@ -1,4 +1,5 @@
-// Каталог услуг (главная и /services): шесть карточек, оговорка и строка для агентств. Цена и круг со стрелкой — как у WorkCard
+// Каталог услуг (главная, /services группами, обзор продвижения): карточки, оговорка, «Также могу помочь» и строка для
+// агентств. Цена и круг со стрелкой — как у WorkCard
 .offerGrid {
 	&__list {
 		display: grid;
@@ -19,12 +20,12 @@
 		min-width: 0;
 	}
 
-	// /services: шире промежутки и поля карточек
-	&--spacious &__list {
+	// /services и обзор продвижения: шире промежутки и поля карточек
+	&__list--spacious {
 		gap: 32px;
 	}
 
-	&--spacious &__card {
+	&__list--spacious &__card {
 		gap: 14px;
 		padding: 36px;
 	}
@@ -46,7 +47,16 @@
 		}
 	}
 
+	// Номер и название — одной строкой: номер моно по базовой линии заголовка, название переносится рядом
+	&__head {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		min-width: 0;
+	}
+
 	&__num {
+		flex: none;
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.4;
@@ -55,6 +65,7 @@
 	}
 
 	&__title {
+		min-width: 0;
 		font-family: var(--font-title);
 		font-weight: 500;
 		font-size: 22px;
@@ -89,6 +100,22 @@
 		gap: 16px;
 		margin-top: auto;
 		padding-top: 12px;
+	}
+
+	&__priceCol {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-width: 0;
+	}
+
+	// Условие под ценами: «Рекламный бюджет оплачивается отдельно» — моно, видно без ховера
+	&__cardFoot {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
 	}
 
 	&__price {
@@ -176,7 +203,32 @@
 		color: var(--text-muted);
 	}
 
-	// Агентства — строка на разделителе, а не седьмая карточка
+	// «Также могу помочь» (главная): подпись и пять текстовых ссылок в строку на разделителе
+	&__more {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 12px 32px;
+		margin-top: 32px;
+		padding-top: 24px;
+		border-top: 1px solid var(--border);
+	}
+
+	&__moreLabel {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.6;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__moreList {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+	}
+
+	// Агентства — строка на разделителе, а не ещё одна карточка
 	&__agencies {
 		display: flex;
 		flex-wrap: wrap;
@@ -203,7 +255,7 @@
 	}
 
 	@media (max-width: 768px) {
-		&--spacious &__card {
+		&__list--spacious &__card {
 			padding: 24px;
 		}
 	}
@@ -213,8 +265,14 @@
 			grid-template-columns: 1fr;
 		}
 
-		&--spacious &__list {
+		&__list--spacious {
 			gap: 24px;
+		}
+
+		&__more,
+		&__moreList {
+			flex-direction: column;
+			gap: 12px;
 		}
 
 		&__slot {

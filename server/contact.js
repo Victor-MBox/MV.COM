@@ -1,25 +1,98 @@
 // @ts-check
 /**
  * Обработчик формы первого обращения: принимает POST /api/contact с JSON ContactPayload (src/api/contact.ts),
- * проверяет поля (lib.js), шлёт заявку в Telegram и дублирует письмом. Слушает 127.0.0.1:3721 — снаружи доступен
- * только через прокси nginx (deploy/nginx/matsakov-victor.com.conf, location /api/), локально — через прокси Vite.
- * На сервере работает службой systemd mvcom-contact (deploy/systemd/), переменные — /etc/matsakov-victor.com/contact.env;
- * локально — `npm run server` в корне проекта с server/.env (образец — .env.example).
+ * проверяет поля и согласие (lib.js), доставляет заявку письмом (основной канал) и уведомляет в Telegram, пишет запись
+ * о согласии в журнал на сервере. Слушает 127.0.0.1:3721 — снаружи доступен только через прокси nginx
+ * (deploy/nginx/matsakov-victor.com.conf, location /api/), локально — через прокси Vite. На сервере работает службой
+ * systemd mvcom-contact (deploy/systemd/), переменные — /etc/matsakov-victor.com/contact.env, журнал согласий —
+ * StateDirectory /var/lib/mvcom-contact; локально — `npm run server` в корне проекта с server/.env (образец — .env.example).
  *
- * Ответы (JSON): 200 {ok:true} — доставлено хотя бы по одному каналу (или сработала ловушка для ботов);
- * 400 invalid (+fields) / bad_json; 413 too_large; 429 rate_limited; 502 delivery_failed — отказали все каналы;
- * 503 not_configured — не задан ни Telegram, ни SMTP. GET /api/contact/health — {ok, telegram, mail} для проверки деплоя
+ * Ответы (JSON): 200 {ok:true, requestId} — содержимое заявки доставлено и запись о согласии сделана (или сработала
+ * ловушка для ботов, или повтор уже принятой отправки); 400 invalid (+fields) / bad_json; 403 forbidden_origin;
+ * 413 too_large; 429 rate_limited; 502 delivery_failed — содержимое не дошло ни по одному каналу; 503 not_configured —
+ * нет канала с содержимым (почта или TELEGRAM_CONTENT=full) или некуда писать записи о согласии.
+ * GET /api/contact/health — {ok, ready, telegram, mail, telegramContent, consentLog, versions} для проверки деплоя и формы
  */
 import { createServer } from 'node:http'
+import { accessSync, constants, mkdirSync, readFileSync } from 'node:fs'
+import { appendFile, readFile, rename, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import nodemailer from 'nodemailer'
-import { RateLimiter, mailContent, parseLead, readConfig, telegramText } from './lib.js'
+import {
+	RateLimiter,
+	SeenSubmissions,
+	consentRecordLine,
+	contentChannels,
+	isAllowedOrigin,
+	mailContent,
+	makeRequestId,
+	parseLead,
+	pruneConsentLines,
+	readConfig,
+	readLegal,
+	telegramNotice,
+	telegramText,
+} from './lib.js'
 
 const MAX_BODY_BYTES = 32 * 1024
 const UPSTREAM_TIMEOUT_MS = 15_000
+const PRUNE_EVERY_MS = 24 * 60 * 60_000
+const CONSENT_FILE = 'consents.jsonl'
 
 const cfg = readConfig(process.env)
+/** Редакции документов, которые принимает сервер; файл лежит рядом и попадает на сервер вместе с кодом */
+const legal = readLegal(JSON.parse(readFileSync(new URL('./legal.json', import.meta.url), 'utf8')))
 const limiter = new RateLimiter(cfg.rate)
-setInterval(() => limiter.prune(), 60_000).unref()
+/** @type {SeenSubmissions<{ ok: true, requestId: string }>} */
+const seen = new SeenSubmissions(cfg.rate.windowMs)
+setInterval(() => {
+	limiter.prune()
+	seen.prune()
+}, 60_000).unref()
+
+/**
+ * Строка в журнал (journald на сервере). Содержимое заявки и контакт сюда не пишутся — только служебные данные
+ * @param {string} event
+ * @param {Record<string, unknown>} [data]
+ */
+function log(event, data = {}) {
+	console.log(`[contact] ${event} ${JSON.stringify(data)}`)
+}
+
+// ---------- Журнал согласий ----------
+
+/** Путь к файлу записей о согласии, если папка задана и доступна на запись; иначе null — заявки не принимаются */
+const consentPath = (() => {
+	if (!cfg.consentDir) return null
+	try {
+		mkdirSync(cfg.consentDir, { recursive: true, mode: 0o700 })
+		accessSync(cfg.consentDir, constants.W_OK)
+		return join(cfg.consentDir, CONSENT_FILE)
+	} catch (err) {
+		console.warn('[contact] папка записей о согласии недоступна:', cfg.consentDir, err instanceof Error ? err.message : err)
+		return null
+	}
+})()
+
+/** Удаляет записи старше срока хранения обращений (CONSENT_RETENTION_DAYS); файл переписывается атомарно */
+async function pruneConsentLog() {
+	if (!consentPath) return
+	try {
+		const text = await readFile(consentPath, 'utf8').catch(() => '')
+		if (!text) return
+		const next = pruneConsentLines(text, Date.now() - cfg.retentionDays * 86_400_000)
+		if (next === text) return
+		const tmp = `${consentPath}.tmp`
+		await writeFile(tmp, next, { mode: 0o600 })
+		await rename(tmp, consentPath)
+		log('consent_log_pruned', { kept: next.split('\n').filter(Boolean).length })
+	} catch (err) {
+		log('consent_log_prune_failed', { error: err instanceof Error ? err.message : String(err) })
+	}
+}
+
+const contentReady = contentChannels(cfg).length > 0
+const ready = contentReady && consentPath !== null
 
 const mailer = cfg.mail
 	? nodemailer.createTransport({
@@ -32,15 +105,6 @@ const mailer = cfg.mail
 			socketTimeout: UPSTREAM_TIMEOUT_MS,
 		})
 	: null
-
-/**
- * Строка в журнал (journald на сервере). Содержимое заявки и контакт сюда не пишутся — только служебные данные
- * @param {string} event
- * @param {Record<string, unknown>} [data]
- */
-function log(event, data = {}) {
-	console.log(`[contact] ${event} ${JSON.stringify(data)}`)
-}
 
 /**
  * @param {import('node:http').ServerResponse} res
@@ -88,27 +152,32 @@ function readJson(req) {
 	})
 }
 
-/**
- * Адрес посетителя. За nginx настоящий — в X-Real-IP (proxy_set_header в конфиге); служба слушает только 127.0.0.1,
- * так что подставить заголовок снаружи нельзя
- * @param {import('node:http').IncomingMessage} req
- */
-function clientIp(req) {
-	const real = req.headers['x-real-ip']
-	return (Array.isArray(real) ? real[0] : real) || req.socket.remoteAddress || 'unknown'
+/** @param {string | string[] | undefined} h */
+function header(h) {
+	return Array.isArray(h) ? h[0] : h
 }
 
 /**
- * Страница, с которой отправлена форма: Referer без query; нет или не разобрать — undefined
+ * Адрес посетителя. За nginx настоящий — в X-Real-IP (proxy_set_header в конфиге); служба слушает только 127.0.0.1,
+ * так что подставить заголовок снаружи нельзя. Нужен только для лимита частоты — в журнал согласий не пишется
+ * @param {import('node:http').IncomingMessage} req
+ */
+function clientIp(req) {
+	return header(req.headers['x-real-ip']) || req.socket.remoteAddress || 'unknown'
+}
+
+/**
+ * Страница, с которой отправлена форма: Referer без query (в письмо — с доменом, в запись о согласии — только путь);
+ * нет или не разобрать — undefined
  * @param {string | undefined} referer
  */
 function pageFrom(referer) {
-	if (!referer) return undefined
+	if (!referer) return { full: undefined, path: undefined }
 	try {
 		const u = new URL(referer)
-		return `${u.origin}${u.pathname}`
+		return { full: `${u.origin}${u.pathname}`, path: u.pathname }
 	} catch {
-		return undefined
+		return { full: undefined, path: undefined }
 	}
 }
 
@@ -127,19 +196,25 @@ async function sendTelegram(tg, text) {
 }
 
 /**
- * Рассылает заявку по всем настроенным каналам параллельно. Заявка считается доставленной, если дошёл хотя бы один
- * канал; отказ остальных попадает в журнал, посетитель о нём не узнаёт
+ * Рассылает заявку по настроенным каналам параллельно. Заявка доставлена, если содержимое дошло хотя бы по одному
+ * каналу с содержимым (почта; Telegram — только в режиме full). Уведомление без содержимого доставкой не считается;
+ * отказы попадают в журнал, посетитель о них не узнаёт
  * @param {import('./lib.js').Lead} lead
  * @param {import('./lib.js').LeadMeta} meta
  */
 async function deliver(lead, meta) {
-	/** @type {{ channel: string, run: Promise<unknown> }[]} */
+	/** @type {{ channel: string, content: boolean, run: Promise<unknown> }[]} */
 	const jobs = []
-	if (cfg.telegram) jobs.push({ channel: 'telegram', run: sendTelegram(cfg.telegram, telegramText(lead, meta)) })
+	if (cfg.telegram) {
+		const full = cfg.telegram.content === 'full'
+		const text = full ? telegramText(lead, meta) : telegramNotice({ ...meta, topic: lead.topic })
+		jobs.push({ channel: 'telegram', content: full, run: sendTelegram(cfg.telegram, text) })
+	}
 	if (mailer && cfg.mail) {
 		const { subject, text, replyTo } = mailContent(lead, meta)
 		jobs.push({
 			channel: 'mail',
+			content: true,
 			run: mailer.sendMail({ from: { name: 'Форма сайта', address: cfg.mail.from }, to: cfg.mail.to, replyTo, subject, text }),
 		})
 	}
@@ -148,16 +223,18 @@ async function deliver(lead, meta) {
 	const delivered = []
 	/** @type {string[]} */
 	const failed = []
+	let contentDelivered = false
 	results.forEach((r, i) => {
-		const { channel } = jobs[i]
+		const { channel, content } = jobs[i]
 		if (r.status === 'fulfilled') {
 			delivered.push(channel)
+			if (content) contentDelivered = true
 		} else {
 			failed.push(channel)
 			log('channel_failed', { channel, error: r.reason instanceof Error ? r.reason.message : String(r.reason) })
 		}
 	})
-	return { delivered, failed }
+	return { delivered, failed, contentDelivered }
 }
 
 /**
@@ -167,14 +244,34 @@ async function deliver(lead, meta) {
 async function handle(req, res) {
 	const path = (req.url || '/').split('?')[0]
 	if (path === '/api/contact/health' && req.method === 'GET') {
-		return send(res, 200, { ok: true, telegram: !!cfg.telegram, mail: !!cfg.mail })
+		return send(res, 200, {
+			ok: true,
+			ready,
+			telegram: !!cfg.telegram,
+			mail: !!cfg.mail,
+			telegramContent: cfg.telegram?.content ?? 'off',
+			consentLog: consentPath !== null,
+			versions: { consent: legal.consent.version, policy: legal.policy.version },
+		})
 	}
 	if (path !== '/api/contact') return send(res, 404, { ok: false, error: 'not_found' })
 	if (req.method !== 'POST') {
 		res.setHeader('allow', 'POST')
 		return send(res, 405, { ok: false, error: 'method_not_allowed' })
 	}
-	if (!cfg.telegram && !cfg.mail) return send(res, 503, { ok: false, error: 'not_configured' })
+	if (!ready) return send(res, 503, { ok: false, error: 'not_configured' })
+
+	if (
+		!isAllowedOrigin({
+			origin: header(req.headers.origin),
+			host: header(req.headers.host),
+			secFetchSite: header(req.headers['sec-fetch-site']),
+			allowed: cfg.allowedOrigins,
+		})
+	) {
+		log('forbidden_origin', { origin: header(req.headers.origin) })
+		return send(res, 403, { ok: false, error: 'forbidden_origin' })
+	}
 
 	const ip = clientIp(req)
 	if (!limiter.take(ip)) {
@@ -192,21 +289,69 @@ async function handle(req, res) {
 		return send(res, code === 'too_large' ? 413 : 400, { ok: false, error: code })
 	}
 
-	const parsed = parseLead(body)
-	if (!parsed.ok) return send(res, 400, { ok: false, error: 'invalid', fields: parsed.fields })
+	const parsed = parseLead(body, { consentVersion: legal.consent.version })
+	if (!parsed.ok) {
+		log('invalid', { ip, fields: parsed.fields })
+		return send(res, 400, { ok: false, error: 'invalid', fields: parsed.fields })
+	}
 	if (parsed.trap) {
 		// Бот заполнил скрытое поле: отвечаем как при успехе, но никуда не отправляем
 		log('trap', { ip })
-		return send(res, 200, { ok: true })
+		return send(res, 200, { ok: true, requestId: makeRequestId() })
 	}
 
-	const { delivered, failed } = await deliver(parsed.lead, { page: pageFrom(req.headers.referer) })
-	if (delivered.length === 0) {
-		log('delivery_failed', { ip, failed })
+	// Повтор уже принятой отправки (обрыв сети после успеха, двойной клик): прежний ответ, второй заявки нет
+	const previous = parsed.submissionId ? seen.get(parsed.submissionId) : undefined
+	if (previous) {
+		log('duplicate', { ip, requestId: previous.requestId })
+		return send(res, 200, previous)
+	}
+
+	const receivedAt = new Date()
+	const requestId = makeRequestId(receivedAt)
+	const page = pageFrom(header(req.headers.referer))
+	/** @type {import('./lib.js').LeadMeta} */
+	const meta = {
+		requestId,
+		receivedAt,
+		formId: parsed.formId,
+		page: page.full,
+		consentVersion: legal.consent.version,
+		policyVersion: legal.policy.version,
+	}
+
+	const { delivered, failed, contentDelivered } = await deliver(parsed.lead, meta)
+	if (!contentDelivered) {
+		log('delivery_failed', { ip, requestId, delivered, failed })
 		return send(res, 502, { ok: false, error: 'delivery_failed' })
 	}
-	log('delivered', { ip, delivered, failed, topic: parsed.lead.topic, messageLength: parsed.lead.message.length })
-	return send(res, 200, { ok: true })
+
+	// Запись о согласии — после доставки, чтобы не плодить записи о заявках, которых оператор не получил. Сбой записи
+	// в журнал (переполнение диска) не отменяет принятую заявку: её письмо само содержит номер, время и редакцию согласия
+	if (consentPath) {
+		const line = consentRecordLine({
+			requestId,
+			receivedAt,
+			formId: parsed.formId,
+			consentVersion: legal.consent.version,
+			consentSha256: legal.consent.sha256,
+			policyVersion: legal.policy.version,
+			page: page.path,
+			topic: parsed.lead.topic,
+			delivered,
+		})
+		try {
+			await appendFile(consentPath, line, { mode: 0o600 })
+		} catch (err) {
+			log('consent_log_failed', { requestId, error: err instanceof Error ? err.message : String(err) })
+		}
+	}
+
+	/** @type {{ ok: true, requestId: string }} */
+	const response = { ok: true, requestId }
+	seen.set(parsed.submissionId, response)
+	log('delivered', { ip, requestId, formId: parsed.formId, delivered, failed, topic: parsed.lead.topic, messageLength: parsed.lead.message.length })
+	return send(res, 200, response)
 }
 
 const server = createServer((req, res) => {
@@ -218,15 +363,30 @@ const server = createServer((req, res) => {
 })
 
 server.listen(cfg.port, cfg.host, () => {
-	log('listening', { host: cfg.host, port: cfg.port, telegram: !!cfg.telegram, mail: !!cfg.mail })
-	if (!cfg.telegram && !cfg.mail) {
-		console.warn('[contact] не заданы ни TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID, ни SMTP_HOST + SMTP_USER + SMTP_PASS — заявки принимать некуда, форма получит 503')
+	log('listening', {
+		host: cfg.host,
+		port: cfg.port,
+		ready,
+		telegram: cfg.telegram?.content ?? 'off',
+		mail: !!cfg.mail,
+		consentLog: consentPath,
+		consentVersion: legal.consent.version,
+	})
+	if (!contentReady) {
+		console.warn(
+			'[contact] нет канала с содержимым заявки: задайте SMTP_HOST + SMTP_USER + SMTP_PASS (почта) или TELEGRAM_CONTENT=full — пока форма получает 503',
+		)
 	}
-	// Проверка SMTP при старте — только в журнал: недоступная почта не должна мешать принимать заявки в Telegram
+	if (!consentPath) {
+		console.warn('[contact] не задана папка записей о согласии (CONSENT_LOG_DIR или StateDirectory systemd) — заявки не принимаются, форма получает 503')
+	}
+	// Проверка SMTP при старте — только в журнал: недоступная почта не должна мешать старту службы
 	mailer?.verify().then(
 		() => log('smtp_ok', { host: cfg.mail?.host }),
 		err => console.warn('[contact] SMTP недоступен:', err instanceof Error ? err.message : err),
 	)
+	void pruneConsentLog()
+	setInterval(() => void pruneConsentLog(), PRUNE_EVERY_MS).unref()
 })
 
 for (const signal of /** @type {NodeJS.Signals[]} */ (['SIGINT', 'SIGTERM'])) {

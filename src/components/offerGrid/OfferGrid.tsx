@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { CATALOG_COPY } from '../../data/home'
-import { AGENCIES_KEY, CATALOG, getOffer, offerPath } from '../../data/offers'
+import { AGENCIES_KEY, CATALOG, MORE_OFFERS, getOffer, offerNumber, offerPath } from '../../data/offers'
 import type { Offer } from '../../data/offers'
 import Box from '../box/Box'
 import Button from '../button/Button'
@@ -12,8 +13,12 @@ import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
 import './OfferGrid.scss'
 
 type Props = {
-	/** /services: больше воздуха между карточками и внутри них */
+	/** Карточки; по умолчанию — шесть основных услуг CATALOG (главная) */
+	offers?: Offer[]
+	/** /services и обзор продвижения: больше воздуха между карточками и внутри них */
 	spacious?: boolean
+	/** Подпись списка для диктора */
+	label?: string
 }
 
 /** Длительность сцены мини-интерфейса (самая длинная — два пульса статуса по 1.6 с) и сдвиг соседних колонок */
@@ -34,7 +39,7 @@ const keepHyphenated = (text: string) =>
 /**
  * Иллюстрация услуги (MiniUi — та же, что в шапке страницы услуги): сцена микроанимаций играет один раз, когда карточка
  * появилась на экране (класс is-playing на .miniUiHost, со сдвигом по колонке), и снимается после сцены или когда карточка
- * ушла с экрана — шесть сцен не крутятся одновременно. Повтор — по ховеру и фокусу карточки (MiniUi.scss). При
+ * ушла с экрана — сцены не крутятся одновременно и вне экрана. Повтор — по ховеру и фокусу карточки (MiniUi.scss). При
  * reduced-motion наблюдателя нет: стоит исходная композиция
  */
 function OfferScene({ variant, column }: { variant: MiniUiVariant; column: number }) {
@@ -77,19 +82,25 @@ function OfferScene({ variant, column }: { variant: MiniUiVariant; column: numbe
 	)
 }
 
-/** Цена и срок карточки: «от 90 000 ₽ · 2–3 недели» одной строкой или строки «подпись над ценой» и срок отдельно */
+/**
+ * Цена карточки: одной строкой «от 90 000 ₽ · 2–3 недели» (хвост — срок или условие cardNote: «одна платформа, готовые
+ * дизайн и API») либо строки «подпись над ценой» (prices) и срок отдельно. cardPrice — одна строка вместо строк
+ * prices (SEO: только ежемесячный тариф). Под ценой — cardFoot («Рекламный бюджет оплачивается отдельно»)
+ */
 function OfferPrice({ offer }: { offer: Offer }) {
-	if (!offer.prices) {
+	const single = offer.cardPrice ?? (offer.prices ? undefined : offer.priceFrom)
+	if (single) {
+		const tail = offer.cardNote ?? (offer.hideTermOnCard ? undefined : offer.term)
 		return (
 			<p className='offerGrid__price'>
-				{offer.priceFrom}
-				<span className='offerGrid__term'> · {offer.term}</span>
+				{single}
+				{tail && <span className='offerGrid__term'> · {tail}</span>}
 			</p>
 		)
 	}
 	return (
 		<dl className='offerGrid__prices'>
-			{offer.prices.map(p => (
+			{offer.prices?.map(p => (
 				<div key={p.label}>
 					<dt>{p.label}</dt>
 					<dd className='offerGrid__price'>{p.price}</dd>
@@ -97,7 +108,7 @@ function OfferPrice({ offer }: { offer: Offer }) {
 			))}
 			{!offer.hideTermOnCard && (
 				<div>
-					<dt>Срок</dt>
+					<dt>{offer.termLabel ?? 'Срок'}</dt>
 					<dd className='offerGrid__term'>{offer.term}</dd>
 				</div>
 			)}
@@ -106,40 +117,69 @@ function OfferPrice({ offer }: { offer: Offer }) {
 }
 
 /**
- * Каталог услуг (ТЗ от 21.10.2026, §7) — один и тот же на главной и /services: шесть статичных карточек CATALOG
- * (название, описание, цена и срок видны сразу, без ховера и переключателей) с иллюстрацией услуги, под сеткой —
- * оговорка про ориентиры и компактная строка для агентств. Вся карточка — ссылка на страницу услуги, внутри нет других
- * интерактивных элементов. Сетка 3 → 2 (≤1200) → 1 (≤640, иллюстрации скрыты)
+ * Сетка карточек услуг (ТЗ от 21.10.2026, §7; группы и новые карточки — ТЗ от 22.10.2026, §4): карточка — номер услуги
+ * (offerNumber, один и тот же в шапке её страницы) в одной строке с названием (правка владельца от 22.10.2026), описание, цена и условия видны сразу, без ховера и
+ * переключателей, иллюстрация услуги, круг со стрелкой. Вся карточка — ссылка на страницу услуги, внутри нет других
+ * интерактивных элементов. Сетка 3 → 2 (≤1200) → 1 (≤640, иллюстрации скрыты). Оговорка и строка для агентств под
+ * сеткой — CatalogFooter
  */
-export default function OfferGrid({ spacious = false }: Props) {
+export default function OfferGrid({ offers = CATALOG, spacious = false, label = 'Услуги' }: Props) {
 	return (
-		<div className={`offerGrid${spacious ? ' offerGrid--spacious' : ''}`}>
-			<ul className='offerGrid__list' aria-label='Услуги'>
-				{CATALOG.map((offer, i) => {
-					const variant = miniUiVariant(offer.key)
-					return (
-						<Reveal as='li' key={offer.key} index={i}>
-							<Box to={offerPath(offer)} className='offerGrid__card' glow cursor='открыть'>
-								{variant && <OfferScene variant={variant} column={i % 3} />}
+		<ul className={`offerGrid__list${spacious ? ' offerGrid__list--spacious' : ''}`} aria-label={label}>
+			{offers.map((offer, i) => {
+				const variant = miniUiVariant(offer.key)
+				return (
+					<Reveal as='li' key={offer.key} index={i}>
+						<Box to={offerPath(offer)} className='offerGrid__card' glow cursor='открыть'>
+							{variant && <OfferScene variant={variant} column={i % 3} />}
+							<div className='offerGrid__head'>
 								<span className='offerGrid__num' aria-hidden='true'>
-									{String(i + 1).padStart(2, '0')}
+									{offerNumber(offer)}
 								</span>
 								<h3 className='offerGrid__title'>{keepHyphenated(offer.title)}</h3>
-								<p className='offerGrid__line'>{offer.line}</p>
-								<div className='offerGrid__foot'>
+							</div>
+							<p className='offerGrid__line'>{offer.line}</p>
+							<div className='offerGrid__foot'>
+								<div className='offerGrid__priceCol'>
 									<OfferPrice offer={offer} />
-									<span className='offerGrid__arrow' aria-hidden='true'>
-										↗
-									</span>
+									{offer.cardFoot && <p className='offerGrid__cardFoot'>{offer.cardFoot}</p>}
 								</div>
-							</Box>
-						</Reveal>
-					)
-				})}
+								<span className='offerGrid__arrow' aria-hidden='true'>
+									↗
+								</span>
+							</div>
+						</Box>
+					</Reveal>
+				)
+			})}
+		</ul>
+	)
+}
+
+/** «Также могу помочь» (главная, ТЗ от 22.10.2026, §4): пять новых услуг обычными ссылками, без второго каталога */
+export function MoreOffers() {
+	return (
+		<div className='offerGrid__more'>
+			<p className='offerGrid__moreLabel'>{CATALOG_COPY.more}</p>
+			<ul className='offerGrid__moreList' aria-label={CATALOG_COPY.more}>
+				{MORE_OFFERS.map(o => (
+					<li key={o.key}>
+						<Button variant='text' to={offerPath(o)}>
+							{o.title}
+						</Button>
+					</li>
+				))}
 			</ul>
+		</div>
+	)
+}
 
+/** Под сеткой каталога: оговорка про ориентиры, слот (ссылки «Также могу помочь» на главной) и строка для агентств */
+export function CatalogFooter({ children }: { children?: ReactNode }) {
+	return (
+		<div className='offerGrid__tail'>
 			<p className='offerGrid__note'>{CATALOG_COPY.note}</p>
-
+			{children}
 			{AGENCIES && (
 				<div className='offerGrid__agencies'>
 					<p>{CATALOG_COPY.agencies}</p>

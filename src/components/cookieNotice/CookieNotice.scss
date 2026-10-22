@@ -1,0 +1,202 @@
+// Уведомление о хранилище внизу экрана и окно «Настройки cookie» (оверлей и диалог — классы .modal из ContactModal.scss)
+.cookieNotice {
+	position: fixed;
+	right: 16px;
+	bottom: 16px;
+	left: 16px;
+	z-index: var(--z-notice);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px 32px;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 20px 24px;
+	padding-bottom: max(20px, env(safe-area-inset-bottom));
+	border: 1px solid var(--border);
+	border-radius: var(--radius-card);
+	background: var(--box);
+	box-shadow: var(--shadow-cover);
+
+	&__text {
+		flex: 1 1 360px;
+		min-width: 0;
+		font-size: 14px;
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+
+		a {
+			color: var(--text);
+			text-decoration: underline;
+			text-decoration-color: var(--border-strong);
+			text-underline-offset: 3px;
+			transition: text-decoration-color var(--d-fast);
+
+			&:hover {
+				text-decoration-color: var(--text);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+				border-radius: 2px;
+			}
+		}
+	}
+
+	&__actions {
+		display: flex;
+		flex: none;
+		gap: 10px;
+
+		// Компактнее системных кнопок: панель служебная
+		.button {
+			height: 44px;
+			padding: 0 20px;
+			font-size: 15px;
+		}
+	}
+
+	@media (max-width: 560px) {
+		right: 8px;
+		bottom: 8px;
+		left: 8px;
+		padding: 16px;
+		gap: 12px;
+
+		&__actions {
+			width: 100%;
+
+			.button {
+				flex: 1;
+			}
+		}
+	}
+}
+
+.cookieSettings {
+	max-width: 640px;
+
+	// Заголовок получает фокус программно при открытии — без рамки
+	.modal__title:focus {
+		outline: none;
+	}
+
+	&__label {
+		margin-top: 24px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1;
+		letter-spacing: 0.06em;
+		color: var(--text-muted);
+
+		span {
+			font-family: inherit;
+			color: var(--accent);
+		}
+	}
+
+	&__list {
+		margin-top: 12px;
+
+		li {
+			display: grid;
+			grid-template-columns: 150px minmax(0, 1fr) auto;
+			gap: 8px 16px;
+			align-items: baseline;
+			padding: 12px 0;
+			border-top: 1px solid var(--border);
+		}
+
+		li:last-child {
+			border-bottom: 1px solid var(--border);
+		}
+	}
+
+	&__list--optional li {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	&__key {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		letter-spacing: 0;
+		color: var(--text);
+		overflow-wrap: anywhere;
+	}
+
+	&__purpose {
+		font-size: 14px;
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__state {
+		font-family: var(--font-mono);
+		font-size: 12px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		white-space: nowrap;
+		color: var(--text-muted);
+
+		&.is-present {
+			color: var(--accent-text);
+		}
+	}
+
+	&__done {
+		margin-top: 20px;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--text-body);
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	&__more {
+		margin-top: 20px;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--text-muted);
+
+		a {
+			color: var(--text);
+			text-decoration: underline;
+			text-decoration-color: var(--border-strong);
+			text-underline-offset: 3px;
+
+			&:hover {
+				text-decoration-color: var(--text);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+				border-radius: 2px;
+			}
+		}
+	}
+
+	@media (max-width: 560px) {
+		&__list li {
+			grid-template-columns: 1fr;
+			gap: 4px;
+		}
+
+		&__state {
+			white-space: normal;
+		}
+
+		&__actions .button {
+			width: 100%;
+		}
+	}
+}

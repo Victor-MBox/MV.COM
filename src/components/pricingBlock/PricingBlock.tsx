@@ -10,24 +10,17 @@ import './PricingBlock.scss'
 type Props = {
 	label?: string
 	title?: Headline
-	/** Полная версия /services (content.md §4.3): под панелью — как читать цифры и чем не занимаюсь */
-	details?: boolean
 	id?: string
 }
 
-/** Строки полной версии: подпись моно слева, содержимое справа */
-const DETAIL_ROWS = (): { label: string; items: string[] }[] => [
-	{ label: 'как читать цифры', items: PRICING.reading },
-	{ label: 'чем не занимаюсь', items: PRICING.notDoing },
-]
-
 /**
  * Стоимость и условия работы (ТЗ от 21.10.2026, §9): три формата PriceCard, панель «Что согласуем перед началом работ /
- * Что влияет на цену» и строка «после запуска» — исправление своих ошибок отдельно от новых задач. Третий формат —
- * «Техническое обслуживание» со ссылкой на пакеты /services/support#packages. На /services с `details` — ещё строки
- * «как читать цифры» и «чем не занимаюсь» (пример «8 часов × 3 500 ₽» снят: его заменили пакеты)
+ * Что влияет на цену» и строки «после запуска» (исправление своих ошибок отдельно от новых задач) и «почасовая ставка»
+ * (ставка разработки не относится к продвижению и рекламе — ТЗ от 22.10.2026). Третий формат — «Техническое
+ * обслуживание» со ссылкой на пакеты /services/support#packages. Один и тот же блок на главной и /services: строки
+ * «как читать цифры» и «чем не занимаюсь» сняты 22.10.2026
  */
-export default function PricingBlock({ label = 'стоимость', title = H2.pricing, details = false, id = 'pricing' }: Props) {
+export default function PricingBlock({ label = 'стоимость', title = H2.pricing, id = 'pricing' }: Props) {
 	const { open } = useContactModal()
 
 	return (
@@ -70,23 +63,12 @@ export default function PricingBlock({ label = 'стоимость', title = H2.
 								<p>{AFTER_LAUNCH}</p>
 							</dd>
 						</div>
-						{details &&
-							DETAIL_ROWS().map(row => (
-								<div key={row.label}>
-									<dt>{row.label}</dt>
-									<dd>
-										{row.items.length === 1 ? (
-											<p>{row.items[0]}</p>
-										) : (
-											<ul>
-												{row.items.map(item => (
-													<li key={item}>{item}</li>
-												))}
-											</ul>
-										)}
-									</dd>
-								</div>
-							))}
+						<div>
+							<dt>{PRICING_PANEL.scope}</dt>
+							<dd>
+								<p>{PRICING.scope}</p>
+							</dd>
+						</div>
 					</dl>
 				</Reveal>
 			</div>

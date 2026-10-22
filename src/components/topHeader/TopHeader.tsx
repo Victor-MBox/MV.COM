@@ -33,6 +33,17 @@ const ICONS: Record<SocialKey, ReactNode> = {
 			<path d='M21.6 3.3 2.7 10.6c-1.2.5-1.2 1.2-.2 1.5l4.8 1.5 1.9 5.7c.2.6.4.9.9.9.4 0 .6-.2.9-.5l2.3-2.3 4.8 3.6c.9.5 1.5.2 1.8-.8l3.2-15.1c.3-1.3-.5-1.9-1.5-1.8zM7.9 13.4l10.3-6.5c.5-.3.9-.1.6.2l-8.8 7.9-.3 3.6-1.8-5.2z' />
 		</svg>
 	),
+	// Одноцветный контур логотипа MAX — маска из favicon max.ru, поля в viewBox уравнивают его с соседними иконками
+	max: (
+		<svg {...svg} viewBox='-8 -8 116 116'>
+			<path d='M50.8 0.3C78.3 0.3 99.9 22.6 99.9 50.1C99.9 77.7 77.6 99.5 51 99.5C41.6 99.5 37 98.2 29.6 92.9C29.1 92.6 28.4 92.7 28 93.1C22.4 99.2 7.8 103.4 7.2 95.2C7.2 80.8 0 71.4 0 49.9C0 21.6 23.2 0.3 50.8 0.3ZM51.5 24.8C38.5 24.1 28.3 33.2 26 47.4C24.1 59.1 27.4 73.5 30.3 74.2C31.5 74.5 34.4 72.3 36.5 70.3C36.9 69.9 37.5 69.9 37.9 70.1C41.2 72.1 44.9 73.6 49 73.9C62.4 74.6 74.3 64.1 75 50.6C75.7 37.2 64.9 25.5 51.5 24.8V24.8Z' />
+		</svg>
+	),
+	email: (
+		<svg {...svg} viewBox='0 0 24 24'>
+			<path d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z' />
+		</svg>
+	),
 	linkedin: (
 		<svg {...svg} viewBox='0 0 24 24'>
 			<path d='M20.4 2H3.6C2.7 2 2 2.7 2 3.6v16.8c0 .9.7 1.6 1.6 1.6h16.8c.9 0 1.6-.7 1.6-1.6V3.6c0-.9-.7-1.6-1.6-1.6zM8 19H5V9h3v10zM6.5 7.7a1.8 1.8 0 1 1 0-3.7 1.8 1.8 0 0 1 0 3.7zM19 19h-3v-4.9c0-1.2 0-2.7-1.6-2.7s-1.9 1.3-1.9 2.6V19h-3V9h2.9v1.4c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.7 2 3.7 4.7V19z' />
@@ -40,7 +51,13 @@ const ICONS: Record<SocialKey, ReactNode> = {
 	),
 }
 
-const SOCIAL_LABELS: Record<SocialKey, string> = { github: 'GitHub', telegram: 'Telegram', linkedin: 'LinkedIn' }
+const SOCIAL_LABELS: Record<SocialKey, string> = {
+	github: 'GitHub',
+	telegram: 'Telegram',
+	max: 'MAX',
+	email: 'Почта',
+	linkedin: 'LinkedIn',
+}
 
 const intro = (i: number) => ({ 'data-intro': true, style: { '--i': i } as CSSProperties })
 
@@ -237,13 +254,22 @@ export default function TopHeader() {
 			{SOCIAL.length > 0 &&
 				createPortal(
 					<ul className={showMenu ? 'socialDock socialDock--hidden' : 'socialDock'} aria-label='Соцсети'>
-						{SOCIAL.map(key => (
-							<li key={key}>
-								<a href={CONTACT_LINKS[key]} target='_blank' rel='noopener noreferrer' aria-label={SOCIAL_LABELS[key]}>
-									{ICONS[key]}
-								</a>
-							</li>
-						))}
+						{SOCIAL.map(key => {
+							// mailto: открывает почтовую программу — новая вкладка ему не нужна
+							const external = CONTACT_LINKS[key].startsWith('http')
+							return (
+								<li key={key}>
+									<a
+										href={CONTACT_LINKS[key]}
+										target={external ? '_blank' : undefined}
+										rel={external ? 'noopener noreferrer' : undefined}
+										aria-label={SOCIAL_LABELS[key]}
+									>
+										{ICONS[key]}
+									</a>
+								</li>
+							)
+						})}
 					</ul>,
 					document.body
 				)}

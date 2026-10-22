@@ -30,11 +30,11 @@ const SERVICES_SEO: Record<string, { title: string; heading: string; description
 		description:
 			'Разработка личных кабинетов и веб-сервисов для клиентов и сотрудников. Функции первой версии, права доступа и подключения — под задачи проекта.',
 	},
+	// ТЗ «расширить услуги» от 22.10.2026, §11
 	integrations: {
-		title: 'Интеграция сайта с CRM и 1С — Виктор Мацаков',
-		heading: 'Интеграции сайта с CRM и другими сервисами',
-		description:
-			'Подключение сайта к CRM, 1С, Telegram и другим сервисам. Передача заявок, заказов и остатков. Разработка и проверка обмена данными.',
+		title: 'Интеграции API и автоматизация — Виктор Мацаков',
+		heading: 'Интеграции API и автоматизация',
+		description: 'Обмен данными между сайтом, CRM, 1С и внешними сервисами. Заявки, заказы, остатки и уведомления. Интеграции от 40 000 ₽.',
 	},
 	support: {
 		title: 'Доработка и обслуживание сайтов — Виктор Мацаков',
@@ -42,10 +42,41 @@ const SERVICES_SEO: Record<string, { title: string; heading: string; description
 		description:
 			'Доработка и техническое обслуживание сайтов: исправление ошибок, новые функции, резервные копии и контроль доступности. Обслуживание от 3 000 ₽ в месяц.',
 	},
+	// Пять новых услуг — ТЗ от 22.10.2026, §2 и §11
+	'mobile-apps': {
+		title: 'Разработка мобильных приложений iOS и Android — Виктор Мацаков',
+		heading: 'Мобильные приложения для iOS и Android',
+		description:
+			'Разработка приложений для клиентов и сотрудников. Интерфейс, подключения и тестирование. От 600 000 ₽ за одну платформу при готовых дизайне и API.',
+	},
+	interactive: {
+		title: 'Разработка квизов и промо-игр — Виктор Мацаков',
+		heading: 'Квизы, промо-игры и интерактивные проекты',
+		description:
+			'Квизы, тесты и интерактивные проекты для сайтов. Квиз от 60 000 ₽, простая промо-игра от 200 000 ₽. Сценарии, разработка и подключения под задачу.',
+	},
+	seo: {
+		title: 'SEO-продвижение и аудит сайта — Виктор Мацаков',
+		heading: 'SEO-продвижение сайтов',
+		description:
+			'SEO-аудит и продвижение сайтов: запросы, структура, технические исправления и работа с содержанием. Аудит от 25 000 ₽, продвижение от 35 000 ₽ в месяц.',
+	},
+	context: {
+		title: 'Настройка и ведение Яндекс Директа — Виктор Мацаков',
+		heading: 'Контекстная реклама в Яндекс Директе',
+		description:
+			'Контекстная реклама в Яндекс Директе: настройка от 35 000 ₽, ведение от 25 000 ₽ в месяц. Объявления, цели и отчёты. Рекламный бюджет отдельно.',
+	},
+	analytics: {
+		title: 'Настройка веб-аналитики и Яндекс Метрики — Виктор Мацаков',
+		heading: 'Настройка веб-аналитики',
+		description:
+			'Настройка Метрики, целей и событий от 15 000 ₽. Проверка форм и источников обращений, отслеживание заказов и электронная коммерция.',
+	},
 }
 
 describe('мета страниц услуг', () => {
-	it('title, description и H1 шести услуг — тексты ТЗ', () => {
+	it('title, description и H1 одиннадцати услуг — тексты ТЗ', () => {
 		Object.entries(SERVICES_SEO).forEach(([key, seo]) => {
 			expect(OFFER_META[key]?.title).toBe(seo.title)
 			expect(OFFER_META[key]?.description).toBe(seo.description)
@@ -65,10 +96,16 @@ describe('мета страниц услуг', () => {
 	})
 
 	it('цена в description — та же, что на странице услуги', () => {
-		;['corporate', 'landing', 'ecommerce'].forEach(key => {
+		;['corporate', 'landing', 'ecommerce', 'integrations', 'mobile-apps'].forEach(key => {
 			const price = getOffer(key)?.priceFrom ?? '—'
 			expect(OFFER_META[key]?.description.toLowerCase()).toContain(price)
 		})
+		getOffer('interactive')?.prices?.forEach(p => expect(OFFER_META.interactive?.description).toContain(p.price))
+		expect(OFFER_META.seo?.description).toContain('от 25 000 ₽')
+		expect(OFFER_META.seo?.description).toContain('от 35 000 ₽ в месяц')
+		expect(OFFER_META.context?.description).toContain('от 35 000 ₽')
+		expect(OFFER_META.context?.description).toContain('от 25 000 ₽ в месяц')
+		expect(OFFER_META.analytics?.description).toContain(getOffer('analytics')?.priceFrom ?? '—')
 		expect(OFFER_META.support?.description).toContain(`от ${SUPPORT_PACKAGES[0].price} в месяц`)
 		expect(getOffer('support')?.priceDetail).toContain(`от ${SUPPORT_PACKAGES[0].price} в месяц`)
 		expect(OFFER_META.agencies?.description).toContain(getOffer('agencies')?.priceFrom ?? '—')
@@ -95,8 +132,18 @@ describe('мета остальных страниц', () => {
 		})
 	})
 
-	it('главная — прежняя мета, 404 — noindex', () => {
+	it('главная — прежняя мета, /services и обзор продвижения — тексты ТЗ от 22.10.2026, 404 — noindex', () => {
 		expect(SITE_META.home.title).toBe('Разработка сайтов и веб-сервисов — Виктор Мацаков')
+		expect(SITE_META.services).toEqual({
+			title: 'Сайты, приложения и продвижение — Виктор Мацаков',
+			description:
+				'Разработка сайтов, мобильных приложений и интерактивных проектов. Интеграции API, SEO, Яндекс Директ и веб-аналитика. Работа по договору с Виктором Мацаковым.',
+		})
+		expect(SITE_META.promotion).toEqual({
+			title: 'Продвижение сайтов: SEO, реклама и аналитика — Виктор Мацаков',
+			description:
+				'SEO-продвижение, контекстная реклама и настройка аналитики сайта. Помогу выбрать первый этап, согласовать работы и отслеживать обращения.',
+		})
 		expect(SITE_META.notFound.noindex).toBe(true)
 		Object.entries(SITE_META)
 			.filter(([key]) => key !== 'notFound')
@@ -123,5 +170,6 @@ describe('публичный адрес и canonical', () => {
 		expect(canonicalUrl('/', site)).toBe('https://example.com/')
 		expect(canonicalUrl('/services/corporate/', site)).toBe('https://example.com/services/corporate')
 		expect(canonicalUrl('/services/support', site)).toBe('https://example.com/services/support')
+		expect(canonicalUrl('/services/promotion/seo', site)).toBe('https://example.com/services/promotion/seo')
 	})
 })
