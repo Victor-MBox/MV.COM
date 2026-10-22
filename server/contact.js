@@ -23,6 +23,7 @@ import {
 	SeenSubmissions,
 	consentRecordLine,
 	contentChannels,
+	errorText,
 	isAllowedOrigin,
 	mailContent,
 	makeRequestId,
@@ -182,17 +183,27 @@ function pageFrom(referer) {
 }
 
 /**
- * @param {{ token: string, chatId: string }} tg
- * @param {string} text
+ * Вызов Bot API; ответ не 2xx — ошибка с текстом Telegram (там причина: неверный токен, чат не найден, бот не запущен)
+ * @param {{ token: string }} tg
+ * @param {string} method
+ * @param {Record<string, unknown>} params
  */
-async function sendTelegram(tg, text) {
-	const res = await fetch(`https://api.telegram.org/bot${tg.token}/sendMessage`, {
+async function telegramCall(tg, method, params) {
+	const res = await fetch(`https://api.telegram.org/bot${tg.token}/${method}`, {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({ chat_id: tg.chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true } }),
+		body: JSON.stringify(params),
 		signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
 	})
 	if (!res.ok) throw new Error(`Telegram API ${res.status}: ${(await res.text()).slice(0, 300)}`)
+}
+
+/**
+ * @param {{ token: string, chatId: string }} tg
+ * @param {string} text
+ */
+function sendTelegram(tg, text) {
+	return telegramCall(tg, 'sendMessage', { chat_id: tg.chatId, text, parse_mode: 'HTML', link_preview_options: { is_disabled: true } })
 }
 
 /**
@@ -231,7 +242,7 @@ async function deliver(lead, meta) {
 			if (content) contentDelivered = true
 		} else {
 			failed.push(channel)
-			log('channel_failed', { channel, error: r.reason instanceof Error ? r.reason.message : String(r.reason) })
+			log('channel_failed', { channel, requestId: meta.requestId, error: errorText(r.reason) })
 		}
 	})
 	return { delivered, failed, contentDelivered }
@@ -383,8 +394,15 @@ server.listen(cfg.port, cfg.host, () => {
 	// Проверка SMTP при старте — только в журнал: недоступная почта не должна мешать старту службы
 	mailer?.verify().then(
 		() => log('smtp_ok', { host: cfg.mail?.host }),
-		err => console.warn('[contact] SMTP недоступен:', err instanceof Error ? err.message : err),
+		err => console.warn('[contact] SMTP недоступен:', errorText(err)),
 	)
+	// Так же Telegram: getChat подтверждает сразу токен, chat_id и то, что бот может писать в этот чат
+	if (cfg.telegram) {
+		telegramCall(cfg.telegram, 'getChat', { chat_id: cfg.telegram.chatId }).then(
+			() => log('telegram_ok'),
+			err => console.warn('[contact] Telegram недоступен:', errorText(err)),
+		)
+	}
 	void pruneConsentLog()
 	setInterval(() => void pruneConsentLog(), PRUNE_EVERY_MS).unref()
 })

@@ -53,8 +53,10 @@ function LeadFormFields({ topic = '', formId = 'contacts', onDone, compact = fal
 	if (status === 'sent') {
 		return (
 			<div className='leadForm__success' role='status' tabIndex={-1} ref={successRef}>
-				<span className='leadForm__ok' aria-hidden='true' />
-				<p>{FORM_COPY.success}</p>
+				<p>
+					<span className='leadForm__ok' aria-hidden='true' />
+					{FORM_COPY.success}
+				</p>
 				{requestId && (
 					<span className='leadForm__requestId'>
 						{FORM_COPY.requestId}: {requestId}

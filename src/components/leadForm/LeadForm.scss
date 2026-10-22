@@ -181,7 +181,10 @@
 		gap: 16px;
 		padding: 8px 0;
 
+		// Точка — в строку с текстом, по центру первой строки; перенос идёт под текстом, не под точкой
 		p {
+			display: flex;
+			gap: 14px;
 			font-family: var(--font-title);
 			font-weight: 500;
 			font-size: clamp(20px, 1.8vw, 26px);
@@ -192,9 +195,10 @@
 	}
 
 	&__ok {
-		display: block;
+		flex: none;
 		width: 12px;
 		height: 12px;
+		margin-top: calc((1.3em - 12px) / 2);
 		border-radius: 50%;
 		background: var(--ok);
 	}
