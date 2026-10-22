@@ -27,7 +27,6 @@ function App() {
 	return (
 		<MotionConfig reducedMotion='user'>
 			<ContactModalProvider>
-				<ScrollToTop />
 				<TopHeader />
 				{/* Цель ссылки «К содержанию» на любой странице: фокус переходит сюда, рамка не нужна (_system.scss) */}
 				<main className='main' id='main' tabIndex={-1}>
@@ -52,6 +51,8 @@ function App() {
 								<Route path='/contacts' element={<ContactsPage />} />
 								<Route path='*' element={<NotFoundPage />} />
 							</Routes>
+							{/* Внутри страницы и после неё: прокрутка — когда старая страница ушла, а у новой отработали свои эффекты */}
+							<ScrollToTop location={location} />
 						</motion.div>
 					</AnimatePresence>
 				</main>

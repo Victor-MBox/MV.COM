@@ -1,15 +1,10 @@
-// «Обо мне» (content.md §4.6; docs/design-spec.md §9): шапка — PageHead с фото в aside, дальше секции на глобальных
-// .section/.container; списки без рамок, с разделителями
+// «Обо мне» (ТЗ от 21.10.2026 «реальный опыт» и правка того же дня; docs/design-spec.md §9): шапка — PageHead с фото в aside, дальше секции
+// на глобальных .section/.container; списки без рамок, с разделителями, карточек внутри секций нет
 .aboutPage {
-	// ---------- Шапка: фото 4:5 и статус под ним ----------
+	// ---------- Шапка: фото 4:5 ----------
 	&__photo {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 16px;
 		width: 100%;
 		max-width: 320px;
-		text-align: left;
 
 		img {
 			display: block;
@@ -23,95 +18,25 @@
 		}
 	}
 
-	&__status {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		font-family: var(--font-mono);
-		font-size: 13px;
-		line-height: 1.4;
-		letter-spacing: 0;
-		color: var(--text-muted);
-
-		i {
-			flex: none;
-			width: 8px;
-			height: 8px;
-			border-radius: 50%;
-			background: var(--ok);
-		}
+	&__nowrap {
+		white-space: nowrap;
 	}
 
-	// ---------- О себе: шапка секции слева, абзацы справа ----------
-	&__about {
-		display: grid;
-		grid-template-columns: repeat(12, minmax(0, 1fr));
-		gap: 24px;
-		align-items: start;
+	// ---------- Общее: H3 колонок, кнопки строкой, список с точками (опыт) ----------
+	&__h3 {
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 22px;
+		line-height: 1.25;
+		letter-spacing: -0.02em;
+		color: var(--text);
 	}
 
-	&__aboutHead {
-		grid-column: 1 / 6;
-		margin-bottom: 0;
-	}
-
-	&__text {
-		grid-column: 7 / -1;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		max-width: 68ch;
-
-		p {
-			font-size: 17px;
-			line-height: 1.6;
-			letter-spacing: -0.01em;
-			color: var(--text-body);
-		}
-	}
-
-	// ---------- Стек: группа моно слева, чипы справа, строки с разделителями ----------
-	&__stack {
-		border-top: 1px solid var(--border);
-	}
-
-	&__stackRow {
-		display: grid;
-		grid-template-columns: 220px minmax(0, 1fr);
-		gap: 12px 40px;
-		align-items: start;
-		padding: 20px 0;
-		border-bottom: 1px solid var(--border);
-	}
-
-	&__stackTitle {
-		padding-top: 6px;
-		font-family: var(--font-mono);
-		font-size: 13px;
-		line-height: 1.4;
-		letter-spacing: 0;
-		color: var(--text-muted);
-	}
-
-	&__chips {
+	&__actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	// ---------- Опыт: содержимое пункта аккордеона ----------
-	&__job {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	&__period {
-		font-family: var(--font-mono);
-		font-size: 13px;
-		line-height: 1.4;
-		letter-spacing: 0;
-		color: var(--text-muted);
+		align-items: center;
+		gap: 12px 24px;
 	}
 
 	&__details {
@@ -136,32 +61,86 @@
 		}
 	}
 
-	// ---------- Принципы: две колонки строк с акцентными точками ----------
-	&__principles {
+	// ---------- Задачи: три колонки с разделителями (как шаги процесса) ----------
+	&__areas {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		border-top: 1px solid var(--border);
 
-		li {
-			position: relative;
-			padding: 20px 32px 20px 24px;
-			border-bottom: 1px solid var(--border);
-			font-size: 17px;
+		> * + * {
+			border-left: 1px solid var(--border);
+		}
+	}
+
+	&__area {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 28px 32px 8px;
+
+		&:first-child {
+			padding-left: 0;
+		}
+
+		&:last-child {
+			padding-right: 0;
+		}
+
+		p {
+			max-width: 46ch;
+			font-size: 16px;
 			line-height: 1.6;
 			letter-spacing: -0.01em;
 			color: var(--text-body);
-
-			&::before {
-				content: '';
-				position: absolute;
-				left: 0;
-				top: calc(20px + 0.8em - 4px);
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				background: var(--accent);
-			}
 		}
+	}
+
+	&__num {
+		margin-bottom: 8px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// ---------- Технологии: группа моно слева, чипы справа, строки с разделителями ----------
+	&__stack {
+		border-top: 1px solid var(--border);
+	}
+
+	&__stackRow {
+		display: grid;
+		grid-template-columns: 260px minmax(0, 1fr);
+		gap: 12px 40px;
+		align-items: start;
+		padding: 20px 0;
+		border-bottom: 1px solid var(--border);
+	}
+
+	&__stackTitle {
+		padding-top: 6px;
+		font-family: var(--font-mono);
+		font-weight: 400;
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__also {
+		max-width: 56ch;
+		margin-top: 24px;
+		font-size: 16px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-muted);
 	}
 
 	// ---------- Адаптив ----------
@@ -170,30 +149,45 @@
 			max-width: 280px;
 		}
 
-		&__about {
-			display: flex;
-			flex-direction: column;
-			gap: 0;
+		&__areas {
+			grid-template-columns: 1fr;
+
+			> * + * {
+				border-left: 0;
+				border-top: 1px solid var(--border);
+			}
 		}
 
-		&__aboutHead {
-			margin-bottom: 32px;
+		&__area,
+		&__area:first-child,
+		&__area:last-child {
+			padding: 24px 0;
 		}
 
-		&__text {
-			max-width: 68ch;
+		&__area {
+			display: grid;
+			grid-template-columns: 48px minmax(0, 1fr);
+			gap: 8px 16px;
+
+			> :not(.aboutPage__num) {
+				grid-column: 2;
+			}
+		}
+
+		&__num {
+			grid-row: 1 / span 2;
+			margin: 4px 0 0;
 		}
 
 		&__stackRow {
-			grid-template-columns: 160px minmax(0, 1fr);
+			grid-template-columns: 200px minmax(0, 1fr);
 			gap: 12px 24px;
 		}
 	}
 
 	@media (max-width: 768px) {
-		&__text p,
-		&__principles li {
-			font-size: 16px;
+		&__h3 {
+			font-size: 20px;
 		}
 
 		&__stackRow {
@@ -203,14 +197,6 @@
 
 		&__stackTitle {
 			padding-top: 0;
-		}
-
-		&__principles {
-			grid-template-columns: 1fr;
-
-			li {
-				padding-right: 0;
-			}
 		}
 	}
 
@@ -222,13 +208,13 @@
 		&__photo img {
 			aspect-ratio: 1 / 1;
 		}
-	}
-}
 
-// «Для команд и работодателей»: кнопки строкой под лидом
-.aboutPage__hireActions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 12px 16px;
+		&__area {
+			display: flex;
+		}
+
+		&__num {
+			margin-bottom: 0;
+		}
+	}
 }

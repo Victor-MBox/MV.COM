@@ -1,15 +1,14 @@
+import { Fragment } from 'react'
 import PageHead from '../../components/pageHead/PageHead'
 import SectionHead from '../../components/sectionHead/SectionHead'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
-import CaseCard from '../../components/caseCard/CaseCard'
 import Reveal from '../../components/reveal/Reveal'
 import Button from '../../components/button/Button'
 import Chip from '../../components/chip/Chip'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
-import { EXPERIENCE, STACK_GROUPS } from '../../data/experience'
-import { PROJECTS } from '../../data/projects'
+import { EXPERIENCE, STACK_COPY, STACK_GROUPS, formatPeriod } from '../../data/experience'
+import { ABOUT_AREAS, ABOUT_INTRO, ABOUT_SECTIONS, ABOUT_TEAMS } from '../../data/about'
 import { CONTACT_LINKS } from '../../data/contacts'
-import { HR_BLOCK, HR_LINE } from '../../data/home'
 import portraitDark from '../../resources/victor-about.webp'
 import portraitLight from '../../resources/victor-about-light.webp'
 import { useTheme } from '../../hooks/useTheme'
@@ -17,45 +16,13 @@ import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import { SITE_META } from '../../data/meta'
 import './AboutPage.scss'
 
-/**
- * Три абзаца о себе (content.md §4.6): первый — лид шапки (с 21.10.2026 — коммерческий абзац ТЗ без перечня технологий
- * и стажа), остальные — секция «О себе»
- */
-const ABOUT = [
-	'Я Виктор Мацаков, веб-разработчик. Работаю с новыми и существующими проектами: от структуры и интерфейса до разработки, интеграций и запуска. Со мной можно обсудить как отдельную доработку, так и проект целиком.',
-	'Лучше всего получается собрать систему из многих частей и довести её до живых пользователей. Пример — NoRandoms, собственная платформа для подбора напарников по играм: спроектировал, написал и вывел в поиск в одиночку, от схемы базы и WebSockets до SEO-ядра из тысяч страниц.',
-	'Работаю удалённо, по договору, с еженедельными версиями на тестовом домене. Открыт к проектной работе, контракту и part-time. Код пишу так, чтобы следующий разработчик разобрался без меня.',
-]
-
-/** Подтверждено владельцем 21.10.2026 (ТЗ «доработать содержание и услуги») — лид секции «Опыт» */
-const EXPERIENCE_LEAD = 'За годы работы участвовал в разработке более 20 веб-проектов. В портфолио собраны избранные работы.'
-
-const PRINCIPLES = [
-	'Скорость загрузки — часть дизайна, а не оптимизация «потом».',
-	'Анимация объясняет интерфейс, а не украшает его.',
-	'Код должен быть понятен следующему разработчику без меня.',
-	'Промежуточные версии — каждую неделю, без сюрпризов в конце.',
-]
-
-const STATUS = 'Открыт для проектов'
-const ROLE = 'Full-stack разработчик'
-
-// TODO (владелец): заголовки секций; в каждом — одно приглушённое выделение (muted), акцента на странице нет
-const H2 = {
-	about: { text: 'Один разработчик на весь проект', muted: 'на весь проект' },
-	stack: { text: 'Чем работаю', muted: 'работаю' },
-	experience: { text: 'Где и что делал', muted: 'и что делал' },
-	principles: { text: 'Четыре правила, которых держусь', muted: 'которых держусь' },
-	work: { text: 'Главный кейс' },
-	hire: { text: HR_BLOCK.title, muted: 'и работодателей' },
-}
-
-const FEATURED = PROJECTS.find(p => p.featured)
+const S = ABOUT_SECTIONS
 
 /**
- * «Обо мне» — страница для найма (content.md §4.6; docs/design-spec.md §9): шапка с фото, GitHub и «Написать» →
- * о себе → стек группами → опыт аккордеоном → для команд и работодателей (бывший блок «Для HR» главной) → принципы →
- * главный кейс. Кнопки «Скачать резюме» появляются, только когда в HR_BLOCK.cv указан настоящий файл
+ * «Обо мне» (ТЗ от 21.10.2026 «реальный опыт» и правка того же дня; docs/design-spec.md §9): представление с фото →
+ * опыт аккордеоном → задачи → технологии → для агентств и команд; финал — общий футер. Проектов здесь нет — они
+ * в портфолио. Тексты — data/about.ts и data/experience.ts. Опыт не прячется за Reveal: содержание видно без
+ * декоративной анимации
  */
 export default function AboutPage() {
 	const { open } = useContactModal()
@@ -63,138 +30,118 @@ export default function AboutPage() {
 	useDocumentMeta(SITE_META.about)
 
 	const experience = EXPERIENCE.map((e, i) => ({
-		id: e.period,
+		id: e.from,
 		number: String(i + 1).padStart(2, '0'),
-		title: `${e.position} · ${e.company}`,
+		title: e.title,
+		meta: `${e.role} · ${formatPeriod(e)}`,
 		content: (
-			<div className='aboutPage__job'>
-				<p className='aboutPage__period'>{e.period}</p>
-				<p>{e.summary}</p>
-				<ul className='aboutPage__details'>
-					{e.details.map(d => (
-						<li key={d}>{d}</li>
-					))}
-				</ul>
-			</div>
+			<ul className='aboutPage__details'>
+				{e.details.map(d => (
+					<li key={d}>{d}</li>
+				))}
+			</ul>
 		),
 	}))
 
 	return (
 		<div className='aboutPage'>
 			<PageHead
-				label='обо мне'
-				title={{ text: 'Виктор Мацаков' }}
-				lead={ABOUT[0]}
-				meta={`${ROLE} · ${HR_LINE.place}`}
+				label={ABOUT_INTRO.label}
+				title={{ text: ABOUT_INTRO.title }}
+				lead={ABOUT_INTRO.text}
+				meta={ABOUT_INTRO.role.split(' · ').map((part, i) => (
+					// Переносится только после «·»: «PHP / Laravel / React» не рвётся на узком экране
+					<Fragment key={part}>
+						{i > 0 && '\u00a0· '}
+						<span className='aboutPage__nowrap'>{part}</span>
+					</Fragment>
+				))}
 				asideFirst
 				actions={
 					<>
-						{HR_BLOCK.cv && (
-							<Button href={HR_BLOCK.cv} download>
-								Скачать резюме
-							</Button>
-						)}
-						<Button variant='secondary' href={CONTACT_LINKS.github} arrow arrowGlyph='↗'>
-							GitHub
+						<Button arrow onClick={() => open()}>
+							{ABOUT_INTRO.cta}
 						</Button>
-						<Button variant='text' onClick={() => open()}>
-							Написать
+						<Button variant='secondary' to={ABOUT_INTRO.works.to}>
+							{ABOUT_INTRO.works.label}
 						</Button>
 					</>
 				}
 				aside={
 					<div className='aboutPage__photo'>
-						<img src={isLight ? portraitLight : portraitDark} alt='Виктор Мацаков' width={720} height={900} />
-						<p className='aboutPage__status'>
-							<i aria-hidden='true' />
-							{STATUS}
-						</p>
+						<img src={isLight ? portraitLight : portraitDark} alt={ABOUT_INTRO.photoAlt} width={720} height={900} />
 					</div>
 				}
 			/>
 
-			<section className='section' id='about'>
-				<div className='container aboutPage__about'>
-					<SectionHead label='о себе' title={H2.about} className='aboutPage__aboutHead' />
-					<Reveal className='aboutPage__text' delay={0.08}>
-						{ABOUT.slice(1).map(p => (
-							<p key={p}>{p}</p>
-						))}
-					</Reveal>
-				</div>
-			</section>
-
-			<section className='section' id='stack'>
-				<div className='container'>
-					<SectionHead label='стек' title={H2.stack} />
-					<Reveal as='ul' className='aboutPage__stack'>
-						{STACK_GROUPS.map(g => (
-							<li key={g.title} className='aboutPage__stackRow'>
-								<span className='aboutPage__stackTitle'>{g.title}</span>
-								<ul className='aboutPage__chips'>
-									{g.items.map(i => (
-										<Chip as='li' key={i}>
-											{i}
-										</Chip>
-									))}
-								</ul>
-							</li>
-						))}
-					</Reveal>
-				</div>
-			</section>
-
 			<section className='section' id='experience'>
 				<div className='container'>
-					<SectionHead label='опыт' title={H2.experience} lead={EXPERIENCE_LEAD} />
-					<Reveal>
-						<DimAccordion idPrefix='exp' items={experience} defaultOpen={[experience[0].id]} />
-					</Reveal>
+					<SectionHead label={S.experience.label} title={S.experience.title} />
+					<DimAccordion idPrefix='exp' items={experience} defaultOpen={[experience[0].id]} />
 				</div>
 			</section>
 
-			<section className='section' id='hire'>
+			<section className='section' id='areas'>
 				<div className='container'>
-					<SectionHead label='для команд' title={H2.hire} lead={HR_BLOCK.cv ? HR_BLOCK.text : HR_BLOCK.textNoCv} />
-					<Reveal className='aboutPage__hireActions'>
-						{HR_BLOCK.cv && (
-							<Button variant='secondary' href={HR_BLOCK.cv} download>
-								Скачать резюме
-							</Button>
-						)}
-						<Button variant='secondary' href={CONTACT_LINKS.github} arrow arrowGlyph='↗'>
-							GitHub
-						</Button>
-						<Button variant='text' onClick={() => open()}>
-							Связаться
-						</Button>
-					</Reveal>
-				</div>
-			</section>
-
-			<section className='section' id='principles'>
-				<div className='container'>
-					<SectionHead label='принципы' title={H2.principles} />
-					<ul className='aboutPage__principles'>
-						{PRINCIPLES.map((p, i) => (
-							<Reveal as='li' key={p} index={i}>
-								{p}
+					<SectionHead label={S.areas.label} title={S.areas.title} />
+					<ul className='aboutPage__areas'>
+						{ABOUT_AREAS.map((a, i) => (
+							<Reveal as='li' key={a.title} index={i} className='aboutPage__area'>
+								<span className='aboutPage__num' aria-hidden='true'>
+									{String(i + 1).padStart(2, '0')}
+								</span>
+								<h3 className='aboutPage__h3'>{a.title}</h3>
+								<p>{a.text}</p>
 							</Reveal>
 						))}
 					</ul>
 				</div>
 			</section>
 
-			{FEATURED && (
-				<section className='section' id='work'>
-					<div className='container'>
-						<SectionHead label='работы' title={H2.work} action={{ label: 'Все работы', to: '/portfolio' }} />
-						<Reveal>
-							<CaseCard project={FEATURED} wide />
-						</Reveal>
-					</div>
-				</section>
-			)}
+			<section className='section' id='stack'>
+				<div className='container'>
+					<SectionHead label={S.stack.label} title={S.stack.title} lead={STACK_COPY.lead} />
+					<Reveal>
+						<ul className='aboutPage__stack'>
+							{STACK_GROUPS.map(g => (
+								<li key={g.title} className='aboutPage__stackRow'>
+									<h3 className='aboutPage__stackTitle'>{g.title}</h3>
+									<ul className='aboutPage__chips'>
+										{g.items.map(i => (
+											<Chip as='li' key={i}>
+												{i}
+											</Chip>
+										))}
+									</ul>
+								</li>
+							))}
+						</ul>
+						<p className='aboutPage__also'>{STACK_COPY.also}</p>
+					</Reveal>
+				</div>
+			</section>
+
+			<section className='section' id='teams'>
+				<div className='container'>
+					<SectionHead label={S.teams.label} title={S.teams.title} lead={ABOUT_TEAMS.text} />
+					<Reveal className='aboutPage__actions'>
+						<Button variant='secondary' arrow onClick={() => open(ABOUT_TEAMS.topic)}>
+							{ABOUT_TEAMS.cta}
+						</Button>
+						<Button variant='text' href={CONTACT_LINKS.github} arrowGlyph='↗'>
+							{ABOUT_TEAMS.github}
+						</Button>
+						<Button variant='text' to={ABOUT_TEAMS.agencies.to}>
+							{ABOUT_TEAMS.agencies.label}
+						</Button>
+						{ABOUT_TEAMS.cv && (
+							<Button variant='text' href={ABOUT_TEAMS.cv} download arrowGlyph='↓'>
+								{ABOUT_TEAMS.cvLabel}
+							</Button>
+						)}
+					</Reveal>
+				</div>
+			</section>
 		</div>
 	)
 }

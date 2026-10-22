@@ -8,6 +8,8 @@ export type DimItem = {
 	/** Номер слева, моно: «01» */
 	number?: string
 	title: string
+	/** Строка моно под заголовком, видна и в закрытом пункте (роль и период опыта на «Обо мне») */
+	meta?: ReactNode
 	content: ReactNode
 }
 
@@ -65,13 +67,21 @@ export default function DimAccordion({ items, multiple = false, defaultOpen = []
 						<h3 className='dimAcc__head'>
 							<button
 								type='button'
-								className='dimAcc__btn'
+								className={`dimAcc__btn${item.meta ? ' dimAcc__btn--meta' : ''}`}
 								aria-expanded={isOpen}
-								aria-controls={panelId}
+								// Панель есть в DOM только открытой — ссылка на неё тоже
+								aria-controls={isOpen ? panelId : undefined}
 								onClick={() => toggle(item.id)}
 							>
 								{item.number && <span className='dimAcc__num'>{item.number}</span>}
-								<span className='dimAcc__title'>{item.title}</span>
+								{item.meta ? (
+									<span className='dimAcc__label'>
+										<span className='dimAcc__title'>{item.title}</span>
+										<span className='dimAcc__meta'>{item.meta}</span>
+									</span>
+								) : (
+									<span className='dimAcc__title'>{item.title}</span>
+								)}
 								<span className='dimAcc__icon' aria-hidden='true'>
 									<i />
 									<i />

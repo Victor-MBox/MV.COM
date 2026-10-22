@@ -46,6 +46,39 @@
 		transition: color var(--d-undim) var(--ease-out);
 	}
 
+	// meta: заголовок и строка моно под ним одной колонкой; номер и иконка — по центру строки заголовка, а не всего блока
+	&__btn--meta {
+		--title-line: calc(clamp(24px, 2.4vw, 36px) * 1.1);
+		align-items: start;
+	}
+
+	&__btn--meta &__num {
+		margin-top: calc((var(--title-line) - 16px) / 2);
+	}
+
+	&__btn--meta &__icon {
+		margin-top: calc((var(--title-line) - 24px) / 2);
+	}
+
+	&__label {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-width: 0;
+	}
+
+	&__meta {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		* {
+			font-family: inherit;
+		}
+	}
+
 	&__icon {
 		position: relative;
 		width: 24px;

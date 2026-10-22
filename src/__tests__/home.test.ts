@@ -6,8 +6,6 @@ import {
 	FOOTER_META,
 	H2,
 	HERO,
-	HR_BLOCK,
-	HR_LINE,
 	NAME,
 	NAV,
 	PROOF,
@@ -20,6 +18,7 @@ import { PROJECTS, isPublic } from '../data/projects'
 import { CONTACTS, CONTACT_LINKS } from '../data/contacts'
 import { FORM_COPY, LEAD_FIELDS } from '../data/leadForm'
 import { SITE_META } from '../data/meta'
+import { ABOUT_TEAMS } from '../data/about'
 import { ROUTE_PATHS } from '../app/routes'
 
 describe('главная: коммерческая структура (ТЗ от 21.10.2026)', () => {
@@ -71,7 +70,7 @@ describe('главная: коммерческая структура (ТЗ от
 	})
 
 	it('города и часового пояса на сайте нет (решение владельца от 20.10.2026)', () => {
-		const strings = [...FOOTER_META, HR_LINE.place, HR_BLOCK.text, HR_BLOCK.textNoCv, CONTACTS.location]
+		const strings = [...FOOTER_META, ABOUT_TEAMS.text, CONTACTS.location]
 		strings.forEach(s => expect(s).not.toMatch(/Тбилиси|Грузия|GMT|UTC/i))
 		expect(FOOTER_META.length).toBe(2)
 	})
@@ -82,11 +81,6 @@ describe('главная: коммерческая структура (ТЗ от
 		expect(new Set(NAV.map(n => n.to)).size).toBe(NAV.length)
 		SOCIAL.forEach(key => expect(CONTACT_LINKS[key]).toMatch(/^https?:/))
 		expect(SOCIAL).not.toContain('linkedin')
-	})
-
-	it('резюме не подставляется, пока файла нет', () => {
-		// Файла public/cv.pdf нет — кнопки скрыты; когда он появится, укажите путь в HR_BLOCK.cv
-		expect(HR_BLOCK.cv).toBeUndefined()
 	})
 
 	it('контакты настоящие: без example и нулевых номеров, телефон для показа — те же цифры', () => {
