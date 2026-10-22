@@ -24,7 +24,7 @@ export const ABOUT_INTRO = {
 	 * Публичная версия резюме от владельца (22.10.2026) в public/, открывается в новой вкладке. Тест проверяет, что
 	 * файл существует
 	 */
-	resume: { label: 'Посмотреть резюме', href: '/victor-matsakov-resume.pdf' },
+	resume: { label: 'Открыть резюме', href: '/victor-matsakov-resume.pdf' },
 	works: { label: 'Посмотреть работы', to: '/portfolio' },
 	photoAlt: 'Виктор Мацаков',
 }

@@ -1,7 +1,8 @@
-# Обработчик формы matsakov-victor.com (server/contact.js): Telegram + почта. Ставится deploy/server-setup.sh в
-# /etc/systemd/system/, переменные — /etc/matsakov-victor.com/contact.env (root:root 600; systemd читает его до смены
-# пользователя). Код обновляет deploy.yml (rsync в /var/www/matsakov-victor.com/server + `sudo systemctl restart`,
-# разрешено пользователю deploy через /etc/sudoers.d/mvcom-deploy). Журнал: journalctl -u mvcom-contact -f
+# Обработчик формы matsakov-victor.com (server/contact.js): Telegram + почта, слушает 127.0.0.1:3721 за прокси nginx.
+# Ставится deploy/server-setup.sh в /etc/systemd/system/ — он же подставляет в ExecStart путь к node, найденному на сервере.
+# Переменные — /etc/matsakov-victor.com/contact.env (root:root 600; systemd читает его до смены пользователя).
+# Код обновляет deploy.yml (rsync в /var/www/matsakov-victor.com/server + `sudo systemctl restart`, разрешено пользователю
+# deploy без пароля через /etc/sudoers.d/mvcom-deploy). Журнал: journalctl -u mvcom-contact -f
 [Unit]
 Description=matsakov-victor.com contact form handler (Telegram + mail)
 After=network-online.target
@@ -10,16 +11,15 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=deploy
-Group=deploy
 WorkingDirectory=/var/www/matsakov-victor.com/server
 EnvironmentFile=/etc/matsakov-victor.com/contact.env
 ExecStart=/usr/bin/node /var/www/matsakov-victor.com/server/contact.js
 Restart=on-failure
 RestartSec=3
-# Служба ничего не пишет на диск: вся файловая система только для чтения, /home и /tmp недоступны
+# Служба ничего не пишет на диск: файловая система только для чтения, /home — тоже (node может лежать в домашней папке)
 NoNewPrivileges=yes
 ProtectSystem=strict
-ProtectHome=yes
+ProtectHome=read-only
 PrivateTmp=yes
 StandardOutput=journal
 StandardError=journal

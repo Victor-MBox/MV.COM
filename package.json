@@ -5,11 +5,12 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"server": "node --env-file-if-exists=server/.env server/contact.js",
 		"build": "vite build",
 		"preview": "vite preview",
-		"lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
+		"lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"server/**/*.js\" --max-warnings=0",
 		"test": "vitest run",
-		"type-check": "tsc --noEmit -p tsconfig.app.json"
+		"type-check": "tsc --noEmit -p tsconfig.app.json && tsc -p server/tsconfig.json"
 	},
 	"dependencies": {
 		"clsx": "^2.1.1",

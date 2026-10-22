@@ -7,6 +7,7 @@ import type { LeadStatus } from '../leadForm/useLeadForm'
 import Button from '../button/Button'
 import Checkbox from '../checkbox/Checkbox'
 import FormFallback from '../leadForm/FormFallback'
+import TrapField from '../leadForm/TrapField'
 
 type Props = {
 	/** Контекст обращения: название оффера на его странице, иначе пусто */
@@ -24,7 +25,7 @@ const BUTTON_LABEL: Record<LeadStatus, string> = {
  * Форма футера (макет «Футер - форма»): поля первого обращения LEAD_FIELDS строками «номер · подпись · поле» на
  * разделителях, внизу согласие чекбоксом и кнопка, под ними — срок ответа и Telegram. Состояние, проверка и отправка —
  * useLeadForm, общий с LeadForm. После отправки поля очищаются, вместо чекбокса — строка успеха; первая же правка
- * возвращает форму в исходное состояние. Пока нет обработчика и политики, в публичной сборке — FormFallback
+ * возвращает форму в исходное состояние. Пока нет политики, в публичной сборке — FormFallback
  */
 export default function FooterForm(props: Props) {
 	return FORM_ENABLED ? <FooterFormFields {...props} /> : <FormFallback className='footerForm__fallback' />
@@ -33,7 +34,7 @@ export default function FooterForm(props: Props) {
 function FooterFormFields({ topic }: Props) {
 	const uid = useId()
 	const id = (key: string) => `${uid}-${key}`
-	const { values, consent, errors, status, setField, setConsent, submit } = useLeadForm(topic)
+	const { values, consent, trap, errors, status, setField, setConsent, setTrap, submit } = useLeadForm(topic)
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault()
@@ -81,6 +82,7 @@ function FooterFormFields({ topic }: Props) {
 					</div>
 				)
 			})}
+			<TrapField id={id('website')} value={trap} onChange={setTrap} />
 
 			<div className='footerForm__foot'>
 				{status === 'sent' ? (

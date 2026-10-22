@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * Обработчик формы первого обращения: принимает POST /api/contact с JSON ContactPayload (src/api/contact.ts),
- * проверяет поля (lib.js), шлёт заявку в Telegram и дублирует письмом. Слушает 127.0.0.1:3001 — снаружи доступен
+ * проверяет поля (lib.js), шлёт заявку в Telegram и дублирует письмом. Слушает 127.0.0.1:3721 — снаружи доступен
  * только через прокси nginx (deploy/nginx/matsakov-victor.com.conf, location /api/), локально — через прокси Vite.
  * На сервере работает службой systemd mvcom-contact (deploy/systemd/), переменные — /etc/matsakov-victor.com/contact.env;
  * локально — `npm run server` в корне проекта с server/.env (образец — .env.example).
@@ -58,7 +58,8 @@ function send(res, status, data) {
 }
 
 /**
- * Тело запроса как JSON, не больше MAX_BODY_BYTES (иначе соединение закрывается, ошибка too_large)
+ * Тело запроса как JSON, не больше MAX_BODY_BYTES: при переполнении чтение останавливается (ошибка too_large), ответ 413
+ * уходит с Connection: close, и Node закрывает соединение, не дочитывая остаток
  * @param {import('node:http').IncomingMessage} req
  * @returns {Promise<unknown>}
  */
@@ -71,7 +72,7 @@ function readJson(req) {
 			size += chunk.length
 			if (size > MAX_BODY_BYTES) {
 				reject(Object.assign(new Error('too_large'), { code: 'too_large' }))
-				req.destroy()
+				req.pause()
 				return
 			}
 			chunks.push(chunk)
@@ -187,6 +188,7 @@ async function handle(req, res) {
 		body = await readJson(req)
 	} catch (err) {
 		const code = /** @type {{ code?: string }} */ (err).code || 'bad_request'
+		if (code === 'too_large') res.setHeader('connection', 'close')
 		return send(res, code === 'too_large' ? 413 : 400, { ok: false, error: code })
 	}
 

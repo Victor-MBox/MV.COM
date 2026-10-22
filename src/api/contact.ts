@@ -2,7 +2,7 @@ import { FORM_DELIVERY_READY, FORM_TEST_MODE } from '../data/leadForm'
 
 /**
  * Адрес обработчика (server/contact.js). Относительный, тот же origin: на боевом сервере за прокси nginx
- * (deploy/nginx, location /api/), на dev-сервере — за прокси Vite (vite.config.ts → 127.0.0.1:3001, `npm run server`)
+ * (deploy/nginx, location /api/), на dev-сервере — за прокси Vite (vite.config.ts → 127.0.0.1:3721, `npm run server`)
  */
 export const CONTACT_ENDPOINT = '/api/contact'
 

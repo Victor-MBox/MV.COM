@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { submitContact } from '../api/contact'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { CONTACT_ENDPOINT, submitContact } from '../api/contact'
 import type { ContactPayload } from '../api/contact'
 import { validateContact } from '../components/leadForm/validate'
 import { FORM_COPY, FORM_DELIVERY_READY, FORM_ENABLED, FORM_LIVE, FORM_TEST_MODE, PRIVACY_POLICY_URL } from '../data/leadForm'
@@ -35,22 +35,54 @@ describe('validateContact — форма первого обращения', () 
 })
 
 describe('готовность формы', () => {
-	it('пока нет обработчика и политики, форма не настоящая: в dev и тестах — только тестовый режим', () => {
-		expect(FORM_DELIVERY_READY).toBe(false)
+	it('обработчик подключён, политики ещё нет: публичная сборка показывает «Написать в Telegram», dev — настоящую форму', () => {
+		expect(FORM_DELIVERY_READY).toBe(true)
 		expect(PRIVACY_POLICY_URL).toBeUndefined()
 		expect(FORM_LIVE).toBe(false)
-		// vitest работает как dev: форма видна в тестовом режиме; в прод-сборке FORM_ENABLED = false → «Написать в Telegram»
-		expect(FORM_TEST_MODE).toBe(import.meta.env.DEV)
-		expect(FORM_ENABLED).toBe(FORM_TEST_MODE)
+		// Тестовый режим (имитация отправки) — только при выключенном обработчике; с обработчиком форма шлёт по-настоящему
+		expect(FORM_TEST_MODE).toBe(false)
+		// vitest работает как dev: форма видна; в прод-сборке FORM_ENABLED = false, пока не задан PRIVACY_POLICY_URL
+		expect(FORM_ENABLED).toBe(import.meta.env.DEV)
 		expect(FORM_COPY.testMode).toMatch(/Тестовый режим/)
 	})
 })
 
-describe('submitContact', () => {
-	it('в тестовом режиме — имитация без внешней отправки; контракт без услуги, бюджета и намерения', async () => {
-		const payload: ContactPayload = { name: '', contact: '@test', message: 'Нужна страница под рекламу', topic: '' }
-		expect(Object.keys(payload).sort()).toEqual(['contact', 'message', 'name', 'topic'])
+describe('submitContact — запрос к обработчику', () => {
+	const payload: ContactPayload = { name: '', contact: '@test', message: 'Нужна страница под рекламу', topic: '', website: '' }
+	const reply = (status: number, body: unknown) =>
+		vi.fn(async () => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }))
+
+	afterEach(() => vi.unstubAllGlobals())
+
+	it('контракт: имя, контакт, задача, контекст и ловушка website — без услуги, бюджета и намерения', () => {
+		expect(Object.keys(payload).sort()).toEqual(['contact', 'message', 'name', 'topic', 'website'])
+	})
+
+	it('шлёт POST JSON на /api/contact и завершается успехом только при 2xx с { ok: true }', async () => {
+		const fetchMock = reply(200, { ok: true })
+		vi.stubGlobal('fetch', fetchMock)
 		await expect(submitContact(payload)).resolves.toBeUndefined()
-		await expect(submitContact({ ...payload, name: 'Тест', topic: 'Лендинг' })).resolves.toBeUndefined()
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+		const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+		expect(url).toBe(CONTACT_ENDPOINT)
+		expect(init.method).toBe('POST')
+		expect(init.headers).toEqual({ 'Content-Type': 'application/json' })
+		expect(JSON.parse(init.body as string)).toEqual(payload)
+	})
+
+	it('ошибка сервера, ответ без подтверждения или обрыв сети — исключение (форма покажет FORM_COPY.error)', async () => {
+		vi.stubGlobal('fetch', reply(502, { ok: false, error: 'delivery_failed' }))
+		await expect(submitContact(payload)).rejects.toThrow(/502/)
+		vi.stubGlobal('fetch', reply(200, { ok: false }))
+		await expect(submitContact(payload)).rejects.toThrow(/не подтвердил/)
+		vi.stubGlobal('fetch', vi.fn(async () => new Response('<html>502</html>', { status: 502 })))
+		await expect(submitContact(payload)).rejects.toThrow()
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => {
+				throw new TypeError('Failed to fetch')
+			}),
+		)
+		await expect(submitContact(payload)).rejects.toThrow('Failed to fetch')
 	})
 })

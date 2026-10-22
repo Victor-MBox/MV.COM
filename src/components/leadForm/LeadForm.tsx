@@ -6,6 +6,7 @@ import { useLeadForm } from './useLeadForm'
 import Button from '../button/Button'
 import Checkbox from '../checkbox/Checkbox'
 import FormFallback from './FormFallback'
+import TrapField from './TrapField'
 import './LeadForm.scss'
 
 type Props = {
@@ -18,8 +19,8 @@ type Props = {
 /**
  * Форма первого обращения (ТЗ от 21.10.2026, §13): три поля из LEAD_FIELDS — имя (необязательно), Telegram или почта,
  * что нужно сделать — и согласие. Состояние и отправка — useLeadForm, общий с формой футера. Встроена на /contacts,
- * в модалке — `compact`. Заголовок и лид (FORM_COPY.title / lead) ставит контейнер. Пока нет обработчика и политики,
- * в публичной сборке вместо формы — FormFallback («Написать в Telegram»); на dev-сервере — тестовый режим с меткой
+ * в модалке — `compact`. Заголовок и лид (FORM_COPY.title / lead) ставит контейнер. Пока нет политики, в публичной
+ * сборке вместо формы — FormFallback («Написать в Telegram»); на dev-сервере форма видна всегда (FORM_ENABLED)
  */
 export default function LeadForm(props: Props) {
 	return FORM_ENABLED ? <LeadFormFields {...props} /> : <FormFallback />
@@ -28,7 +29,7 @@ export default function LeadForm(props: Props) {
 function LeadFormFields({ topic = '', onDone, compact = false }: Props) {
 	const uid = useId()
 	const id = (key: string) => `${uid}-${key}`
-	const { values, consent, errors, status, setField, setConsent, submit } = useLeadForm(topic)
+	const { values, consent, trap, errors, status, setField, setConsent, setTrap, submit } = useLeadForm(topic)
 	const successRef = useRef<HTMLDivElement>(null)
 
 	// Кнопка отправки исчезает вместе с формой — фокус на сообщение об успехе, а не в никуда
@@ -97,6 +98,7 @@ function LeadFormFields({ topic = '', onDone, compact = false }: Props) {
 				{field('contact')}
 			</div>
 			{field('message')}
+			<TrapField id={id('website')} value={trap} onChange={setTrap} />
 
 			<Checkbox
 				id={id('consent')}

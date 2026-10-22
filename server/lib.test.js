@@ -119,7 +119,7 @@ describe('readConfig — настройки из окружения', () => {
 	it('без переменных: адрес и лимиты по умолчанию, каналы отключены', () => {
 		expect(readConfig({})).toEqual({
 			host: '127.0.0.1',
-			port: 3001,
+			port: 3721,
 			telegram: null,
 			mail: null,
 			rate: { limit: 5, windowMs: 10 * 60_000 },

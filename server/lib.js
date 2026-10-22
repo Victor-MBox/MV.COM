@@ -14,7 +14,8 @@ export const LIMITS = { name: 120, contact: 200, message: 5000, topic: 200 }
 const RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const RE_PHONE = /^\+?[\d\s()-]{7,}$/
 const RE_HANDLE = /^@?[\w.]{3,}$/
-/** Управляющие символы, кроме перевода строки и табуляции */
+/** Управляющие символы, кроме перевода строки и табуляции — вычищаются из полей намеренно */
+// eslint-disable-next-line no-control-regex
 const RE_CONTROL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g
 
 /** @param {string} contact */
@@ -173,7 +174,7 @@ export function readConfig(env) {
 
 	return {
 		host: env.LISTEN_HOST || '127.0.0.1',
-		port: Number(env.PORT) || 3001,
+		port: Number(env.PORT) || 3721,
 		telegram,
 		mail,
 		rate: { limit: Number(env.RATE_LIMIT) || 5, windowMs: (Number(env.RATE_WINDOW_MIN) || 10) * 60_000 },

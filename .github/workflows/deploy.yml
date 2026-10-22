@@ -1,11 +1,13 @@
-# Публикация matsakov-victor.com: push в main (или запуск вручную) → проверки → `vite build` → rsync dist/ по SSH
-# на облачный сервер Beget в releases/<sha> → атомарное переключение симлинка current → nginx отдаёт новую сборку.
-# Сервер готовится один раз скриптом deploy/server-setup.sh (пользователь deploy, nginx, certbot). Подробности — code.md §13.
+# Публикация matsakov-victor.com: push в main (или запуск вручную) → проверки → `vite build` → по SSH на облачный сервер Beget:
+# обработчик формы (server/) rsync в /var/www/matsakov-victor.com/server + `npm ci` + перезапуск службы mvcom-contact,
+# затем dist/ в releases/<sha> → атомарное переключение симлинка current → nginx отдаёт новую сборку.
+# Сервер готовится один раз скриптом deploy/server-setup.sh (ключ deploy, конфиг nginx, служба systemd обработчика). Подробности — code.md §13.
 #
 # Что должно быть задано в репозитории (Settings → Secrets and variables → Actions):
 #   secret DEPLOY_SSH_KEY     — приватный ключ деплоя (пара к ключу в authorized_keys пользователя deploy)
 #   variable DEPLOY_HOST      — IP или хост сервера
 #   variable DEPLOY_KNOWN_HOSTS — строка(и) `ssh-keyscan -t ed25519 <host>`: отпечаток сервера, чтобы не доверять вслепую
+# Токен бота и SMTP в GitHub не нужны: они лежат на сервере в /etc/matsakov-victor.com/contact.env (server-setup.sh).
 name: Deploy
 
 on:
@@ -25,6 +27,7 @@ env:
   DEPLOY_USER: deploy
   DEPLOY_PATH: /var/www/matsakov-victor.com
   SITE_URL: https://matsakov-victor.com
+  CONTACT_SERVICE: mvcom-contact
 
 jobs:
   deploy:
@@ -39,8 +42,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
 
       - run: npm ci
+      - run: npm ci --prefix server
       - run: npm run type-check
       - run: npm run lint
       - run: npm test
@@ -69,6 +76,21 @@ jobs:
           EOF
           chmod 600 ~/.ssh/config
 
+      # Сначала обработчик, потом сайт: новая сборка никогда не говорит со старым обработчиком.
+      # node_modules и .env на сервере не трогаем (исключены и из передачи, и из удаления)
+      - name: Загрузить обработчик формы в server/
+        run: rsync -az --delete --exclude node_modules --exclude .env --chmod=D755,F644 server/ "prod:$DEPLOY_PATH/server/"
+
+      - name: Установить зависимости обработчика и перезапустить службу
+        run: |
+          ssh prod bash -s <<EOF
+          set -e
+          cd "$DEPLOY_PATH/server"
+          npm ci --omit=dev --no-audit --no-fund
+          sudo -n /usr/bin/systemctl restart "$CONTACT_SERVICE.service"
+          systemctl is-active "$CONTACT_SERVICE.service"
+          EOF
+
       - name: Загрузить сборку в releases/${{ github.sha }}
         run: rsync -az --delete --chmod=D755,F644 dist/ "prod:$DEPLOY_PATH/releases/${{ github.sha }}/"
 
@@ -85,11 +107,15 @@ jobs:
           echo "current -> \$(readlink current)"
           EOF
 
-      - name: Проверить, что сервер отдаёт сайт
+      - name: Проверить, что сервер отдаёт сайт и обработчик формы
         env:
           HOST: ${{ vars.DEPLOY_HOST }}
         run: |
           # Через IP с заголовком Host — не зависит от DNS; после certbot --redirect здесь 301, это нормально
-          curl -sS -o /dev/null -w 'по IP: HTTP %{http_code}\n' --retry 3 --retry-delay 2 -H 'Host: matsakov-victor.com' "http://$HOST/"
-          curl -fsS -o /dev/null -w 'по домену: HTTP %{http_code}\n' "$SITE_URL/" \
+          curl -sS -o /dev/null -w 'сайт по IP: HTTP %{http_code}\n' --retry 3 --retry-delay 2 -H 'Host: matsakov-victor.com' "http://$HOST/"
+          curl -sS -o /dev/null -w 'обработчик по IP: HTTP %{http_code}\n' --retry 3 --retry-delay 2 -H 'Host: matsakov-victor.com' "http://$HOST/api/contact/health"
+          curl -fsS -o /dev/null -w 'сайт по домену: HTTP %{http_code}\n' "$SITE_URL/" \
             || echo "::warning::$SITE_URL не отвечает — DNS ещё не указывает на сервер или не выпущен сертификат (certbot)"
+          # {ok:true, telegram:true, mail:true} — оба канала настроены в /etc/matsakov-victor.com/contact.env; false — канал отключён
+          curl -fsS -w '\n' "$SITE_URL/api/contact/health" \
+            || echo "::warning::$SITE_URL/api/contact/health не отвечает — см. journalctl -u $CONTACT_SERVICE на сервере"
