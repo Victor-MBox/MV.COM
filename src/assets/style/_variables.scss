@@ -43,6 +43,7 @@
 	--box: #141414; // карточки, панели, поля
 	--box-hover: #1a1a1a; // карточка по ховеру
 	--box-deep: #0d0d0d; // подложки внутри карточек: мини-интерфейсы, код, теги
+	--scene-plate: rgba(13, 13, 13, 0.5); // подложка сцены FloatingPreview — полупрозрачный --box-deep (правка владельца 22.10.2026)
 	--text: #fefefe; // заголовки, девиз, цифры
 	--text-body: rgba(255, 255, 255, 0.8); // читаемый текст абзацев
 	--text-muted: #8a8a8a; // подписи, метки, даты
@@ -74,6 +75,7 @@ body.light {
 	--box: #ffffff;
 	--box-hover: #ffffff; // по ховеру меняется только бордер
 	--box-deep: #ebeae7;
+	--scene-plate: #ebeae7;
 	--text: #161616;
 	--text-body: rgba(22, 22, 22, 0.82);
 	--text-muted: #6f6f6f;
@@ -105,6 +107,7 @@ body.dark {
 	--box: #141414;
 	--box-hover: #1a1a1a;
 	--box-deep: #0d0d0d;
+	--scene-plate: rgba(13, 13, 13, 0.5);
 	--text: #fefefe;
 	--text-body: rgba(255, 255, 255, 0.8);
 	--text-muted: #8a8a8a;

@@ -7,6 +7,7 @@ import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
 import Box from '../box/Box'
 import Chip from '../chip/Chip'
 import Stat from '../stat/Stat'
+import FloatingPreview from '../floatingPreview/FloatingPreview'
 import './CaseCard.scss'
 
 type Props = {
@@ -15,7 +16,8 @@ type Props = {
 	wide?: boolean
 	/**
 	 * Карточка проекта на главной (ТЗ от 21.10.2026, §6): широкая, тип проекта, описание с ролью и «Посмотреть кейс» —
-	 * без цифр, роли отдельной строкой и тегов стека (числа — в кейсе, технологии — на «Обо мне»)
+	 * без цифр, роли отдельной строкой и тегов стека (числа — в кейсе, технологии — на «Обо мне»). Если у проекта есть
+	 * `preview`, вместо скриншота справа — интерактивная обложка из элементов интерфейса (ТЗ от 22.10.2026)
 	 */
 	teaser?: boolean
 }
@@ -26,10 +28,12 @@ const MAX_TAGS = 4
  * Карточка работы по Zolt (docs/design-spec.md §6.9): год · срок · клиент, H3, строка, цифры из highlights (только
  * подтверждённые — isPublic), роль, теги стека. Вся карточка — ссылка на кейс, курсор-подпись «смотреть»; внутри нет
  * других интерактивных элементов («Посмотреть кейс» у teaser — подпись, а не вложенная ссылка). Обложка широкой
- * карточки мягко смещается при скролле (только pointer: fine, без reduced-motion).
+ * карточки мягко смещается при скролле (только pointer: fine, без reduced-motion); у интерактивной обложки вместо
+ * этого — параллакс от курсора внутри FloatingPreview.
  */
 export default function CaseCard({ project, wide: wideProp, teaser }: Props) {
 	const wide = wideProp || teaser
+	const stage = !!teaser && !!project.preview
 	const coverRef = useRef<HTMLDivElement>(null)
 	const hoverable = useMediaQuery(MQ.hover)
 	const coarse = useMediaQuery(MQ.coarse)
@@ -37,7 +41,7 @@ export default function CaseCard({ project, wide: wideProp, teaser }: Props) {
 	// target только у широкой карточки: у обычной обложки нет, и framer бросал бы «Target ref is defined but not hydrated»
 	const { scrollYProgress } = useScroll(wide ? { target: coverRef, offset: ['start end', 'end start'] } : undefined)
 	const y = useTransform(scrollYProgress, [0, 1], [-12, 12])
-	const parallax = wide && hoverable && !coarse && !reduced
+	const parallax = wide && !stage && hoverable && !coarse && !reduced
 
 	const meta = teaser
 		? project.kind
@@ -86,15 +90,19 @@ export default function CaseCard({ project, wide: wideProp, teaser }: Props) {
 				)}
 			</div>
 			{wide && (
-				<div className='caseCard__cover' ref={coverRef}>
-					<motion.img
-						src={project.cover}
-						alt={teaser ? `${project.title}: скриншот` : ''}
-						width={1680}
-						height={720}
-						fetchPriority='high'
-						style={parallax ? { y } : undefined}
-					/>
+				<div className={`caseCard__cover${stage ? ' caseCard__cover--scene' : ''}`} ref={coverRef}>
+					{stage && project.preview ? (
+						<FloatingPreview preview={project.preview} />
+					) : (
+						<motion.img
+							src={project.cover}
+							alt={teaser ? `${project.title}: скриншот` : ''}
+							width={1680}
+							height={720}
+							fetchPriority='high'
+							style={parallax ? { y } : undefined}
+						/>
+					)}
 				</div>
 			)}
 		</Box>

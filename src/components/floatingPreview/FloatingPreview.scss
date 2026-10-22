@@ -1,0 +1,100 @@
+// Интерактивная обложка кейса: парящие элементы интерфейса продукта (ТЗ от 22.10.2026)
+.floatingPreview {
+	--preview-shadow: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.5));
+	--preview-shadow-hover: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.6));
+
+	position: absolute;
+	inset: 0;
+	// Своего фона нет (правка владельца 22.10.2026): мягкая подложка --box-deep и радиус — у рамки .caseCard__cover--scene;
+	// остатки фона NoRandoms у краёв вырезок на тёмных карточках не видны
+	overflow: hidden;
+	user-select: none;
+
+	&__layer {
+		position: absolute;
+		left: calc(var(--x) * 1%);
+		top: calc(var(--y) * 1%);
+		width: calc(var(--w) * 1%);
+		// Появление: снизу и чуть меньше, по очереди слоёв (--i)
+		opacity: 0;
+		transform: translateY(18px) scale(0.97);
+		transition:
+			opacity var(--d-reveal) var(--ease-out),
+			transform var(--d-reveal) var(--ease-out);
+		transition-delay: calc(var(--i) * 110ms);
+	}
+
+	&.is-in &__layer {
+		opacity: 1;
+		transform: none;
+	}
+
+	// Параллакс: transform ставит скрипт (translate3d по глубине слоя)
+	&__shift {
+		will-change: transform;
+	}
+
+	// Покачивание: размах 3–6px и период 6–8,4 с по глубине, старт со сдвигом фазы по номеру слоя
+	&__float {
+		--amp: calc(3px + var(--depth) * 3px);
+		animation: floatingPreviewFloat calc((9 - var(--depth) * 3) * 1s) ease-in-out infinite;
+		animation-delay: calc(var(--i) * -1.7s);
+	}
+
+	&__card {
+		display: block;
+		width: 100%;
+		height: auto;
+		filter: var(--preview-shadow);
+		transition:
+			transform var(--d-base) var(--ease-out),
+			filter var(--d-base) var(--ease-out);
+	}
+
+	// Наведение на слой: подъём, чуть крупнее, тень глубже
+	&__layer:hover &__card {
+		transform: translateY(-4px) scale(1.03);
+		filter: var(--preview-shadow-hover) brightness(1.04);
+	}
+
+	// Телефон: только слои с мобильной раскладкой (главная карточка и одна соседняя), крупнее
+	@media (max-width: 560px) {
+		&__layer {
+			display: none;
+		}
+
+		&__layer--phone {
+			display: block;
+			left: calc(var(--px) * 1%);
+			top: calc(var(--py) * 1%);
+			width: calc(var(--pw) * 1%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		&__layer {
+			opacity: 1;
+			transform: none;
+			transition: none;
+		}
+
+		&__float {
+			animation: none;
+		}
+
+		&__shift {
+			will-change: auto;
+		}
+	}
+}
+
+@keyframes floatingPreviewFloat {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(calc(var(--amp) * -1));
+	}
+}
