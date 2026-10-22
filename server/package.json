@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
-	"description": "Обработчик формы matsakov-victor.com: POST /api/contact → Telegram и почта. Запуск: node contact.js (переменные — .env.example)",
+	"description": "Обработчик формы matsakov-victor.com: POST /api/contact → письмо (основной канал), уведомление в Telegram, запись о согласии. Запуск: node contact.js (переменные — .env.example)",
 	"engines": {
 		"node": ">=20.6"
 	},

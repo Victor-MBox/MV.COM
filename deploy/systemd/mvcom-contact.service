@@ -13,10 +13,14 @@ Type=simple
 User=deploy
 WorkingDirectory=/var/www/matsakov-victor.com/server
 EnvironmentFile=/etc/matsakov-victor.com/contact.env
+# Журнал записей о согласии (consents.jsonl): /var/lib/mvcom-contact, владелец — пользователь службы; путь приходит
+# в STATE_DIRECTORY и остаётся доступным на запись при ProtectSystem=strict
+StateDirectory=mvcom-contact
+StateDirectoryMode=0700
 ExecStart=/usr/bin/node /var/www/matsakov-victor.com/server/contact.js
 Restart=on-failure
 RestartSec=3
-# Служба ничего не пишет на диск: файловая система только для чтения, /home — тоже (node может лежать в домашней папке)
+# Файловая система только для чтения (кроме StateDirectory), /home — тоже (node может лежать в домашней папке)
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=read-only

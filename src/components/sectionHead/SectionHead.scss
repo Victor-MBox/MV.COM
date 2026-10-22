@@ -113,6 +113,17 @@
 			font-size: 16px;
 		}
 
+		// Длинная метка и действие («// продвижение и аналитика» + «Как выбрать способ продвижения →») — в две строки, без переполнения
+		&__row {
+			flex-wrap: wrap;
+			row-gap: 10px;
+		}
+
+		&__action {
+			white-space: normal;
+			text-align: right;
+		}
+
 		&--divided .sectionHead__titleRow {
 			display: block;
 

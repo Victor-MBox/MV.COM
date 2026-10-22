@@ -1,0 +1,63 @@
+// Обзор продвижения (/services/promotion): карточки — OfferGrid, «С чего начать» — строки «номер · вопрос · ответ», обращение — DiscussRow
+.promotionPage {
+	&__narrow {
+		max-width: calc(var(--container) * 10 / 12);
+	}
+
+	&__start {
+		border-top: 1px solid var(--border);
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 16px;
+			padding: 20px 0;
+			border-bottom: 1px solid var(--border);
+		}
+	}
+
+	&__num {
+		flex: none;
+		min-width: 2ch;
+		padding-top: 5px;
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__q {
+		margin-bottom: 6px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 20px;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+		color: var(--text);
+	}
+
+	&__a {
+		max-width: 64ch;
+		font-size: 15px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	&__note {
+		max-width: 64ch;
+		margin-top: 24px;
+		font-size: 17px;
+		line-height: 1.6;
+		letter-spacing: -0.01em;
+		color: var(--text-body);
+	}
+
+	@media (max-width: 1200px) {
+		&__narrow {
+			max-width: none;
+		}
+	}
+}

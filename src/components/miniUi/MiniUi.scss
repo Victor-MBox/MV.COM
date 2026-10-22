@@ -50,6 +50,74 @@
 	.miniUi--agencies .miniUi__arrow {
 		transform: translateX(4px);
 	}
+
+	// --- новые услуги (22.10.2026) ---
+	// Телефон: приложение сначала скрыто (виден рабочий стол), нажимается акцентная иконка, приложение открывается и строки
+	// появляются по очереди; конец сцены — открытое приложение, как в покое
+	.miniUi--mobile-apps {
+		.miniUi__appIcon.is-accent {
+			animation: miniUiPress var(--d-mid) var(--ease-out);
+			animation-delay: 160ms;
+		}
+
+		.miniUi__app {
+			animation: miniUiAppOpen var(--d-base) var(--ease-out) both;
+			animation-delay: 420ms;
+		}
+
+		.miniUi__phoneRow {
+			animation: miniUiRow var(--d-base) var(--ease-out) both;
+			animation-delay: calc(560ms + var(--n) * var(--stagger));
+		}
+
+		.miniUi__tab.is-accent {
+			animation: miniUiPulse 1.6s var(--ease-out) 1;
+			animation-delay: 1s;
+		}
+	}
+
+	.miniUi--interactive {
+		.miniUi__option {
+			animation: miniUiRow var(--d-base) var(--ease-out) both;
+			animation-delay: calc(var(--n) * var(--stagger));
+		}
+
+		.miniUi__option.is-accent .miniUi__radio {
+			animation: miniUiPulse 1.6s var(--ease-out) 2;
+		}
+
+		.miniUi__progressFill {
+			animation: miniUiFill var(--d-reveal) var(--ease-out) both;
+		}
+	}
+
+	.miniUi--seo {
+		.miniUi__result {
+			animation: miniUiRow var(--d-base) var(--ease-out) both;
+			animation-delay: calc(var(--n) * var(--stagger));
+		}
+
+		.miniUi__rank.is-accent {
+			animation: miniUiPulse 1.6s var(--ease-out) 2;
+		}
+	}
+
+	.miniUi--context {
+		.miniUi__button {
+			animation: miniUiPress var(--d-mid) var(--ease-out);
+		}
+
+		.miniUi__plus {
+			opacity: 1;
+			transform: none;
+			transition-delay: var(--d-mid);
+		}
+	}
+
+	.miniUi--analytics .miniUi__chartBar {
+		animation: miniUiFillY var(--d-reveal) var(--ease-out) both;
+		animation-delay: calc(var(--n) * 80ms);
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -407,6 +475,330 @@
 		transition: transform var(--d-mid) var(--ease-out);
 	}
 
+	// --- мобильные приложения: телефон (корпус --ui-plate, вырез, экран --box-deep, полоска «домой»); на экране рабочий стол
+	// с иконками, поверх — открытое приложение (шапка, список, вкладки, активная — акцент). Акцентных элемента два, но
+	// виден в каждый момент один: иконка — пока приложение закрыто, вкладка — когда открыто ---
+	&--mobile-apps {
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__phone {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		width: 76px;
+		height: 100%;
+		padding: 7px 5px 6px;
+		border-radius: 16px;
+		background: var(--ui-plate);
+	}
+
+	&__phoneNotch {
+		flex: none;
+		width: 24px;
+		height: 5px;
+		margin: 0 auto 6px;
+		border-radius: 3px;
+		background: var(--box-deep);
+	}
+
+	&__phoneHome {
+		flex: none;
+		width: 22px;
+		height: 3px;
+		margin: 6px auto 0;
+		border-radius: 2px;
+		background: var(--box-deep);
+	}
+
+	&__screen {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		border-radius: 10px;
+		background: var(--box-deep);
+		overflow: hidden;
+	}
+
+	&__home {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		align-content: start;
+		gap: 6px;
+		padding: 10px 8px;
+	}
+
+	&__appIcon {
+		aspect-ratio: 1;
+		border-radius: 5px;
+		background: var(--ui-plate);
+
+		&.is-accent {
+			background: var(--accent);
+		}
+	}
+
+	&__app {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px;
+		background: var(--box-deep);
+		transform-origin: 22% 18%; // раскрывается из угла, где лежит нажатая иконка
+
+		.miniUi__bar {
+			background: var(--ui-plate);
+		}
+	}
+
+	&__appBar {
+		display: flex;
+		flex: none;
+		align-items: center;
+		height: 12px;
+		padding: 0 2px;
+	}
+
+	&__phoneList {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	&__phoneRow {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	&__tabs {
+		display: flex;
+		justify-content: space-around;
+		padding-top: 2px;
+	}
+
+	&__tab {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--ui-plate);
+
+		&.is-accent {
+			background: var(--accent);
+		}
+	}
+
+	// --- квиз: прогресс, вопрос и три варианта, выбранный вариант — акцентная точка ---
+	&--interactive {
+		align-items: stretch;
+	}
+
+	&__quiz {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 10px;
+		padding: 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		> .miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__progress {
+		display: block;
+		height: 4px;
+		border-radius: 2px;
+		background: var(--box-deep);
+		overflow: hidden;
+	}
+
+	&__progressFill {
+		display: block;
+		width: 40%;
+		height: 100%;
+		border-radius: 2px;
+		background: var(--text-muted);
+		transform-origin: left center;
+	}
+
+	&__options {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		gap: 6px;
+	}
+
+	&__option {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 8px;
+		border-radius: 6px;
+		background: var(--box-deep);
+
+		.miniUi__bar {
+			background: var(--ui-plate);
+		}
+	}
+
+	&__radio {
+		flex: none;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--ui-plate);
+	}
+
+	&__option.is-accent &__radio {
+		background: var(--accent);
+	}
+
+	// --- SEO: строка поиска и три результата, позиция первого — акцент ---
+	&--seo {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	&__search {
+		display: flex;
+		flex: none;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 10px;
+		border-radius: var(--radius-pill);
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__lens {
+		flex: none;
+		width: 10px;
+		height: 10px;
+		border: 2px solid var(--text-muted);
+		border-radius: 50%;
+	}
+
+	&__results {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		gap: 6px;
+	}
+
+	&__result {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 6px 10px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	// `& &__rank` — специфичность выше правила `.miniUi b { display: block }`, иначе цифра прижималась к верхнему левому углу
+	& &__rank {
+		display: flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		border-radius: 6px;
+		background: var(--box-deep);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		line-height: 1;
+		color: var(--text-muted);
+
+		&.is-accent {
+			background: var(--accent);
+			color: var(--on-accent);
+		}
+	}
+
+	&__resultText {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 5px;
+		min-width: 0;
+	}
+
+	// --- контекстная реклама: объявление с пометкой «Реклама» и кнопкой-акцентом, по нажатию «+1» (как у магазина) ---
+	&--context {
+		align-items: stretch;
+	}
+
+	&__ad {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 10px;
+		padding: 14px 16px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+
+		.miniUi__bar {
+			background: var(--box-deep);
+		}
+	}
+
+	&__adLabel {
+		align-self: flex-start;
+		padding: 3px 6px;
+		border-radius: 4px;
+		background: var(--box-deep);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		line-height: 1;
+		color: var(--text-muted);
+	}
+
+	// --- аналитика: столбчатая диаграмма событий, самый высокий столбец — акцент ---
+	&--analytics {
+		align-items: stretch;
+	}
+
+	&__chart {
+		display: flex;
+		flex: 1;
+		align-items: flex-end;
+		gap: 8px;
+		padding: 14px 16px 12px;
+		border-radius: 8px;
+		background: var(--ui-plate);
+	}
+
+	&__chartBar {
+		flex: 1;
+		height: var(--h);
+		border-radius: 4px 4px 2px 2px;
+		background: var(--box-deep);
+		transform-origin: bottom center;
+
+		&.is-accent {
+			background: var(--accent);
+		}
+	}
+
 	// --- циклические сценарии (loop, шапка страницы оффера): те же движения, что по ховеру, но по кругу и связанные
 	// в историю. Акцент в каждый момент — у одного элемента: он переходит по строкам, пунктам меню, задачам.
 	// Отрицательная задержка сдвигает фазу без пустого старта (при положительной до старта действовал бы кадр 0%).
@@ -485,6 +877,58 @@
 		&--loop.miniUi--support .miniUi__state {
 			animation: miniUiLoopState 4.5s var(--ease-out) infinite;
 			animation-delay: calc((var(--n) - 3) * 1.5s);
+		}
+
+		// Телефон, 6 с: нажатие иконки на рабочем столе, приложение раскрывается, строки появляются по очереди, затем закрывается
+		&--loop.miniUi--mobile-apps {
+			.miniUi__appIcon.is-accent {
+				animation: miniUiLoopTap 6s var(--ease-out) infinite;
+			}
+
+			.miniUi__app {
+				animation: miniUiLoopApp 6s var(--ease-out) infinite both;
+			}
+
+			.miniUi__phoneRow {
+				animation: miniUiLoopAppRow 6s var(--ease-out) infinite both;
+				animation-delay: calc(var(--n) * 120ms);
+			}
+		}
+
+		// Квиз, 4.5 с: выбранный вариант переходит сверху вниз, прогресс дорастает к концу цикла
+		&--loop.miniUi--interactive {
+			.miniUi__radio {
+				animation: miniUiLoopState 4.5s var(--ease-out) infinite;
+				animation-delay: calc((var(--n) - 3) * 1.5s);
+			}
+
+			.miniUi__progressFill {
+				animation: miniUiLoopGrow 4.5s var(--ease-out) infinite both;
+			}
+		}
+
+		// Поиск, 4.5 с: акцентная позиция поднимается снизу вверх — третья, вторая, первая
+		&--loop.miniUi--seo .miniUi__rank {
+			animation: miniUiLoopRank 4.5s var(--ease-out) infinite;
+			animation-delay: calc((2 - var(--n)) * 1.5s - 4.5s);
+		}
+
+		// Объявление, 3.2 с: нажатие «Перейти», всплывает «+1» и тает
+		&--loop.miniUi--context {
+			.miniUi__button {
+				animation: miniUiLoopTap 3.2s var(--ease-out) infinite;
+				animation-delay: -2.6s;
+			}
+
+			.miniUi__plus {
+				animation: miniUiLoopPlus 3.2s var(--ease-out) infinite both;
+			}
+		}
+
+		// Диаграмма, 4 с: столбцы вырастают по очереди, держатся и складываются
+		&--loop.miniUi--analytics .miniUi__chartBar {
+			animation: miniUiLoopBars 4s var(--ease-out) infinite both;
+			animation-delay: calc(var(--n) * 80ms);
 		}
 
 		// Агентства, 3.6 с: стрелка подталкивает, во второй колонке по очереди «дописываются» строки
@@ -614,6 +1058,66 @@
 @keyframes miniUiDashY {
 	to {
 		background-position: 0 16px;
+	}
+}
+
+@keyframes miniUiFill {
+	from {
+		transform: scaleX(0);
+	}
+}
+
+@keyframes miniUiAppOpen {
+	from {
+		opacity: 0;
+		transform: scale(0.88);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+// Приложение открыто 10–84% цикла: до — рабочий стол и нажатие иконки (miniUiLoopTap на 4%), после — закрывается
+@keyframes miniUiLoopApp {
+	0%,
+	9% {
+		opacity: 0;
+		transform: scale(0.88);
+	}
+	15%,
+	84% {
+		opacity: 1;
+		transform: none;
+	}
+	92%,
+	100% {
+		opacity: 0;
+		transform: scale(0.96);
+	}
+}
+
+@keyframes miniUiLoopAppRow {
+	0%,
+	15% {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	22%,
+	84% {
+		opacity: 1;
+		transform: none;
+	}
+	92%,
+	100% {
+		opacity: 0;
+		transform: none;
+	}
+}
+
+@keyframes miniUiFillY {
+	from {
+		transform: scaleY(0);
 	}
 }
 
@@ -772,6 +1276,35 @@
 	34%,
 	96% {
 		background-color: var(--box-deep);
+	}
+}
+
+// Позиция в выдаче — акцент свою треть цикла (фон и цвет цифры)
+@keyframes miniUiLoopRank {
+	0%,
+	30%,
+	100% {
+		background-color: var(--accent);
+		color: var(--on-accent);
+	}
+	34%,
+	96% {
+		background-color: var(--box-deep);
+		color: var(--text-muted);
+	}
+}
+
+@keyframes miniUiLoopBars {
+	0% {
+		transform: scaleY(0);
+	}
+	18%,
+	80% {
+		transform: none;
+	}
+	94%,
+	100% {
+		transform: scaleY(0);
 	}
 }
 

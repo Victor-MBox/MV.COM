@@ -10,6 +10,7 @@
 		"preview": "vite preview",
 		"lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"server/**/*.js\" --max-warnings=0",
 		"test": "vitest run",
+		"legal:hash": "npx -y vite-node@6 scripts/legal-hash.ts",
 		"type-check": "tsc --noEmit -p tsconfig.app.json && tsc -p server/tsconfig.json"
 	},
 	"dependencies": {

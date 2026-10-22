@@ -101,7 +101,7 @@ export default function ContactModal() {
 							<p className='modal__subtitle'>{FORM_COPY.lead}</p>
 						</div>
 
-						<LeadForm key={topic} topic={topic} onDone={close} compact />
+						<LeadForm key={topic} topic={topic} formId='modal' onDone={close} compact />
 					</motion.div>
 				</motion.div>
 			)}

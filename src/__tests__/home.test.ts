@@ -3,7 +3,6 @@ import {
 	ABOUT_BRIEF,
 	CATALOG_COPY,
 	FOOTER,
-	FOOTER_META,
 	H2,
 	HERO,
 	NAME,
@@ -12,7 +11,7 @@ import {
 	PROJECTS_ANCHOR,
 	SOCIAL,
 } from '../data/home'
-import { OFFERS, CATALOG, AGENCIES_KEY } from '../data/offers'
+import { OFFERS, CATALOG, AGENCIES_KEY, MORE_OFFERS } from '../data/offers'
 import { PROCESS } from '../data/experience'
 import { PROJECTS, isPublic } from '../data/projects'
 import { CONTACTS, CONTACT_LINKS } from '../data/contacts'
@@ -38,11 +37,13 @@ describe('главная: коммерческая структура (ТЗ от
 		expect(PROOF[0].value).toBe('8 лет') // данные остаются в источнике
 	})
 
-	it('каталог: шесть услуг в порядке ТЗ, агентства — отдельной строкой', () => {
+	it('каталог главной: шесть основных услуг в порядке ТЗ, новые — ссылками «Также могу помочь», агентства — отдельной строкой', () => {
 		expect(CATALOG.map(o => o.key)).toEqual(['corporate', 'landing', 'ecommerce', 'web-service', 'integrations', 'support'])
 		expect(OFFERS.slice(0, 6)).toEqual(CATALOG) // порядок массива = номер «услуга 0N»
 		expect(OFFERS.find(o => o.key === AGENCIES_KEY)).toBeTruthy()
 		expect(CATALOG_COPY.note).toMatch(/Ориентиры/)
+		expect(MORE_OFFERS.length).toBe(5)
+		MORE_OFFERS.forEach(o => expect(CATALOG).not.toContain(o))
 	})
 
 	it('кратко о разработчике — без чисел стажа и проектов', () => {
@@ -70,17 +71,18 @@ describe('главная: коммерческая структура (ТЗ от
 	})
 
 	it('города и часового пояса на сайте нет (решение владельца от 20.10.2026)', () => {
-		const strings = [...FOOTER_META, ABOUT_TEAMS.text, CONTACTS.location]
+		const strings = [ABOUT_TEAMS.text, CONTACTS.location]
 		strings.forEach(s => expect(s).not.toMatch(/Тбилиси|Грузия|GMT|UTC/i))
-		expect(FOOTER_META.length).toBe(2)
 	})
 
-	it('ссылки шапки ведут на существующие маршруты, соцссылки — настоящие (без заглушки LinkedIn)', () => {
+	it('ссылки шапки ведут на существующие маршруты, соцссылки и ссылки футера — настоящие', () => {
 		const paths = ROUTE_PATHS as readonly string[]
 		NAV.forEach(n => expect(paths).toContain(n.to))
 		expect(new Set(NAV.map(n => n.to)).size).toBe(NAV.length)
-		SOCIAL.forEach(key => expect(CONTACT_LINKS[key]).toMatch(/^https?:/))
-		expect(SOCIAL).not.toContain('linkedin')
+		SOCIAL.forEach(key => expect(CONTACT_LINKS[key]).toMatch(/^(https?:|mailto:)/))
+		expect(SOCIAL).toEqual(['telegram', 'max', 'email'])
+		expect(CONTACT_LINKS.max).toMatch(/^https:\/\/max\.ru\/u\/\w+$/)
+		expect(CONTACT_LINKS.linkedin).toBe('https://www.linkedin.com/in/viktor-matsakov-148767268')
 	})
 
 	it('контакты настоящие: без example и нулевых номеров, телефон для показа — те же цифры', () => {
@@ -92,7 +94,7 @@ describe('главная: коммерческая структура (ТЗ от
 
 	it('мета главной, услуг и портфолио — тексты ТЗ', () => {
 		expect(SITE_META.home.title).toBe('Разработка сайтов и веб-сервисов — Виктор Мацаков')
-		expect(SITE_META.services.title).toBe('Разработка и доработка сайтов — услуги Виктора Мацакова')
+		expect(SITE_META.services.title).toBe('Сайты, приложения и продвижение — Виктор Мацаков')
 		expect(SITE_META.portfolio.title).toBe('Проекты и опыт разработки — Виктор Мацаков')
 		Object.values(SITE_META).forEach(m => expect(m.description.length).toBeGreaterThan(50))
 	})

@@ -70,16 +70,19 @@
 		min-width: 0;
 	}
 
-	// Нижняя строка: на всю ширину окна, гаттеры как у контейнера
+	// Нижние строки: на всю ширину окна, гаттеры как у контейнера. Первая — копирайт, мета-ряд и ссылки; вторая — документы
+	&__bottom {
+		margin-top: clamp(48px, 6vw, 88px);
+		padding: 24px var(--gutter);
+		border-top: 1px solid var(--border);
+	}
+
 	&__bar {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px 24px;
-		margin-top: clamp(48px, 6vw, 88px);
-		padding: 24px var(--gutter);
-		border-top: 1px solid var(--border);
 
 		p,
 		span,
@@ -111,14 +114,53 @@
 		}
 	}
 
-	&__meta {
+	// Документы: три ссылки на свои страницы и кнопка настроек — моно, как остальная нижняя строка
+	&__legal {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px 12px;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px 24px;
+		margin-top: 14px;
+
+		ul {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px 16px;
+		}
+
+		a,
+		button {
+			font-family: var(--font-mono);
+			font-size: 13px;
+			line-height: 1.4;
+			letter-spacing: 0;
+			color: var(--text-muted);
+			transition: color var(--d-fast);
+
+			&:hover {
+				color: var(--text);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 4px;
+			}
+		}
 	}
 
-	// /contacts: только нижняя строка, форма — на самой странице
-	&--bare &__bar {
+	&__settings {
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-color: var(--border-strong);
+		text-underline-offset: 3px;
+	}
+
+	// /contacts и страницы документов: только нижние строки, формы нет
+	&--bare &__bottom {
 		margin-top: 0;
 	}
 
@@ -144,6 +186,12 @@
 		}
 
 		&__bar {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		&__legal {
 			flex-direction: column;
 			align-items: flex-start;
 			gap: 8px;
@@ -308,13 +356,56 @@
 		display: inline;
 	}
 
-	&__policy {
+	// Строка «Как обрабатываются данные — в Политике конфиденциальности» и ссылка в подписи чекбокса
+	&__policy,
+	&__check a {
 		font-family: var(--font-mono);
 		font-size: 13px;
 		line-height: 1.4;
+		letter-spacing: 0;
 		color: var(--text-muted);
+	}
+
+	&__policy a,
+	&__check a {
+		color: inherit;
 		text-decoration: underline;
+		text-decoration-color: var(--border-strong);
 		text-underline-offset: 3px;
+		transition: color var(--d-fast);
+
+		&:hover {
+			color: var(--text);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+			border-radius: 2px;
+		}
+	}
+
+	// Услуга, с которой открыта форма: «// услуга: Лендинг» над первой строкой
+	&__topic {
+		padding-bottom: 16px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		span {
+			font-family: inherit;
+			color: var(--accent);
+		}
+	}
+
+	// Номер заявки под строкой успеха
+	&__requestId {
+		display: block;
+		margin-top: 4px;
+		font-family: inherit;
+		color: var(--text-muted);
 	}
 
 	// Замена формы до готовности обработчика: по верхней линии, как первая строка формы

@@ -91,18 +91,59 @@
 		color: var(--accent-text);
 	}
 
+	// Согласие: чекбокс со ссылкой на документ согласия, ошибка, строка со ссылкой на политику
+	&__consent {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
 	&__policy {
-		align-self: flex-start;
 		font-size: 13px;
 		line-height: 1.4;
 		color: var(--text-muted);
+	}
+
+	&__policy a,
+	&__check a {
+		color: var(--text);
 		text-decoration: underline;
+		text-decoration-color: var(--border-strong);
 		text-underline-offset: 3px;
+		transition: text-decoration-color var(--d-fast);
+
+		&:hover {
+			text-decoration-color: currentColor;
+		}
 
 		&:focus-visible {
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
+			border-radius: 2px;
 		}
+	}
+
+	// Услуга, с которой открыта форма: «// услуга: Лендинг»
+	&__topic {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		span {
+			font-family: inherit;
+			color: var(--accent);
+		}
+	}
+
+	// Номер заявки под сообщением об успехе
+	&__requestId {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
 	}
 
 	// Срок ответа и прямой канал под кнопкой

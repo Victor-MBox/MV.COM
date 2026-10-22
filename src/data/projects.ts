@@ -9,6 +9,10 @@ import norandomsParty from '../resources/norandoms/party-valheim.webp'
 import norandomsVoice from '../resources/norandoms/home-voice.webp'
 import norandomsSteam from '../resources/norandoms/home-steam.webp'
 import norandomsMobile from '../resources/norandoms/mobile.webp'
+import previewParty from '../resources/norandoms/preview/party-row.webp'
+import previewGame from '../resources/norandoms/preview/game-card.webp'
+import previewPlayer from '../resources/norandoms/preview/player-card.webp'
+import previewSteam from '../resources/norandoms/preview/steam-row.webp'
 
 /**
  * Число без подтверждения (нет источника, даты замера или методики) хранится в данных, но публично не выводится:
@@ -40,6 +44,42 @@ export type ProjectFact = Unconfirmed & {
 	label: string
 }
 
+/** Раскладка слоя на телефоне (≤560): проценты сцены, как у основной */
+export type PreviewPlacement = {
+	/** Ширина в % ширины сцены */
+	width: number
+	/** Отступ слева в % ширины сцены */
+	left: number
+	/** Отступ сверху в % высоты сцены */
+	top: number
+}
+
+/**
+ * Слой интерактивной обложки (FloatingPreview): настоящий элемент интерфейса продукта — вырезка из скриншота
+ * с альфа-маской по форме углов. Сцена 16:10, позиции и ширина — в процентах сцены (от базы 705×440);
+ * высота — из пропорций картинки `w`/`h`. Порядок в массиве — от дальнего слоя к ближнему (он же порядок появления)
+ */
+export type PreviewLayer = PreviewPlacement & {
+	src: string
+	/** Что это за элемент — для тестов и документации; на сцене картинки с пустым alt, подпись — у сцены */
+	name: string
+	/** Размер файла в px (атрибуты width/height — без скачка раскладки до загрузки) */
+	w: number
+	h: number
+	/** Глубина 0 (далеко) … 1 (близко): амплитуда параллакса, размах и скорость покачивания */
+	depth: number
+	/** Главная карточка композиции — самая крупная, остаётся на телефоне */
+	main?: boolean
+	/** Раскладка на телефоне; слой без неё на ≤560 скрыт */
+	phone?: PreviewPlacement
+}
+
+export type ProjectPreview = {
+	/** Подпись сцены для диктора (role="img") */
+	label: string
+	layers: PreviewLayer[]
+}
+
 /** Показатель можно выводить на сайте */
 export const isPublic = (item: Unconfirmed) => !item.hidden
 
@@ -64,6 +104,8 @@ export type Project = {
 	categories: string[]
 	link?: string
 	cover: string
+	/** Интерактивная обложка карточки на главной (ТЗ от 22.10.2026); без неё карточка показывает `cover` */
+	preview?: ProjectPreview
 	gallery: { src: string; caption: string }[]
 	/** Два скриншота для блока главного кейса на главной: большой сверху справа, малый снизу слева */
 	showcase?: { src: string; alt: string }[]
@@ -121,6 +163,40 @@ export const PROJECTS: Project[] = [
 		categories: ['Веб-разработка', 'Собственный продукт', 'SEO'],
 		link: 'https://norandoms.team',
 		cover: norandomsCover,
+		preview: {
+			label: 'Интерфейс NoRandoms: объявление о сборе пати, карточка игры, анкета игрока и статистика Steam',
+			layers: [
+				// Пати Call of Duty — широкая строка на заднем плане, сверху: заголовок и создатель видны, низ уходит под карточки
+				{ src: previewParty, name: 'Объявление о сборе пати', w: 1456, h: 250, width: 86, left: 5, top: 4.5, depth: 0.2 },
+				// Карточка игры PEAK — главная, слева от центра
+				{
+					src: previewGame,
+					name: 'Карточка игры',
+					w: 635,
+					h: 705,
+					width: 38,
+					left: 15,
+					top: 19.5,
+					depth: 0.5,
+					main: true,
+					phone: { width: 50, left: 4, top: 6 },
+				},
+				// Анкета игрока — справа, целиком видна
+				{
+					src: previewPlayer,
+					name: 'Анкета игрока',
+					w: 640,
+					h: 522,
+					width: 34,
+					left: 57,
+					top: 38,
+					depth: 0.7,
+					phone: { width: 44, left: 54, top: 30 },
+				},
+				// Строка статистики Steam — ближний слой, поверх нижнего края карточки игры
+				{ src: previewSteam, name: 'Статистика Steam', w: 757, h: 141, width: 36, left: 9, top: 84, depth: 1 },
+			],
+		},
 		showcase: [
 			{ src: norandomsHome, alt: 'Главная NoRandoms: поиск тиммейтов и пати' },
 			{ src: norandomsParties, alt: 'Сбор пати в NoRandoms' },

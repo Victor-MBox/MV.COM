@@ -80,6 +80,19 @@ function subscribe(listener: () => void) {
 	}
 }
 
+/**
+ * Забыть ручной выбор темы («Удалить сохранённые настройки» в окне настроек cookie): ключ localStorage удаляется,
+ * снова действует системная тема и её отслеживание
+ */
+export function clearStoredTheme() {
+	try {
+		localStorage.removeItem(KEY)
+	} catch {
+		// хранилище недоступно — удалять нечего
+	}
+	commit(systemTheme(), false)
+}
+
 export function useTheme() {
 	const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 

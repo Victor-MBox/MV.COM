@@ -33,6 +33,7 @@
 	--section-y: 128px; // 96 на ≤1200, 64 на ≤768
 	--header-h: 72px; // высота шапки TopHeader (56 на ≤768)
 	--z-sticky: 10;
+	--z-notice: 40; // уведомление о cookie внизу экрана: под меню и модалкой, над липкими элементами
 	--z-menu: 50;
 	--z-modal: 100;
 	--z-cursor: 9999;
@@ -42,6 +43,7 @@
 	--box: #141414; // карточки, панели, поля
 	--box-hover: #1a1a1a; // карточка по ховеру
 	--box-deep: #0d0d0d; // подложки внутри карточек: мини-интерфейсы, код, теги
+	--scene-plate: rgba(13, 13, 13, 0.5); // подложка сцены FloatingPreview — полупрозрачный --box-deep (правка владельца 22.10.2026)
 	--text: #fefefe; // заголовки, девиз, цифры
 	--text-body: rgba(255, 255, 255, 0.8); // читаемый текст абзацев
 	--text-muted: #8a8a8a; // подписи, метки, даты
@@ -73,6 +75,7 @@ body.light {
 	--box: #ffffff;
 	--box-hover: #ffffff; // по ховеру меняется только бордер
 	--box-deep: #ebeae7;
+	--scene-plate: #ebeae7;
 	--text: #161616;
 	--text-body: rgba(22, 22, 22, 0.82);
 	--text-muted: #6f6f6f;
@@ -104,6 +107,7 @@ body.dark {
 	--box: #141414;
 	--box-hover: #1a1a1a;
 	--box-deep: #0d0d0d;
+	--scene-plate: rgba(13, 13, 13, 0.5);
 	--text: #fefefe;
 	--text-body: rgba(255, 255, 255, 0.8);
 	--text-muted: #8a8a8a;

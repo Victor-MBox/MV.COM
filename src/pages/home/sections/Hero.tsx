@@ -35,7 +35,11 @@ const SPOT_START = { x: 0.72, y: 0.36 }
  * колонки, низ растворяется. Фон — «прожектор»: сетка в круге и пятно акцента в одной точке; на устройствах с мышью
  * точка плавно догоняет курсор (CSS-переменные --sx/--sy на секции), на тач и при reduced-motion стоит на старте.
  * Интро: сетка и пятно проявляются 1.4 с, строки H1 выезжают с 0.2 с через 0.1 с, портрет — с 0.45 с, подпись — с 0.55 с,
- * нижняя группа одним блоком — с 0.65 с. На ≤992 всё в столбик, портрет после кнопок (HomePage.scss)
+ * нижняя группа (описание, затем условие с кнопками — два элемента с одним шагом) — с 0.65 с.
+ * На ≤992 — макет владельца «Главная · мобильный hero 2a» (22.10.2026): портрет по центру под шапкой, низ растворяется,
+ * поверх него с 360px H1, подпись и описание; сразу за описанием — кнопки, под ними условие (правка владельца: без
+ * привязки к высоте окна). Разметка та же: `__bottom` на ≤992 — display: contents, описание и «кнопки + условие»
+ * становятся ячейками сетки `__copy` (HomePage.scss)
  */
 export default function Hero({ instant }: Props) {
 	const { open } = useContactModal()
@@ -123,18 +127,22 @@ export default function Hero({ instant }: Props) {
 						</div>
 					</div>
 
-					<motion.div className='homeHero__bottom' {...step(0.65, 0.5, { y: 24 })}>
-						<p className='homeHero__text'>{HERO.text}</p>
-						<p className='homeHero__note'>{HERO.note}</p>
-						<div className='homeHero__cta'>
-							<Button variant='primary' arrow onClick={() => open()}>
-								{HERO.cta}
-							</Button>
-							<Button variant='secondary' href={`#${PROJECTS_ANCHOR}`} onClick={toProjects}>
-								{HERO.projects}
-							</Button>
-						</div>
-					</motion.div>
+					<div className='homeHero__bottom'>
+						<motion.p className='homeHero__text' {...step(0.65, 0.5, { y: 24 })}>
+							{HERO.text}
+						</motion.p>
+						<motion.div className='homeHero__actions' {...step(0.65, 0.5, { y: 24 })}>
+							<p className='homeHero__note'>{HERO.note}</p>
+							<div className='homeHero__cta'>
+								<Button variant='primary' arrow onClick={() => open()}>
+									{HERO.cta}
+								</Button>
+								<Button variant='secondary' href={`#${PROJECTS_ANCHOR}`} onClick={toProjects}>
+									{HERO.projects}
+								</Button>
+							</div>
+						</motion.div>
+					</div>
 				</div>
 
 				<motion.div className='homeHero__portrait' {...step(0.45, 1, { y: 24 })}>

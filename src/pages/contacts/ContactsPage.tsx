@@ -6,7 +6,8 @@ import DimAccordion from '../../components/dimAccordion/DimAccordion'
 import Reveal from '../../components/reveal/Reveal'
 import { CONTACTS, CONTACT_LINKS } from '../../data/contacts'
 import { CONTACTS_FAQ_KEYS, getFaq } from '../../data/faq'
-import { FORM_COPY, FORM_ENABLED } from '../../data/leadForm'
+import { FORM_COPY } from '../../data/leadForm'
+import { useFormVisible } from '../../components/leadForm/useDeliveryReady'
 import { SITE_META } from '../../data/meta'
 import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import './ContactsPage.scss'
@@ -21,13 +22,14 @@ type Channel = {
 	hint: string
 }
 
+// Порядок — решение владельца от 22.10.2026: MAX, почта, Telegram, телефон. У MAX нет имени пользователя —
+// вместо него «Открыть чат», копировать нечего
 const CHANNELS: Channel[] = [
 	{
-		key: 'telegram',
-		label: 'Telegram',
-		value: `@${CONTACTS.telegram}`,
-		href: CONTACT_LINKS.telegram,
-		copy: `@${CONTACTS.telegram}`,
+		key: 'max',
+		label: 'MAX',
+		value: 'Открыть чат',
+		href: CONTACT_LINKS.max,
 		hint: 'Самый быстрый способ',
 	},
 	{
@@ -39,6 +41,14 @@ const CHANNELS: Channel[] = [
 		hint: 'Для описания задачи и материалов',
 	},
 	{
+		key: 'telegram',
+		label: 'Telegram',
+		value: `@${CONTACTS.telegram}`,
+		href: CONTACT_LINKS.telegram,
+		copy: `@${CONTACTS.telegram}`,
+		hint: 'Если удобнее Telegram',
+	},
+	{
 		key: 'phone',
 		label: 'Телефон',
 		value: CONTACTS.phoneLabel,
@@ -48,12 +58,13 @@ const CHANNELS: Channel[] = [
 	},
 ]
 
-// H1 и вступление — ТЗ от 21.10.2026, §7. Вступление зависит от готовности формы: пока её нет (публичная сборка до
-// обработчика и политики), про форму не пишем. Что прислать — одна инструкция FORM_COPY.lead в панели заявки ниже
+// H1 и вступление — ТЗ от 21.10.2026, §7. Вступление зависит от готовности формы (ответ health, useFormVisible): пока
+// сервер не настроен, про форму не пишем. Что прислать — одна инструкция FORM_COPY.lead в панели заявки ниже
 // (ТЗ по текстам и SEO от 21.10.2026), здесь не повторяется. Срок ответа стоит под формой, как везде
 const HEAD = {
 	title: { text: 'Обсудим вашу задачу', accent: 'вашу задачу' },
-	lead: FORM_ENABLED ? 'Напишите в Telegram или отправьте сообщение через форму.' : 'Напишите в Telegram или на почту.',
+	leadWithForm: 'Напишите в Telegram или отправьте сообщение через форму.',
+	leadNoForm: 'Напишите в Telegram или на почту.',
 }
 
 // TODO (владелец): заголовки колонок и блока вопросов
@@ -66,13 +77,14 @@ const H2 = {
 const COPIED_MS = 1600
 
 /**
- * Контакты (docs/design-spec.md §9; ТЗ от 21.10.2026, §14): шапка со статусом → каналы строками (Telegram — основной,
- * почта и телефон — настоящие из contacts.ts, с копированием в буфер), под ними GitHub как ссылка на код, а не канал для
+ * Контакты (docs/design-spec.md §9; ТЗ от 21.10.2026, §14): шапка со статусом → каналы строками (с 22.10.2026 MAX — первый,
+ * дальше почта, Telegram и телефон — настоящие из contacts.ts, кроме MAX с копированием в буфер), под ними GitHub как ссылка на код, а не канал для
  * заказа; справа форма первого обращения в единственной панели страницы → четыре вопроса аккордеоном. Футер здесь
  * без формы — второй раз она не повторяется
  */
 export default function ContactsPage() {
 	const [copied, setCopied] = useState<string | null>(null)
+	const formVisible = useFormVisible()
 	useDocumentMeta(SITE_META.contacts)
 	const faq = getFaq(CONTACTS_FAQ_KEYS).map(f => ({ id: f.key, title: f.q, content: <p>{f.a}</p> }))
 
@@ -92,7 +104,7 @@ export default function ContactsPage() {
 			<PageHead
 				label='контакты'
 				title={HEAD.title}
-				lead={HEAD.lead}
+				lead={formVisible ? HEAD.leadWithForm : HEAD.leadNoForm}
 				aside={
 					<div className='contactsPage__status'>
 						<p className='contactsPage__statusLine'>

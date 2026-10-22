@@ -13,7 +13,8 @@
 // секции, на устройствах с мышью плавно догоняет курсор (Hero.tsx пишет --sx/--sy в px). Потолка 820px из макета
 // «Hero 1b» (20.10.2026) больше нет — высота от окна, как в новом макете, но на 100px меньше окна (правка владельца
 // от 21.10.2026 после просмотра: следующая секция видна сразу). Шапка 72px входит в высоту, контент — на 40px ниже неё;
-// растёт секция вместе с содержимым (min-height, не height)
+// растёт секция вместе с содержимым (min-height, не height). Мобильная раскладка (≤992) — макет владельца
+// «Главная · мобильный hero 2a» (22.10.2026) с его правкой «кнопки сразу за описанием», см. медиазапрос ниже
 .homeHero {
 	--sx: 72%;
 	--sy: 36%;
@@ -124,13 +125,22 @@
 		transform-origin: left center;
 	}
 
-	// Нижняя группа: описание, условие и две кнопки — появляется одним блоком
+	// Нижняя группа: описание и блок «условие + две кнопки». Это два motion-элемента с одним шагом интро (видно как один
+	// блок); разделены они ради мобильной раскладки — там кнопки идут выше условия, и оба блока становятся ячейками
+	// сетки `__copy` (медиазапрос ≤992)
 	&__bottom {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 16px;
 		margin-top: 64px;
+	}
+
+	&__actions {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 16px;
 	}
 
 	&__text {
@@ -253,52 +263,106 @@
 	}
 }
 
-// ≤992: hero в столбик — предложение, подпись, описание, условие и кнопки слева, портрет после них (ТЗ §5: на мобильном
-// сначала предложение и кнопки, затем фотография); прожектор стоит за портретом, как на десктопе
+// ≤992: макет владельца «Главная · мобильный hero 2a» (22.10.2026, собран на 390px, размеры фиксированные): портрет
+// по центру от 36px сверху (под прозрачной шапкой) высотой 500px, низ растворяется с 50% до 74%; поверх него с 360px —
+// H1 44px, подпись и описание; прожектор — сетка 420px и пятно 260px на 24% высоты окна за головой. Кнопки (столбиком)
+// и под ними условие — через 24px сразу за описанием: в макете они стояли за границей первого экрана на высоту окна,
+// но владелец после просмотра попросил не привязывать их к высоте — на высоком экране они уезжали вниз и оставляли
+// пустоту. Устройство: `__copy` — сетка из четырёх рядов [360px | H1 с подписью | описание | кнопки с условием],
+// `__bottom` — display: contents, чтобы описание и блок кнопок стали её ячейками (на десктопе он держит нижнюю группу)
 @media (max-width: 992px) {
 	.homeHero {
 		--sx: 50%;
-		--sy: 80%;
+		--sy: 24svh;
 		min-height: 0;
+		padding-bottom: 8px; // + 32px верхнего отступа секции проектов = 40px от условия до метки «// проекты» по макету
+
+		// Пятно на мобильном меньше и слабее: 260px и ~0.08 альфы (0.3 токена × 27%)
+		&__glow {
+			background: radial-gradient(
+				260px circle at var(--sx) var(--sy),
+				color-mix(in srgb, var(--hero-glow) 27%, transparent),
+				transparent 70%
+			);
+		}
 
 		&__in {
-			display: flex;
-			flex-direction: column;
-			align-items: stretch; // не end из десктопной сетки: иначе колонка текста ужимается и уходит вправо
-			padding: calc(var(--header-h) + 32px) var(--gutter) 0;
+			display: block;
+			padding: 0 var(--gutter);
 		}
 
 		&__copy {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-rows: 360px auto auto auto;
+			align-items: start;
+			justify-content: normal;
 			align-self: auto;
-			padding-top: 0;
-			padding-bottom: 0;
+			padding: 0;
+		}
+
+		&__top {
+			grid-row: 2;
+			grid-column: 1;
 		}
 
 		&__title {
-			font-size: clamp(36px, 8vw, 56px);
+			font-size: 44px;
 		}
 
 		&__eyebrow {
-			margin-top: 20px;
+			margin-top: 16px;
+			font-size: 16px;
+		}
+
+		&__rule {
+			width: 24px;
 		}
 
 		&__bottom {
-			margin-top: 32px;
+			display: contents;
+		}
+
+		&__text {
+			grid-row: 3;
+			grid-column: 1;
+			margin-top: 20px;
+		}
+
+		&__actions {
+			grid-row: 4;
+			grid-column: 1;
+			align-items: stretch;
+			margin-top: 24px;
+		}
+
+		// Кнопки выше условия
+		&__cta {
+			order: -1;
+			margin-top: 0;
 		}
 
 		&__portrait {
-			align-self: auto;
+			position: absolute;
+			top: 36px;
+			right: 0;
+			left: 0;
+			height: 500px;
 			min-height: 0;
-			margin-top: 8px;
+			align-self: auto;
 
 			img {
-				position: static;
-				width: min(100%, 320px);
-				max-width: 100%;
-				height: auto;
+				position: absolute;
+				top: 0;
+				bottom: auto;
+				left: 50%;
+				width: auto;
+				max-width: none;
+				height: 100%;
 				max-height: none;
-				margin: 0 auto;
-				transform: none;
+				transform: translateX(-50%);
+				mask-image: linear-gradient(to bottom, #000 50%, transparent 74%);
+				-webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent 74%);
 			}
 		}
 	}
@@ -318,7 +382,6 @@
 
 @media (max-width: 560px) {
 	// Две кнопки hero — столбиком на всю ширину
-	.homeHero__bottom,
 	.homeHero__cta,
 	.homeHero__cta .button {
 		width: 100%;
@@ -326,14 +389,5 @@
 
 	.homeHero__cta {
 		flex-direction: column;
-	}
-
-	// Подпись «имя · роль» в одну-две строки: штрих короче, кегль меньше
-	.homeHero__eyebrow {
-		font-size: 16px;
-	}
-
-	.homeHero__rule {
-		width: 24px;
 	}
 }

@@ -6,6 +6,7 @@ import Button from '../../components/button/Button'
 import Chip from '../../components/chip/Chip'
 import Reveal from '../../components/reveal/Reveal'
 import DimAccordion from '../../components/dimAccordion/DimAccordion'
+import DiscussRow from '../../components/discussRow/DiscussRow'
 import MiniUi from '../../components/miniUi/MiniUi'
 import { miniUiVariant } from '../../components/miniUi/variants'
 import WorkCard from '../../components/workCard/WorkCard'
@@ -13,8 +14,10 @@ import type { WorkCardData } from '../../components/workCard/WorkCard'
 import ProcessSteps from '../../components/processSteps/ProcessSteps'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { useDocumentMeta } from '../../hooks/useDocumentMeta'
-import { AGENCIES_KEY, OFFERS, getOffer } from '../../data/offers'
+import { AGENCIES_KEY, getOffer, offerNumber, relatedLinks } from '../../data/offers'
+import type { OfferExtra, OfferParent } from '../../data/offers'
 import { OFFER_META } from '../../data/meta'
+import { PROMOTION } from '../../data/promotion'
 import { getService } from '../../data/services'
 import type { Service } from '../../data/services'
 import {
@@ -34,8 +37,13 @@ import { CASE_FACTS } from '../../data/home'
 import NotFoundPage from '../NotFoundPage'
 import './OfferPage.scss'
 
+type Props = {
+	/** Раздел, в котором открыта страница: /services/promotion/:offer — только для офферов с таким parent, иначе 404 */
+	parent?: OfferParent
+}
+
 // Заголовки разделов страницы услуги — ТЗ по текстам и SEO от 21.10.2026; в каждом — не больше одного выделения.
-// «Состав работ» у доработки и свой заголовок процесса у интеграций и доработки — Offer.headings
+// Свои заголовки («Когда это нужно», «Состав работ», «Форматы работы», «Как проходит запуск») — Offer.headings
 const H2: Record<'fit' | 'outcomes' | 'price' | 'packages' | 'examples' | 'process' | 'faq' | 'tech', Headline> = {
 	fit: { text: 'Для каких задач подходит', muted: 'подходит' },
 	outcomes: { text: 'Состав проекта', muted: 'проекта' },
@@ -53,7 +61,7 @@ const PACKAGE_CARDS = SUPPORT_PACKAGES.map(p => ({ ...p, price: `${p.price} / м
 /** Обслуживание в блоке стоимости доработки — та же строка, что формат «Техническое обслуживание» в блоке цен */
 const MAINTENANCE = PRICING_MODELS.filter(m => m.key === 'maintenance').map(m => ({ label: m.label, price: m.price }))
 
-/** Формат оплаты — общий для всех офферов (content.md §4.2, п. 4) */
+/** Формат оплаты — общий для разработки (content.md §4.2, п. 4); у продвижения свой (Offer.payment) */
 const PAYMENT = 'По смете с оплатой по этапам или по часам — зависит от того, насколько объём понятен до старта.'
 
 /** Кейс → карточка работы: факты те же, что в слайдере главной (CASE_FACTS) */
@@ -68,25 +76,59 @@ const toWorkCard = (p: Project): WorkCardData => ({
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/** Дополнительный раздел (Offer.extras): список с номерами или абзац, под ним подпись моно */
+function ExtraSection({ extra }: { extra: OfferExtra }) {
+	return (
+		<section className='section' id={extra.id}>
+			<div className='container'>
+				<SectionHead label={extra.label} title={extra.title} lead={extra.lead} />
+				{extra.items && (
+					<Reveal as='ol' className='offerPage__outcomes'>
+						{extra.items.map((item, i) => (
+							<li key={item}>
+								<span className='offerPage__num'>{pad(i + 1)}</span>
+								{item}
+							</li>
+						))}
+					</Reveal>
+				)}
+				{extra.text && (
+					<Reveal as='p' className='offerPage__extraText'>
+						{extra.text}
+					</Reveal>
+				)}
+				{extra.note && (
+					<Reveal as='p' className='offerPage__colLabel offerPage__extraNote'>
+						{extra.note}
+					</Reveal>
+				)}
+			</div>
+		</section>
+	)
+}
+
 /**
- * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (H1 — offer.heading, цены и срок бейджами — те же
- * строки, что на карточке каталога; справа мини-интерфейс оффера в цикле) → для каких задач подходит → состав проекта
- * → стоимость и дополнительные работы (стартовая цена с одним пояснением PRICE_NOTE, что нужно для оценки, что не
- * входит, оплата, после запуска) → пакеты обслуживания (только у доработки и поддержки, #packages — сюда ведёт
- * «Посмотреть пакеты» из блока цен) → примеры (если есть кейсы по категориям) → процесс (свой у интеграций, доработки
- * и агентств — offer.process; без вводного текста и условия — они повторяли блок стоимости) → вопросы перед заказом →
- * аккордеон «Стек и детали» (единственное место с названиями технологий)
+ * Страница оффера (content.md §4.2; docs/design-spec.md §9): шапка (крошки Главная → Услуги [→ Продвижение сайтов] →
+ * услуга, H1 — offer.heading, цены и срок бейджами — те же строки, что на карточке каталога, условия базового объёма
+ * моно рядом; справа мини-интерфейс оффера в цикле) → для каких задач подходит (колонка «не подходит» — если есть) →
+ * состав (подпись outcomesNote) → дополнительные разделы после состава → стоимость (форматы работы или стартовая
+ * цена с одним пояснением PRICE_NOTE, что нужно для оценки, что не входит, оплата, после запуска) → дополнительные
+ * разделы после стоимости → пакеты обслуживания (только у доработки, #packages) → примеры (если есть кейсы по
+ * категориям) → процесс (свой — offer.process; без вводного текста и условия) → вопросы перед заказом → аккордеон
+ * «Стек и детали» (если у оффера есть tech) → обращение со ссылками на смежные услуги (если есть ctaLead или related)
  */
-export default function OfferPage() {
+export default function OfferPage({ parent }: Props) {
 	const { offer: key } = useParams()
-	const offer = getOffer(key)
+	const found = getOffer(key)
+	// Страница услуги открывается только по своему пути: /services/seo для вложенной услуги — 404
+	const offer = found && found.parent === parent ? found : undefined
 	const { open } = useContactModal()
 	// Оффера нет — мету ставит NotFoundPage (noindex), страница свою не ставит
 	useDocumentMeta(offer ? OFFER_META[offer.key] : null)
 
 	if (!offer) return <NotFoundPage />
 
-	const number = pad(OFFERS.indexOf(offer) + 1)
+	const number = offerNumber(offer)
 	const visual = miniUiVariant(offer.key)
 	const prices = offer.prices ?? [{ label: 'стоимость', price: offer.priceFrom }]
 	// Ставка агентств — не стартовая цена: вместо PRICE_NOTE уточнение «или по смете»
@@ -95,13 +137,16 @@ export default function OfferPage() {
 		...(offer.prices ?? [{ label: '', price: offer.priceFrom }]),
 		...(offer.key === PACKAGES_OFFER ? MAINTENANCE : []),
 	]
+	const formats = offer.formats ?? []
 	const projects = PROJECTS.filter(p => p.categories.some(c => offer.categories.includes(c)))
 		.slice(0, 2)
 		.map(toWorkCard)
 	const subservices = offer.services.map(k => getService(k)).filter((s): s is Service => !!s)
 	const faq = offer.faq.map((f, i) => ({ id: `q${i + 1}`, title: f.q, content: <p>{f.a}</p> }))
+	const extras = (after: OfferExtra['after']) => (offer.extras ?? []).filter(e => e.after === after)
+	const related = relatedLinks(offer)
 
-	const tech = (
+	const tech = offer.tech && (
 		<div className='offerPage__tech'>
 			<div className='offerPage__techGroup'>
 				<h4 className='offerPage__h3'>Стек</h4>
@@ -142,10 +187,17 @@ export default function OfferPage() {
 			<PageHead
 				label={`услуга ${number}`}
 				title={{ text: offer.heading }}
-				lead={offer.line}
+				lead={offer.lead ?? offer.line}
 				meta={
 					<>
-						<Link to='/services'>Услуги</Link> · {offer.title}
+						<Link to='/'>Главная</Link> · <Link to='/services'>Услуги</Link>
+						{offer.parent === 'promotion' && (
+							<>
+								{' '}
+								· <Link to={PROMOTION.path}>{PROMOTION.name}</Link>
+							</>
+						)}{' '}
+						· {offer.title}
 					</>
 				}
 				facts={
@@ -158,7 +210,7 @@ export default function OfferPage() {
 								</div>
 							))}
 							<div className='offerPage__badge'>
-								<dt>срок</dt>
+								<dt>{offer.termLabel ?? 'срок'}</dt>
 								<dd>{offer.term}</dd>
 							</div>
 						</dl>
@@ -185,24 +237,26 @@ export default function OfferPage() {
 
 			<section className='section' id='fit'>
 				<div className='container'>
-					<SectionHead label='для кого' title={H2.fit} />
-					<div className='offerPage__fit'>
+					<SectionHead label='для кого' title={offer.headings?.fit ?? H2.fit} />
+					<div className={`offerPage__fit${offer.notFor.length === 0 ? ' offerPage__fit--single' : ''}`}>
 						<Reveal>
-							<p className='offerPage__colLabel'>подходит</p>
+							{offer.notFor.length > 0 && <p className='offerPage__colLabel'>подходит</p>}
 							<ul className='offerPage__rows'>
 								{offer.audience.map(a => (
 									<li key={a}>{a}</li>
 								))}
 							</ul>
 						</Reveal>
-						<Reveal delay={0.1}>
-							<p className='offerPage__colLabel'>не подходит</p>
-							<ul className='offerPage__rows offerPage__rows--no'>
-								{offer.notFor.map(n => (
-									<li key={n}>{n}</li>
-								))}
-							</ul>
-						</Reveal>
+						{offer.notFor.length > 0 && (
+							<Reveal delay={0.1}>
+								<p className='offerPage__colLabel'>не подходит</p>
+								<ul className='offerPage__rows offerPage__rows--no'>
+									{offer.notFor.map(n => (
+										<li key={n}>{n}</li>
+									))}
+								</ul>
+							</Reveal>
+						)}
 					</div>
 				</div>
 			</section>
@@ -218,26 +272,50 @@ export default function OfferPage() {
 							</li>
 						))}
 					</Reveal>
+					{offer.outcomesNote && (
+						<Reveal as='p' className='offerPage__outcomesNote'>
+							{offer.outcomesNote}
+						</Reveal>
+					)}
 				</div>
 			</section>
 
+			{extras('outcomes').map(e => (
+				<ExtraSection extra={e} key={e.id} />
+			))}
+
 			<section className='section' id='price'>
 				<div className='container'>
-					<SectionHead label='стоимость' title={H2.price} />
+					<SectionHead label='стоимость' title={offer.headings?.price ?? H2.price} />
 					<Reveal as='div' className='offerPage__price'>
 						<dl>
 							<div>
-								<dt>{isRate ? 'ставка' : 'стартовая стоимость'}</dt>
+								<dt>{isRate ? 'ставка' : formats.length > 1 ? 'форматы работы' : 'стартовая стоимость'}</dt>
 								<dd>
-									<ul className='offerPage__start'>
-										{startPrices.map(p => (
-											<li key={p.price}>
-												{p.label && <span>{p.label}</span>}
-												<strong>{p.price}</strong>
-											</li>
-										))}
-									</ul>
+									{formats.length > 0 ? (
+										<ul className='offerPage__formats'>
+											{formats.map(f => (
+												<li key={f.label}>
+													<div className='offerPage__formatHead'>
+														<h3>{f.label}</h3>
+														{f.price && <strong>{f.price}</strong>}
+													</div>
+													<p>{f.text}</p>
+												</li>
+											))}
+										</ul>
+									) : (
+										<ul className='offerPage__start'>
+											{startPrices.map(p => (
+												<li key={p.price}>
+													{p.label && <span>{p.label}</span>}
+													<strong>{p.price}</strong>
+												</li>
+											))}
+										</ul>
+									)}
 									<p>{isRate ? offer.priceDetail : PRICE_NOTE}</p>
+									{offer.formatsNote && <p>{offer.formatsNote}</p>}
 								</dd>
 							</div>
 							<div>
@@ -267,7 +345,7 @@ export default function OfferPage() {
 							<div>
 								<dt>формат оплаты</dt>
 								<dd>
-									<p>{PAYMENT}</p>
+									<p>{offer.payment ?? PAYMENT}</p>
 								</dd>
 							</div>
 							<div>
@@ -280,6 +358,10 @@ export default function OfferPage() {
 					</Reveal>
 				</div>
 			</section>
+
+			{extras('price').map(e => (
+				<ExtraSection extra={e} key={e.id} />
+			))}
 
 			{offer.key === PACKAGES_OFFER && (
 				<section className='section' id={PACKAGES_ANCHOR}>
@@ -329,14 +411,24 @@ export default function OfferPage() {
 				</div>
 			</section>
 
-			<section className='section' id='tech'>
-				<div className='container offerPage__narrow'>
-					<SectionHead label='техника' title={H2.tech} />
-					<Reveal>
-						<DimAccordion idPrefix='offerTech' items={[{ id: 'stack', title: 'Стек и детали', content: tech }]} wide />
-					</Reveal>
-				</div>
-			</section>
+			{tech && (
+				<section className='section' id='tech'>
+					<div className='container offerPage__narrow'>
+						<SectionHead label='техника' title={H2.tech} />
+						<Reveal>
+							<DimAccordion idPrefix='offerTech' items={[{ id: 'stack', title: 'Стек и детали', content: tech }]} wide />
+						</Reveal>
+					</div>
+				</section>
+			)}
+
+			{(offer.ctaLead || related.length > 0) && (
+				<section className='section' id='discuss'>
+					<div className='container offerPage__narrow'>
+						<DiscussRow text={offer.ctaLead ?? offer.line} cta={offer.cta} onClick={() => open(offer.title)} links={related} />
+					</div>
+				</section>
+			)}
 		</article>
 	)
 }

@@ -49,6 +49,7 @@
 		margin-top: auto;
 	}
 
+	// Обложка: скриншот (портфолио) или сцена FloatingPreview (главная) — та же рамка 16:10, радиус 12 и тень
 	&__cover {
 		position: relative;
 		aspect-ratio: 16 / 10;
@@ -57,7 +58,7 @@
 		box-shadow: var(--shadow-cover);
 		background: var(--box-deep);
 
-		img {
+		> img {
 			position: absolute;
 			inset: -6% 0;
 			width: 100%;
@@ -68,7 +69,15 @@
 		}
 	}
 
-	&:hover &__cover img {
+	// Сцена FloatingPreview: без тени скриншота, подложка --scene-plate (в тёмной теме полупрозрачный --box-deep —
+	// правка владельца 22.10.2026: плашка с тенью давила)
+	&__cover--scene {
+		background: var(--scene-plate);
+		box-shadow: none;
+	}
+
+	// Скриншот чуть приближается по ховеру карточки; у слоёв сцены — свой ховер
+	&:hover &__cover > img {
 		scale: 1.02;
 	}
 

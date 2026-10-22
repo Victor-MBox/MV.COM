@@ -77,9 +77,9 @@ jobs:
           chmod 600 ~/.ssh/config
 
       # Сначала обработчик, потом сайт: новая сборка никогда не говорит со старым обработчиком.
-      # node_modules и .env на сервере не трогаем (исключены и из передачи, и из удаления)
+      # node_modules, .env и локальный журнал .data на сервере не трогаем (исключены и из передачи, и из удаления)
       - name: Загрузить обработчик формы в server/
-        run: rsync -az --delete --exclude node_modules --exclude .env --chmod=D755,F644 server/ "prod:$DEPLOY_PATH/server/"
+        run: rsync -az --delete --exclude node_modules --exclude .env --exclude .data --chmod=D755,F644 server/ "prod:$DEPLOY_PATH/server/"
 
       - name: Установить зависимости обработчика и перезапустить службу
         run: |
@@ -116,6 +116,7 @@ jobs:
           curl -sS -o /dev/null -w 'обработчик по IP: HTTP %{http_code}\n' --retry 3 --retry-delay 2 -H 'Host: matsakov-victor.com' "http://$HOST/api/contact/health"
           curl -fsS -o /dev/null -w 'сайт по домену: HTTP %{http_code}\n' "$SITE_URL/" \
             || echo "::warning::$SITE_URL не отвечает — DNS ещё не указывает на сервер или не выпущен сертификат (certbot)"
-          # {ok:true, telegram:true, mail:true} — оба канала настроены в /etc/matsakov-victor.com/contact.env; false — канал отключён
+          # {ok, ready, telegram, mail, telegramContent, consentLog, versions}: ready:true — форма принимает заявки (почта настроена
+          # в /etc/matsakov-victor.com/contact.env и есть StateDirectory для записей о согласии); false — форма показывает «Написать в Telegram»
           curl -fsS -w '\n' "$SITE_URL/api/contact/health" \
             || echo "::warning::$SITE_URL/api/contact/health не отвечает — см. journalctl -u $CONTACT_SERVICE на сервере"
