@@ -101,6 +101,25 @@ export function truncate(s, max) {
 	return s.length > max ? `${s.slice(0, max - 1)}…` : s
 }
 
+/**
+ * Текст ошибки для журнала с причинами. У fetch сетевой сбой приходит как «fetch failed», а что случилось (таймаут
+ * соединения, DNS, отказ) — в cause; у попыток по нескольким адресам (IPv4/IPv6) — AggregateError с пустым текстом,
+ * кодом и списком errors
+ * @param {unknown} err
+ * @param {number} [depth]
+ * @returns {string}
+ */
+export function errorText(err, depth = 0) {
+	if (!(err instanceof Error)) return String(err)
+	const code = /** @type {{ code?: unknown }} */ (err).code
+	const parts = [typeof code === 'string' && !err.message.includes(code) ? code : '', err.message]
+	if (depth < 3) {
+		if (err instanceof AggregateError && err.errors.length) parts.push(`[${err.errors.map(e => errorText(e, depth + 1)).join('; ')}]`)
+		if (err.cause !== undefined) parts.push(`← ${errorText(err.cause, depth + 1)}`)
+	}
+	return parts.filter(Boolean).join(' ')
+}
+
 // ---------- Номер заявки и время ----------
 
 /** Алфавит номера заявки без похожих символов (0/O, 1/I/L, U/V) */

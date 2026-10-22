@@ -8,6 +8,7 @@ import {
 	TELEGRAM_MESSAGE_MAX,
 	consentRecordLine,
 	contentChannels,
+	errorText,
 	formatUtc,
 	isAllowedOrigin,
 	mailContent,
@@ -358,5 +359,19 @@ describe('readConfig — настройки из окружения', () => {
 			port: 4000,
 			rate: { limit: 3, windowMs: 60_000 },
 		})
+	})
+})
+
+describe('errorText', () => {
+	it('достаёт причину сетевого сбоя fetch из cause и AggregateError', () => {
+		expect(errorText(new Error('Telegram API 403: Forbidden'))).toBe('Telegram API 403: Forbidden')
+		const timeout = Object.assign(new Error('connect ETIMEDOUT 149.154.167.220:443'), { code: 'ETIMEDOUT' })
+		expect(errorText(new TypeError('fetch failed', { cause: timeout }))).toBe('fetch failed ← connect ETIMEDOUT 149.154.167.220:443')
+		const v6 = Object.assign(new Error('connect ENETUNREACH 2001:67c:4e8:f004::9:443'), { code: 'ENETUNREACH' })
+		const both = Object.assign(new AggregateError([timeout, v6], ''), { code: 'ETIMEDOUT' })
+		expect(errorText(new TypeError('fetch failed', { cause: both }))).toBe(
+			'fetch failed ← ETIMEDOUT [connect ETIMEDOUT 149.154.167.220:443; connect ENETUNREACH 2001:67c:4e8:f004::9:443]',
+		)
+		expect(errorText('строка')).toBe('строка')
 	})
 })
