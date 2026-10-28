@@ -1,0 +1,69 @@
+// Страница «кейс изнутри» (InsidePage.tsx): шапка как у кейса, сюжет и архитектура — свои стили, финал — цифры и стек
+.insidePage {
+	overflow-x: clip; // лента архитектуры и окно сцены не должны давать горизонтальной прокрутки
+
+	&__facts,
+	&__role {
+		display: block;
+		font-family: inherit;
+	}
+
+	&__role {
+		margin-top: 6px;
+	}
+
+	&__status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-family: inherit;
+		color: var(--text);
+
+		i {
+			display: block;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: var(--ok);
+		}
+	}
+
+	// Цифры в ряд (единственное место с числами на странице), переносятся при нехватке места
+	&__metrics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 32px 56px;
+		list-style: none;
+
+		li {
+			flex: 0 1 auto;
+			min-width: 0;
+		}
+	}
+
+	&__stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 48px;
+		list-style: none;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 16px;
+		margin-top: 40px;
+	}
+
+	@media (max-width: 768px) {
+		&__metrics {
+			gap: 28px 32px;
+		}
+
+		&__stack {
+			margin-top: 36px;
+		}
+	}
+}

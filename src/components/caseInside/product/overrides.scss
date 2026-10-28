@@ -1,0 +1,477 @@
+// Поправки продукта под холст окна 720×480 (после nr-product.css): корень сцены, компактные раскладки, элементы,
+// которых в разметке продукта нет (поля ввода как текст, плитки Jitsi). Палитра — продукта
+.nr-ui {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	background: #0b0e13;
+	color: #e5e7eb;
+	font-family: 'M PLUS Rounded 1c', 'Science Gothic', 'Segoe UI', system-ui, sans-serif;
+	font-size: 14px;
+	line-height: 1.4;
+	user-select: none;
+
+	// Глобальный `* { font-family: body }` сайта-портфолио не должен перебивать шрифты продукта
+	* {
+		font-family: inherit;
+	}
+
+	& &__main {
+		min-height: 100%;
+		padding: 18px 20px;
+		gap: 12px;
+	}
+
+	// Поля ввода показаны текстом: плейсхолдер и значение
+	& &__placeholder {
+		color: #7b8597;
+	}
+
+	& &__textarea {
+		display: flex;
+		align-items: center;
+		flex: 1;
+		min-height: 40px;
+		padding: 8px 12px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.03);
+		color: #7b8597;
+		font-size: 13px;
+
+		&.has-value {
+			color: #e5e7eb;
+		}
+
+		&--chat {
+			min-height: 36px;
+			border-radius: 18px;
+		}
+	}
+
+	& &__form {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 18px;
+		border: 1px solid rgba(68, 248, 130, 0.18);
+		border-radius: 10px;
+		background: #0f1c23;
+
+		.party-form__row {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 10px;
+		}
+
+		.party-form__hr {
+			height: 1px;
+			background: rgba(255, 255, 255, 0.08);
+		}
+
+		.main-btn {
+			align-self: flex-end;
+		}
+	}
+
+	& &__field--wide {
+		grid-column: 1 / -1;
+	}
+
+	// Нажатая кнопка продукта
+	.main-btn.is-pressed,
+	.matchmaking-card-cta.is-active {
+		transform: scale(0.96);
+		filter: brightness(1.15);
+	}
+
+	// Пригашенная анкета (не подходит под фильтры) — уходит вместе с layout-анимацией
+	.tm-card.is-dimmed {
+		opacity: 0.35;
+		filter: grayscale(0.6);
+	}
+
+	// Сетка анкет под ширину холста
+	.tm-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	// Страница пати на холсте: узкая боковая колонка
+	& &__party-page {
+		grid-template-columns: minmax(0, 1fr) 230px;
+		gap: 14px;
+
+		.party-page__communication {
+			position: static;
+			height: auto;
+			gap: 12px;
+		}
+
+		.party-chat {
+			padding: 14px;
+		}
+
+		.party-chat__messages {
+			min-height: 150px;
+			max-height: 230px;
+		}
+	}
+
+	// Совместимость: две колонки под холст
+	& &__compat {
+		gap: 12px;
+
+		.compat-page__layout {
+			grid-template-columns: minmax(0, 1fr) 250px;
+			gap: 12px;
+		}
+
+		.compat-page__hero {
+			padding: 14px 18px;
+		}
+
+		.compat-games__grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	// Переключатель формата без баннера и заголовка — одной строкой
+	& &__intro--compact {
+		display: block;
+		min-height: 0;
+		padding: 0;
+		background: none;
+
+		&::before,
+		&::after {
+			display: none;
+		}
+
+		.party-intro__content {
+			gap: 8px;
+			max-width: none;
+		}
+
+		.party-intro__eyebrow {
+			font-size: 14px;
+		}
+
+		.party-intro__format-option {
+			min-height: 52px;
+			padding: 8px 12px;
+		}
+	}
+
+	& &__gameCards {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	& &__telegram {
+		padding: 14px 14px 16px;
+
+		.telegram-banner__title {
+			margin-bottom: 8px;
+			font-size: 18px;
+		}
+
+		.telegram-banner__sub-title {
+			margin-bottom: 10px;
+			font-size: 12px;
+			line-height: 1.45;
+		}
+
+		.telegram-banner__inner {
+			display: block;
+		}
+
+		.telegram-banner__list {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.telegram-banner-item {
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.telegram-banner-item__title {
+			font-size: 12px;
+		}
+
+		.telegram-banner-item__text {
+			font-size: 11px;
+		}
+
+		.telegram-banner__cta {
+			align-self: flex-start;
+			height: 34px;
+			margin-top: 4px;
+			padding: 0 14px;
+			font-size: 11px;
+		}
+
+		.telegram-banner__inner {
+			margin: 0;
+			padding: 0;
+
+			&::after {
+				display: none;
+			}
+		}
+	}
+
+	// Горизонтальная карточка пати под ширину холста
+	.party-card__link--horizontal {
+		grid-template-columns: 140px minmax(0, 1fr) 206px;
+		gap: 12px;
+	}
+
+	.party-card__horizontal-aside .matchmaking-card-actions__message {
+		padding: 0 8px;
+		font-size: 11px;
+	}
+
+	.party-card__media--horizontal {
+		width: 150px;
+		min-height: 120px;
+	}
+
+	// Поля-комбо показаны span'ами, а не input: высота как у поля продукта
+	.parties-filter__combo-field {
+		display: block;
+		min-height: 44px;
+		box-sizing: border-box;
+	}
+
+	.parties-filter_teammates .parties-filter__form {
+		top: 56px;
+		width: 430px;
+		gap: 10px 10px;
+	}
+
+	.parties-filter__combo-input .parties-filter__clear {
+		display: inline-flex;
+	}
+
+	// Шапка страницы игры под узкую колонку
+	.game-hero {
+		padding: 14px 16px;
+		border-radius: 12px;
+	}
+
+	.game-hero__wrapper {
+		gap: 14px;
+	}
+
+	.game-hero__cover {
+		width: 140px;
+	}
+
+	.game-hero__title {
+		margin-left: 0;
+		font-size: 17px;
+	}
+
+	.game-hero__description {
+		font-size: 12px;
+		line-height: 1.45;
+	}
+
+	.game-hero__meta {
+		font-size: 11px;
+	}
+
+	// Шаг «Steam» онбординга в одну колонку
+	.onb-steam {
+		display: block;
+		padding: 0;
+	}
+
+	.onb-steam__header {
+		gap: 12px;
+		padding: 18px 20px 0;
+	}
+
+	.onb-steam__title {
+		font-size: 18px;
+	}
+
+	.onb-steam__pitch {
+		gap: 12px;
+		padding: 12px 20px 18px;
+	}
+
+	.onb-steam__text,
+	.onb-steam__benefits li,
+	.onb-steam__safety,
+	.onb-notice {
+		font-size: 12px;
+	}
+
+	.onb-steam__cta {
+		gap: 10px;
+	}
+
+	// Таблица Steam в одну колонку
+	.steam-games-table {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	}
+
+	.steam-games-table__cover {
+		width: 84px;
+		height: 47px;
+	}
+
+	.steam-games-table__name {
+		font-size: 12.5px;
+	}
+
+	.steam-games-table__hours {
+		font-size: 12px;
+	}
+
+	.steam-card__head .player-card__header p {
+		font-size: 15px;
+	}
+
+	.party-card__voice-title {
+		font-size: 14px;
+	}
+
+	// Плитки конференции в стиле Jitsi (сам Jitsi — iframe с voice.norandoms.team); селектор сильнее правил обёртки
+	& .voice-room__jitsi.nr-ui__jitsi {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 10px;
+		align-content: start;
+		height: 100%;
+		padding: 14px 14px 64px;
+		background: #040404;
+	}
+
+	& &__jitsiTile {
+		position: relative;
+		display: grid;
+		place-items: center;
+		aspect-ratio: 4 / 3;
+		border: 2px solid transparent;
+		border-radius: 8px;
+		background: #1c1c1c;
+		transition: border-color 200ms ease;
+
+		img {
+			width: 56px;
+			height: 56px;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+
+		&.is-speaking {
+			border-color: #44f882;
+			box-shadow: 0 0 0 4px rgba(68, 248, 130, 0.18);
+		}
+	}
+
+	& &__jitsiName {
+		position: absolute;
+		left: 8px;
+		bottom: 8px;
+		padding: 3px 7px;
+		border-radius: 4px;
+		background: rgba(0, 0, 0, 0.6);
+		font-size: 11px;
+		color: #fff;
+	}
+
+	& &__jitsiMic {
+		position: absolute;
+		right: 8px;
+		bottom: 8px;
+		display: grid;
+		place-items: center;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		background: rgba(0, 0, 0, 0.6);
+		color: #fff;
+
+		svg {
+			width: 13px;
+			height: 13px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 1.8;
+		}
+
+		&.is-muted {
+			color: #ff6b6b;
+		}
+	}
+
+	& &__jitsiBar {
+		position: absolute;
+		left: 50%;
+		bottom: 12px;
+		display: flex;
+		gap: 8px;
+		transform: translateX(-50%);
+	}
+
+	& &__jitsiBtn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 40px;
+		height: 40px;
+		padding: 0 14px;
+		border-radius: 20px;
+		background: #292929;
+		color: #fff;
+		font-size: 13px;
+
+		svg {
+			width: 18px;
+			height: 18px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 1.8;
+		}
+
+		&--leave {
+			background: #cb2233;
+		}
+	}
+}
+
+// Переменные набора подписей (kit.tsx / nr.scss) доступны и внутри интерфейса продукта
+.nr-ui {
+	--nr-bg: #0a1117;
+	--nr-panel: #111a22;
+	--nr-panel2: #0d151c;
+	--nr-line: rgba(255, 255, 255, 0.08);
+	--nr-line-strong: rgba(255, 255, 255, 0.16);
+	--nr-text: #e8eef3;
+	--nr-muted: #8593a0;
+	--nr-green: #44f882;
+	--nr-green-dim: rgba(68, 248, 130, 0.14);
+	--nr-yellow: #fcbb17;
+	--nr-red: #ff6161;
+	--nr-blue: #4ea3ff;
+}
+
+// Состав и запас в узкой карточке пати — переносом, а не внахлёст
+.nr-ui .party-card__roster-slots {
+	flex-wrap: wrap;
+	gap: 8px 14px;
+}
+
+.nr-ui .party-card__main-slots,
+.nr-ui .party-card__bench-slots {
+	flex: 0 0 auto;
+}

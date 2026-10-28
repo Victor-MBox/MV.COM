@@ -16,8 +16,7 @@ type Props = {
 	wide?: boolean
 	/**
 	 * Карточка проекта на главной (ТЗ от 21.10.2026, §6): широкая, тип проекта, описание с ролью и «Посмотреть кейс» —
-	 * без цифр, роли отдельной строкой и тегов стека (числа — в кейсе, технологии — на «Обо мне»). Если у проекта есть
-	 * `preview`, вместо скриншота справа — интерактивная обложка из элементов интерфейса (ТЗ от 22.10.2026)
+	 * без цифр, роли отдельной строкой и тегов стека (числа — в кейсе, технологии — на «Обо мне»)
 	 */
 	teaser?: boolean
 }
@@ -28,12 +27,13 @@ const MAX_TAGS = 4
  * Карточка работы по Zolt (docs/design-spec.md §6.9): год · срок · клиент, H3, строка, цифры из highlights (только
  * подтверждённые — isPublic), роль, теги стека. Вся карточка — ссылка на кейс, курсор-подпись «смотреть»; внутри нет
  * других интерактивных элементов («Посмотреть кейс» у teaser — подпись, а не вложенная ссылка). Обложка широкой
- * карточки мягко смещается при скролле (только pointer: fine, без reduced-motion); у интерактивной обложки вместо
- * этого — параллакс от курсора внутри FloatingPreview.
+ * карточки: если у проекта есть `preview` — интерактивная сцена FloatingPreview из живой вёрстки продукта, одна и та же
+ * на главной и в портфолио (28.10.2026); иначе скриншот `cover`, который мягко смещается при скролле (только
+ * pointer: fine, без reduced-motion).
  */
 export default function CaseCard({ project, wide: wideProp, teaser }: Props) {
 	const wide = wideProp || teaser
-	const stage = !!teaser && !!project.preview
+	const stage = !!project.preview
 	const coverRef = useRef<HTMLDivElement>(null)
 	const hoverable = useMediaQuery(MQ.hover)
 	const coarse = useMediaQuery(MQ.coarse)

@@ -11,13 +11,12 @@ describe('projects', () => {
 		slugs.forEach(s => expect(s).toMatch(/^[a-z0-9-]+$/))
 	})
 
-	it('у каждого проекта есть обложка, галерея, метрики, категории и строка для карточки', () => {
+	it('у каждого проекта есть обложка, метрики, категории, строка для карточки и тексты «Коротко»', () => {
 		PROJECTS.forEach(p => {
 			expect(p.cover).toBeTruthy()
 			expect(p.cover).not.toMatch(/picsum/)
-			expect(p.gallery.length).toBeGreaterThan(0)
-			p.gallery.forEach(g => expect(g.src).not.toMatch(/picsum/))
-			expect(p.metrics.length).toBe(4)
+			expect(p.metrics.length).toBeGreaterThanOrEqual(4)
+			;[p.task, p.solution, p.result].forEach(t => expect(t.length).toBeGreaterThan(40))
 			expect(p.categories.length).toBeGreaterThan(0)
 			p.categories.forEach(c => expect(PROJECT_CATEGORIES).toContain(c))
 			expect(p.line.length).toBeGreaterThan(20)
@@ -28,15 +27,6 @@ describe('projects', () => {
 	it('у главного кейса три факта для широкой карточки', () => {
 		PROJECTS.filter(p => p.featured).forEach(p => {
 			expect(p.highlights?.length).toBe(3)
-		})
-	})
-
-	it('у главного кейса два своих скриншота для блока на главной', () => {
-		const featured = PROJECTS.find(p => p.featured)
-		expect(featured?.showcase?.length).toBe(2)
-		featured?.showcase?.forEach(s => {
-			expect(s.src).not.toMatch(/picsum/)
-			expect(s.alt).toBeTruthy()
 		})
 	})
 
@@ -99,20 +89,10 @@ describe('кейс NoRandoms', () => {
 		expect(norandoms().link).toBe('https://norandoms.team')
 	})
 
-	it('расширенные блоки заполнены', () => {
+	it('у кейса есть сюжет для страницы и стек', () => {
 		const p = norandoms()
-		expect(p.features?.length).toBeGreaterThanOrEqual(6)
-		p.features?.forEach(f => {
-			expect(f.title).toBeTruthy()
-			expect(f.text).toBeTruthy()
-		})
-		expect(p.scheme?.length).toBeGreaterThanOrEqual(3)
-		expect(p.process?.length).toBeGreaterThanOrEqual(4)
-		p.process?.forEach(s => {
-			expect(s.title).toBeTruthy()
-			expect(s.text).toBeTruthy()
-		})
-		expect(p.gallery.length).toBeGreaterThanOrEqual(8)
+		expect(p.story?.chapters.length).toBeGreaterThan(0)
+		expect(p.stack.length).toBeGreaterThan(5)
 	})
 })
 

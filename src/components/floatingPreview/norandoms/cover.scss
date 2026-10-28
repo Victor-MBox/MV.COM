@@ -1,0 +1,61 @@
+// Поправки продукта под холст обложки (после nr-cover.css). Палитра и шрифты — продукта, одинаковые в обеих темах сайта
+.nr-cover {
+	// Корень холста получил правила body продукта: фон и обрезку по x убираем — у холста фона нет, тени слоёв видны
+	overflow: visible;
+	background: none;
+	font-size: 14px;
+	line-height: normal;
+	user-select: none;
+
+	// Глобальный `* { font-family: body }` сайта-портфолио не должен перебивать шрифты продукта: всё наследует корень,
+	// классы и заголовки продукта задают своё (у них специфичность выше)
+	* {
+		font-family: inherit;
+	}
+
+	// Логотип сайдбара — плашкой на фоне продукта, как кусок сайдбара
+	.app-sidebar__logo {
+		display: inline-flex;
+		margin: 0;
+		padding: 8px 20px 8px 10px;
+		border: 1px solid rgba(68, 248, 130, 0.18);
+		border-radius: 6px;
+		background: #0b0e13;
+	}
+
+	.hero-intro__actions {
+		flex-wrap: nowrap;
+		margin: 0;
+	}
+
+	// Один пункт полосы преимуществ; размер подписи — десктопный (у продукта clamp по vw, на холсте vw не работает)
+	.hero-benefits {
+		grid-template-columns: max-content;
+		margin: 0;
+
+		&__item {
+			padding: 3px 18px 3px 10px;
+		}
+
+		&__copy strong {
+			font-size: 15px;
+		}
+	}
+
+	// Анкета: заголовок — span вместо h3 (внутри ссылки-карточки), под карточкой — фон страницы продукта: в продукте
+	// у неё почти прозрачный фон, а сцена в светлой теме сайта светлая
+	.tm-card {
+		min-height: 0;
+		background:
+			linear-gradient(rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.02)),
+			#0b0e13;
+	}
+
+	.tm-card__title {
+		display: block;
+	}
+
+	.home-game-card {
+		background: #060c15;
+	}
+}

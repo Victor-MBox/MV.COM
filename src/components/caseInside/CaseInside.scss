@@ -1,0 +1,321 @@
+// Сюжет «изнутри» (Narrative.tsx): главы слева, залипшее окно продукта справа. Холст сцен 720×480 масштабируется
+// под ширину экрана окна через --k (ResizeObserver)
+.caseInside {
+	padding-top: 24px;
+
+	&__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+		gap: 56px; // колонка окна тянется на высоту глав — иначе sticky не работает
+	}
+
+	// ---------- Главы ----------
+	&__chapters {
+		padding: 4vh 0 22vh;
+	}
+
+	&__ch {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-height: 92vh;
+		opacity: 0.28;
+		transition: opacity var(--d-reveal) var(--ease-out);
+
+		&.is-active {
+			opacity: 1;
+		}
+
+		p {
+			font-size: 17px;
+			line-height: 1.6;
+			letter-spacing: -0.01em;
+			color: var(--text-body);
+		}
+
+		p + p {
+			margin-top: 12px;
+		}
+	}
+
+	&__label,
+	&__howLabel {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	&__label::before {
+		content: '// ';
+		color: var(--accent);
+	}
+
+	&__title {
+		margin: 16px 0 18px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: clamp(28px, 2.6vw, 36px);
+		line-height: 1.12;
+		letter-spacing: -0.02em;
+		color: var(--text);
+		text-wrap: balance;
+	}
+
+	&__howLabel {
+		margin-top: 24px;
+	}
+
+	&__how {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 12px;
+		list-style: none;
+
+		li {
+			position: relative;
+			padding-left: 18px;
+			font-size: 15px;
+			line-height: 1.5;
+			color: var(--text-body);
+
+			&::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0.6em;
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: var(--accent);
+			}
+		}
+	}
+
+	&__why {
+		margin-top: 22px;
+		padding: 14px 18px;
+		border-left: 2px solid var(--accent);
+		border-radius: 0 var(--radius-field) var(--radius-field) 0;
+		background: var(--box);
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--text);
+
+		span {
+			display: block;
+			margin-bottom: 6px;
+			font-family: var(--font-mono);
+			font-size: 12px;
+			line-height: 1;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+	}
+
+	// ---------- Окно продукта ----------
+	&__stageCol {
+		position: relative;
+	}
+
+	&__stage {
+		position: sticky;
+		top: var(--header-h);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: calc(100vh - var(--header-h));
+	}
+
+	&__window {
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		background: var(--box);
+		box-shadow: var(--shadow-cover);
+		overflow: hidden;
+	}
+
+	&__chrome {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		height: 38px;
+		padding: 0 14px;
+		border-bottom: 1px solid var(--border);
+		background: var(--box);
+	}
+
+	&__dots {
+		display: flex;
+		gap: 6px;
+
+		i {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+			background: var(--border-strong);
+		}
+	}
+
+	&__url {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		height: 24px;
+		padding: 0 12px;
+		border-radius: var(--radius-pill);
+		background: var(--box-deep);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
+		white-space: nowrap;
+		overflow: hidden;
+
+		* {
+			font-family: inherit;
+		}
+
+		b {
+			font-weight: 400;
+			color: var(--text);
+		}
+
+		svg {
+			color: var(--ok);
+		}
+	}
+
+	&__screen {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 720 / 480;
+		background: #0a1117;
+		overflow: hidden;
+	}
+
+	&__canvas {
+		position: absolute;
+		left: 0;
+		top: 0;
+		transform: scale(var(--k, 1));
+		transform-origin: 0 0;
+	}
+
+	&__scene {
+		position: absolute;
+		inset: 0;
+	}
+
+	// ---------- Подпись и прогресс ----------
+	&__caption {
+		display: flex;
+		gap: 14px;
+		min-height: 1.4em;
+		margin-top: 18px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		b {
+			font-family: inherit;
+			font-weight: 400;
+			color: var(--text);
+		}
+	}
+
+	&__progress {
+		position: relative;
+		height: 2px;
+		margin-top: 14px;
+		border-radius: 2px;
+		background: var(--border);
+		overflow: hidden;
+	}
+
+	&__bar {
+		position: absolute;
+		inset: 0;
+		background: var(--accent);
+		transform-origin: 0 50%;
+	}
+
+	// ---------- ≤992: окно липнет под шапкой, главы под ним ----------
+	@media (max-width: 992px) {
+		// Высота залипшего блока: экран окна по ширине контейнера (3:2) + хром 38 + подпись и полоса
+		--inside-stage: calc((100vw - 2 * var(--gutter)) * 0.6667 + 38px + 50px);
+
+		padding-top: 0;
+
+		&__grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
+
+		&__stageCol {
+			order: -1;
+			position: sticky;
+			top: var(--header-h);
+			z-index: var(--z-sticky);
+			height: 0;
+		}
+
+		&__stage {
+			position: relative;
+			top: 0;
+			height: auto;
+			padding: 10px 0 10px;
+			background: var(--bg);
+
+			&::after {
+				content: '';
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 100%;
+				height: 40px;
+				background: linear-gradient(var(--bg), transparent);
+				pointer-events: none;
+			}
+		}
+
+		&__caption {
+			margin-top: 10px;
+		}
+
+		&__progress {
+			margin-top: 8px;
+		}
+
+		&__chapters {
+			padding: calc(var(--inside-stage) + 48px) 0 20vh;
+		}
+
+		&__ch {
+			min-height: 0;
+			padding: 28px 0;
+			opacity: 0.35;
+
+			p {
+				font-size: 16px;
+			}
+		}
+
+		&__title {
+			font-size: 26px;
+		}
+	}
+
+	@media (max-width: 560px) {
+		&__how li,
+		&__why {
+			font-size: 14px;
+		}
+	}
+}

@@ -1,0 +1,594 @@
+// Раскладки сцен (scenes/*.tsx) на холсте 720×480 поверх настоящего интерфейса NoRandoms (product/*). Курсоры сцен
+// считают координаты от padding-box .nr-ui — при правке отступов править и константы в сценах
+@use 'sass:math';
+
+// ---------- 01 · задача ----------
+.sc-problem {
+	&__main {
+		display: grid;
+		grid-template-columns: 280px minmax(0, 1fr);
+		gap: 16px;
+		height: 100%;
+	}
+
+	&__chatWrap {
+		min-height: 0;
+	}
+
+	&__chat {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 12px;
+		overflow: hidden;
+	}
+
+	&__chatHead {
+		display: flex;
+		justify-content: space-between;
+		padding-bottom: 8px;
+		border-bottom: 1px solid var(--nr-line);
+	}
+
+	&__feed {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding-top: 10px;
+
+		.nr-msg.is-key .nr-msg__body {
+			background: var(--nr-green-dim);
+			box-shadow: 0 0 0 1px var(--nr-green);
+		}
+	}
+
+	&__noteWrap {
+		position: absolute;
+		left: 12px;
+		bottom: 12px;
+
+		&--right {
+			left: auto;
+			right: 0;
+			bottom: 0;
+		}
+	}
+
+	&__right {
+		position: relative;
+	}
+
+	// Пока анкеты нет — пунктирный контур на её месте
+	&__empty {
+		position: absolute;
+		inset: 0 0 auto;
+		display: grid;
+		place-items: center;
+		min-height: 300px;
+		border: 1px dashed var(--nr-line-strong);
+		border-radius: 10px;
+		text-align: center;
+		color: var(--nr-muted);
+		line-height: 1.5;
+	}
+
+	&__card {
+		max-width: 360px;
+	}
+}
+
+// ---------- 02 · подбор ----------
+.sc-filters {
+	.teammate-finder {
+		position: relative;
+		gap: 10px;
+	}
+
+	&__query {
+		margin: 0;
+
+		i {
+			font-family: inherit;
+			font-style: normal;
+			color: var(--nr-blue);
+		}
+
+		em {
+			font-family: inherit;
+			font-style: normal;
+			color: var(--nr-green);
+		}
+	}
+
+	.tm-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	.tm-card {
+		min-height: 0;
+	}
+
+	&__note {
+		position: absolute;
+		left: 20px;
+		bottom: 16px;
+		z-index: 7;
+	}
+}
+
+// ---------- 03 · совместимость ----------
+.sc-match {
+	&__note {
+		position: absolute;
+		right: 20px;
+		bottom: 16px;
+		z-index: 7;
+	}
+}
+
+// ---------- 04 · страницы и seo ----------
+.sc-seo {
+	&__main {
+		display: grid;
+		grid-template-columns: 236px minmax(0, 1fr);
+		gap: 14px;
+		height: 100%;
+	}
+
+	&__left {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-height: 0;
+	}
+
+	&__cardLabel {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		padding: 6px 8px;
+		border-bottom: 1px solid var(--nr-line);
+		font-size: 10.5px;
+	}
+
+	&__kv {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: 3px 8px;
+		padding: 8px;
+		font-family: var(--font-mono);
+		font-size: 10.5px;
+
+		dt,
+		dd {
+			font-family: inherit;
+		}
+
+		dt {
+			color: var(--nr-muted);
+		}
+
+		dd {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	&__arrow {
+		align-self: center;
+		font-size: 16px;
+		line-height: 1;
+		color: var(--nr-green);
+	}
+
+	&__code {
+		margin: 0;
+		padding: 8px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		line-height: 1.55;
+		white-space: pre-wrap;
+		word-break: break-word;
+		color: var(--nr-text);
+
+		i,
+		em {
+			font-family: inherit;
+			font-style: normal;
+		}
+
+		i {
+			color: var(--nr-muted);
+		}
+
+		em {
+			color: var(--nr-yellow);
+			transition: color 300ms var(--ease-out);
+		}
+
+		&.is-filled em {
+			color: var(--nr-green);
+		}
+	}
+
+	&__sitemap,
+	&__bots {
+		.nr-log {
+			padding: 8px;
+		}
+	}
+
+	&__page {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-width: 0;
+	}
+
+	&__note {
+		position: absolute;
+		left: 0;
+		top: 150px;
+	}
+
+	.game-hero {
+		margin: 0;
+	}
+}
+
+// ---------- 05 · пати ----------
+.sc-party {
+	// Переключатель формата на всю ширину, счётчики «Созданных» строкой под ним справа
+	&__top {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 8px;
+		margin-bottom: 12px;
+
+		.party-intro {
+			width: 100%;
+		}
+
+		.party-intro__eyebrow {
+			display: none;
+		}
+	}
+
+	&__status {
+		display: flex;
+		gap: 8px;
+		margin-top: 10px;
+	}
+}
+
+// ---------- 06 · чат и голос ----------
+.sc-live {
+	&__room {
+		height: 444px;
+
+		.voice-room {
+			height: 100%;
+		}
+	}
+
+	// Журнал событий: последние строки, старые уходят вверх под обрез
+	&__log {
+		position: absolute;
+		left: 20px;
+		bottom: 14px;
+		z-index: 7;
+		width: 250px;
+		max-height: 64px;
+		padding: 6px 10px;
+		border: 1px solid var(--nr-line-strong);
+		border-radius: 8px;
+		background: rgba(10, 17, 23, 0.94);
+		overflow: hidden;
+
+		.nr-log {
+			justify-content: flex-end;
+			min-height: 52px;
+			font-size: 10px;
+		}
+	}
+
+	&__note {
+		position: absolute;
+		right: 20px;
+		bottom: 14px;
+		z-index: 7;
+	}
+}
+
+// ---------- 07 · steam и telegram ----------
+.sc-steam {
+	&__main {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 236px;
+		gap: 14px;
+		height: 100%;
+	}
+
+	&__left {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-height: 0;
+	}
+
+	&__notes {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	&__flow {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 8px 10px;
+	}
+
+	&__nodes {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	&__node {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 8px;
+		border: 1px solid var(--nr-line-strong);
+		border-radius: 6px;
+		background: var(--nr-panel);
+		font-family: var(--font-mono);
+		font-size: 10.5px;
+		white-space: nowrap;
+	}
+
+	&__wire {
+		position: relative;
+		flex: 1;
+		height: 2px;
+		background: var(--nr-line-strong);
+
+		i {
+			position: absolute;
+			top: -3px;
+			width: 8px;
+			height: 8px;
+			margin-left: -4px;
+			border-radius: 50%;
+			background: var(--nr-green);
+			box-shadow: 0 0 10px var(--nr-green);
+		}
+	}
+
+	&__jobLog {
+		padding: 0 2px;
+	}
+
+	&__right {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		min-height: 0;
+	}
+
+	&__tg {
+		display: flex;
+		flex-direction: column;
+		border-radius: 12px;
+		background: #17212b;
+		overflow: hidden;
+	}
+
+	&__tgHead {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #242f3d;
+
+		> span:last-child {
+			display: flex;
+			flex-direction: column;
+			font-size: 12px;
+		}
+
+		.nr-muted {
+			font-size: 10.5px;
+		}
+	}
+
+	&__tgLogo {
+		display: grid;
+		place-items: center;
+		width: 26px;
+		height: 26px;
+		border-radius: 50%;
+		background: #2aabee;
+		color: #fff;
+	}
+
+	&__tgFeed {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-height: 60px;
+		padding: 10px;
+	}
+
+	&__tgMsg {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 8px 10px;
+		border-radius: 10px;
+		border-top-left-radius: 3px;
+		background: #182533;
+		font-size: 11.5px;
+		line-height: 1.4;
+	}
+
+	&__tgBtns {
+		display: flex;
+		gap: 4px;
+
+		span {
+			flex: 1;
+			padding: 5px 0;
+			border-radius: 6px;
+			background: #2b5278;
+			font-size: 11px;
+			text-align: center;
+			color: #fff;
+		}
+	}
+
+	&__note {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+	}
+
+	.onb-steam {
+		margin: 0;
+	}
+
+	.steam-section {
+		margin: 0;
+	}
+}
+
+// ---------- 08 · мобильная версия ----------
+.sc-mobile {
+	&__desk {
+		position: absolute;
+		inset: 18px 20px;
+		transform-origin: 0 50%;
+	}
+
+	&__phone {
+		position: absolute;
+		left: calc(50% - 118px);
+		top: 14px;
+		aspect-ratio: 637 / 1278;
+		filter: var(--device-shadow);
+	}
+
+	&__screen {
+		position: absolute;
+		z-index: 1;
+		overflow: hidden;
+		background: #0b0e14;
+	}
+
+	&__canvas {
+		position: absolute;
+		left: 0;
+		top: 0;
+		transform-origin: 0 0;
+	}
+
+	&__move {
+		position: absolute;
+		left: 0;
+		width: 100%;
+
+		> img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	&__top {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		background: #0a1116;
+	}
+
+	&__header {
+		position: absolute;
+		left: 0;
+		width: 100%;
+		overflow: hidden;
+
+		> img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	&__nav {
+		position: absolute;
+	}
+
+	&__home {
+		position: absolute;
+		left: 128px;
+		top: 826px;
+		width: 134px;
+		height: 5px;
+		border-radius: 3px;
+		background: rgba(255, 255, 255, 0.92);
+	}
+
+	&__frame {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+
+	&__note {
+		position: absolute;
+		z-index: 7;
+
+		&--a {
+			left: 20px;
+			top: 120px;
+		}
+
+		&--b {
+			right: 20px;
+			top: 60px;
+		}
+	}
+
+	&__app {
+		position: absolute;
+		left: 20px;
+		bottom: 18px;
+		z-index: 7;
+		width: 228px;
+	}
+
+	&__appCard {
+		padding: 10px;
+
+		ul {
+			margin-top: 6px;
+			list-style: none;
+		}
+	}
+
+	&__appLabel {
+		display: block;
+		color: var(--nr-green);
+	}
+}

@@ -7,6 +7,7 @@ export const ROUTE_PATHS = [
 	'/services/:offer',
 	'/portfolio',
 	'/portfolio/:slug',
+	'/portfolio/:slug/inside',
 	'/about',
 	'/blog',
 	'/blog/:slug',
