@@ -1,20 +1,30 @@
-// Интерактивная обложка кейса: парящие элементы интерфейса продукта (ТЗ от 22.10.2026)
+// Интерактивная обложка кейса: парящие элементы интерфейса продукта (ТЗ от 22.10.2026; живая вёрстка — 28.10.2026)
 .floatingPreview {
 	--preview-shadow: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.5));
 	--preview-shadow-hover: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.6));
 
 	position: absolute;
 	inset: 0;
-	// Своего фона нет (правка владельца 22.10.2026): мягкая подложка --box-deep и радиус — у рамки .caseCard__cover--scene;
-	// остатки фона NoRandoms у краёв вырезок на тёмных карточках не видны
+	// Своего фона нет (правка владельца 22.10.2026): мягкая подложка и радиус — у рамки .caseCard__cover--scene
 	overflow: hidden;
 	user-select: none;
 
+	// Холст в px продукта (--cw × --ch), масштаб под ширину сцены (--k ставит скрипт); элементы на нём — в своих размерах
+	&__canvas {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: calc(var(--cw) * 1px);
+		height: calc(var(--ch) * 1px);
+		transform: scale(var(--k, 1));
+		transform-origin: 0 0;
+	}
+
 	&__layer {
 		position: absolute;
-		left: calc(var(--x) * 1%);
-		top: calc(var(--y) * 1%);
-		width: calc(var(--w) * 1%);
+		left: calc(var(--x) * 1px);
+		top: calc(var(--y) * 1px);
+		width: var(--w);
 		// Появление: снизу и чуть меньше, по очереди слоёв (--i)
 		opacity: 0;
 		transform: translateY(18px) scale(0.97);
@@ -34,17 +44,17 @@
 		will-change: transform;
 	}
 
-	// Покачивание: размах 3–6px и период 6–8,4 с по глубине, старт со сдвигом фазы по номеру слоя
+	// Покачивание: размах 3–6px и период 6–9 с по глубине, старт со сдвигом фазы по номеру слоя
 	&__float {
 		--amp: calc(3px + var(--depth) * 3px);
 		animation: floatingPreviewFloat calc((9 - var(--depth) * 3) * 1s) ease-in-out infinite;
 		animation-delay: calc(var(--i) * -1.7s);
 	}
 
+	// Элемент продукта: масштаб слоя (--s) от левого верхнего угла, тень по форме элемента
 	&__card {
-		display: block;
-		width: 100%;
-		height: auto;
+		scale: var(--s);
+		transform-origin: 0 0;
 		filter: var(--preview-shadow);
 		transition:
 			transform var(--d-base) var(--ease-out),
@@ -57,18 +67,20 @@
 		filter: var(--preview-shadow-hover) brightness(1.04);
 	}
 
-	// Телефон: только слои с мобильной раскладкой (главная карточка и одна соседняя), крупнее
-	@media (max-width: 560px) {
-		&__layer {
-			display: none;
-		}
+	// Телефон (сцена уже 560px): холст 400×250, только слои с мобильной раскладкой
+	&--phone &__layer {
+		display: none;
+	}
 
-		&__layer--phone {
-			display: block;
-			left: calc(var(--px) * 1%);
-			top: calc(var(--py) * 1%);
-			width: calc(var(--pw) * 1%);
-		}
+	&--phone &__layer--phone {
+		display: block;
+		left: calc(var(--px) * 1px);
+		top: calc(var(--py) * 1px);
+		width: var(--pw);
+	}
+
+	&--phone &__layer--phone &__card {
+		scale: var(--ps);
 	}
 
 	@media (prefers-reduced-motion: reduce) {

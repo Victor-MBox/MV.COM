@@ -1,11 +1,12 @@
 import CountUp from '../countUp/CountUp'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
-import { NBSP, formatStat } from './formatStat'
+import { NBSP, RANGE_DASH, formatStat } from './formatStat'
+import type { StatRange } from './formatStat'
 import './Stat.scss'
 
 export type StatItem = {
-	/** Число для счётчика или строка («Февраль 2026») без анимации */
-	value: number | string
+	/** Число для счётчика, диапазон [от, до] (считаются обе границы) или строка («Февраль 2026») без анимации */
+	value: number | StatRange | string
 	suffix?: string
 	label: string
 }
@@ -25,14 +26,16 @@ type Props = StatItem & {
 
 /**
  * Цифра-доказательство (docs/design-spec.md §6.6): число + суффикс + подпись моно. Счётчик — существующий CountUp (gsap):
- * 0 → значение за 1200 мс power2.out при 30% видимости, один раз. Невидимый дубль итога держит ширину, чтобы вёрстка не прыгала.
+ * 0 → значение за 1200 мс power2.out при 30% видимости, один раз (у диапазона «300–800» — обе границы). Невидимый дубль итога
+ * держит ширину, чтобы вёрстка не прыгала.
  * При reduced-motion и для строковых значений — сразу итог. Пока число считается, диктор читает итог из .srOnly, а не «0»
  */
 export default function Stat({ value, suffix = '', label, size = 'hero', accent, delay = 0, animate = true, className }: Props) {
 	const reduced = useMediaQuery(MQ.reduced)
-	const numeric = typeof value === 'number'
+	const numeric = typeof value !== 'string'
 	const final = numeric ? formatStat(value) : value
 	const counting = numeric && animate && !reduced
+	const count = (to: number) => <CountUp to={to} duration={1.2} delay={delay} separator={NBSP} inViewAmount={0.3} ease='power2.out' />
 	const cn = ['stat', `stat--${size}`, accent ? 'stat--accent' : '', className ?? ''].filter(Boolean).join(' ')
 
 	return (
@@ -43,10 +46,16 @@ export default function Stat({ value, suffix = '', label, size = 'hero', accent,
 					{suffix}
 				</span>
 				<span className='stat__live' aria-hidden={counting || undefined}>
-					{counting ? (
-						<CountUp to={value} duration={1.2} delay={delay} separator={NBSP} inViewAmount={0.3} ease='power2.out' />
-					) : (
+					{!counting ? (
 						final
+					) : typeof value === 'number' ? (
+						count(value)
+					) : (
+						<>
+							{count(value[0])}
+							{RANGE_DASH}
+							{count(value[1])}
+						</>
 					)}
 					{suffix}
 				</span>

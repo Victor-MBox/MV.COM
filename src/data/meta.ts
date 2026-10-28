@@ -48,6 +48,23 @@ export function canonicalUrl(pathname: string, siteUrl: string | undefined) {
  * значения главной в index.html (при правке менять оба места). Главная, /services и /portfolio — ТЗ от 21.10.2026, §16;
  * «Обо мне», контакты и 404 — по содержанию страниц (ТЗ по текстам и SEO от 21.10.2026)
  */
+/** Мета страницы кейса: название и тип проекта в title, строка карточки без чисел в description */
+export function projectMeta(p: { title: string; kind: string; line: string }): PageMeta {
+	const kind = p.kind.charAt(0).toLowerCase() + p.kind.slice(1)
+	return {
+		title: `${p.title}: ${kind} — Виктор Мацаков`,
+		description: `${p.line}. Кейс: задача, что сделал и на чём построено.`,
+	}
+}
+
+/** Мета страницы «кейс изнутри»: механики и стек в title, без чисел */
+export function insideMeta(p: { title: string }): PageMeta {
+	return {
+		title: `Как устроен ${p.title}: механики и стек — Виктор Мацаков`,
+		description: `Кейс изнутри: что реализовано в ${p.title}, как сделаны подбор, пати, чат и голос, SEO-страницы, и почему выбран стек Laravel, Reverb и WebRTC.`,
+	}
+}
+
 export const SITE_META = {
 	home: {
 		title: 'Разработка сайтов и веб-сервисов — Виктор Мацаков',

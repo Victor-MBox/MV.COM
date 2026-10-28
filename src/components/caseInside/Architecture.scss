@@ -1,0 +1,177 @@
+// Горизонтальная секция «архитектура» (Architecture.tsx): залипшая лента узлов едет вбок по вертикальной прокрутке.
+// Геометрия ленты — в компоненте (px), здесь — вид узлов, дорожек и пакета
+.insideArch {
+	position: relative;
+
+	&__pin {
+		position: sticky;
+		top: var(--header-h);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 24px;
+		height: calc(100vh - var(--header-h));
+		overflow: hidden;
+
+		.sectionHead {
+			margin-bottom: 0;
+		}
+	}
+
+	// Контейнер внутри flex-колонки не должен сжиматься по содержимому
+	&__head {
+		width: 100%;
+	}
+
+	&__viewport {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	&__track {
+		position: relative;
+		transform-origin: 0 0;
+		will-change: transform;
+	}
+
+	&__line,
+	&__vline {
+		position: absolute;
+		display: block;
+		background: var(--border-strong);
+	}
+
+	&__line {
+		height: 2px;
+		margin-top: -1px;
+	}
+
+	&__vline {
+		width: 2px;
+		margin-left: -1px;
+	}
+
+	&__packet {
+		position: absolute;
+		display: block;
+		width: 14px;
+		height: 14px;
+		margin: -7px 0 0 -7px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 6px var(--accent-soft), 0 0 28px var(--accent);
+	}
+
+	&__spark {
+		position: absolute;
+		display: block;
+		width: 8px;
+		height: 8px;
+		margin: -4px 0 0 -4px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 12px var(--accent);
+	}
+
+	&__node {
+		position: absolute;
+		width: 360px;
+		padding: 18px 20px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-card);
+		background: var(--box);
+		transition: border-color var(--d-base) var(--ease-out), box-shadow var(--d-base) var(--ease-out), opacity var(--d-base) var(--ease-out);
+		opacity: 0.55;
+
+		&--main {
+			min-height: 200px;
+		}
+
+		&.is-lit {
+			opacity: 1;
+			border-color: var(--accent);
+			box-shadow: 0 0 0 1px var(--accent-soft), 0 20px 60px rgba(0, 0, 0, 0.3);
+		}
+	}
+
+	&__nodeLabel {
+		font-family: var(--font-mono);
+		font-size: 12px;
+		line-height: 1;
+		letter-spacing: 0;
+		color: var(--text-muted);
+
+		&::before {
+			content: '// ';
+			color: var(--accent);
+		}
+	}
+
+	&__nodeTitle {
+		margin: 8px 0 8px;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 22px;
+		line-height: 1.15;
+		letter-spacing: -0.01em;
+		color: var(--text);
+	}
+
+	&__nodeWhat {
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--text-body);
+	}
+
+	&__nodeWhy {
+		margin-top: 10px;
+		padding-top: 10px;
+		border-top: 1px solid var(--border);
+		font-size: 13.5px;
+		line-height: 1.5;
+		color: var(--text);
+
+		span {
+			display: block;
+			margin-bottom: 3px;
+			font-family: var(--font-mono);
+			font-size: 12px;
+			line-height: 1;
+			letter-spacing: 0;
+			color: var(--text-muted);
+		}
+	}
+
+	&__hint {
+		width: 100%;
+		max-width: var(--container);
+		margin: 0 auto;
+		padding: 0 var(--gutter);
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		color: var(--text-muted);
+	}
+
+	// ---------- Плоский вариант: ≤992 и reduced-motion ----------
+	&--flat &__list {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+		list-style: none;
+	}
+
+	&--flat &__node {
+		position: static;
+		width: auto;
+		opacity: 1;
+	}
+
+	@media (max-width: 560px) {
+		&--flat &__list {
+			grid-template-columns: 1fr;
+		}
+	}
+}

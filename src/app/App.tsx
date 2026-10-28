@@ -14,6 +14,7 @@ import OfferPage from '../pages/services/OfferPage'
 import PromotionPage from '../pages/services/PromotionPage'
 import PortfolioPage from '../pages/portfolio/PortfolioPage'
 import ProjectPage from '../pages/portfolio/ProjectPage'
+import InsidePage from '../pages/portfolio/InsidePage'
 import AboutPage from '../pages/about/AboutPage'
 import BlogPage from '../pages/blog/BlogPage'
 import PostPage from '../pages/blog/PostPage'
@@ -53,6 +54,8 @@ function App() {
 								<Route path='/services/:offer' element={<OfferPage />} />
 								<Route path='/portfolio' element={<PortfolioPage />} />
 								<Route path='/portfolio/:slug' element={<ProjectPage />} />
+								{/* «Кейс изнутри» (28.10.2026): сюжет с живым интерфейсом и архитектурой; обычная страница кейса остаётся */}
+								<Route path='/portfolio/:slug/inside' element={<InsidePage />} />
 								<Route path='/about' element={<AboutPage />} />
 								<Route path='/blog' element={<BlogPage />} />
 								<Route path='/blog/:slug' element={<PostPage />} />

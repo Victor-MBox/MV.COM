@@ -107,7 +107,7 @@ describe('главная: коммерческая структура (ТЗ от
 		const norandoms = PROJECTS.find(p => p.slug === 'norandoms')
 		expect(norandoms?.metrics.filter(isPublic).some(m => /топ-10/.test(m.label))).toBe(false)
 		expect(norandoms?.highlights?.filter(isPublic).some(h => /топ-10/.test(h.label))).toBe(false)
-		expect(norandoms?.metrics.some(m => m.value === 92)).toBe(true) // значение хранится до подтверждения
+		expect(norandoms?.metrics.some(m => m.value === 91)).toBe(true) // значение хранится до скриншотов Яндекс Вебмастера
 		expect(norandoms?.result).not.toMatch(/восемь месяцев/)
 	})
 })

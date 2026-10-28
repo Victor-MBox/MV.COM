@@ -49,7 +49,7 @@
 		margin-top: auto;
 	}
 
-	// Обложка: скриншот (портфолио) или сцена FloatingPreview (главная) — та же рамка 16:10, радиус 12 и тень
+	// Обложка: сцена FloatingPreview (проект с preview — и на главной, и в портфолио) или скриншот — рамка 16:10, радиус 12
 	&__cover {
 		position: relative;
 		aspect-ratio: 16 / 10;

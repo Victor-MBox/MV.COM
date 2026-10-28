@@ -9,12 +9,13 @@ import Chip from '../../components/chip/Chip'
 import Stat from '../../components/stat/Stat'
 import { formatStat } from '../../components/stat/formatStat'
 import Reveal from '../../components/reveal/Reveal'
-import Gallery from '../../components/gallery/Gallery'
-import FlowScheme from '../../components/flowScheme/FlowScheme'
-import DimAccordion from '../../components/dimAccordion/DimAccordion'
+import CaseStory from '../../components/caseStory/CaseStory'
+import CaseVideo from '../../components/caseVideo/CaseVideo'
 import { useContactModal } from '../../components/contactModal/ContactModalContext'
 import { getAdjacentProjects, getProject, isPublic } from '../../data/projects'
-import type { Project } from '../../data/projects'
+import type { Project, ProjectMetric } from '../../data/projects'
+import { projectMeta } from '../../data/meta'
+import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import NotFoundPage from '../NotFoundPage'
 import './ProjectPage.scss'
 
@@ -24,15 +25,13 @@ const BRIEF = [
 	{ key: 'result', label: 'результат' },
 ] as const
 
-// TODO (владелец): H2 секций страницы кейса; в каждом — не больше одного выделения
+// TODO (владелец): H2 секций кейса без сюжета; в каждом — не больше одного выделения
 const H2 = {
 	brief: { text: 'Задача, решение и результат', muted: 'и результат' },
-	screens: { text: 'Как это выглядит' },
 	stack: { text: 'На чём построено' },
 }
 
 const EASE_OUT = [0.2, 0.7, 0.2, 1] as const
-const pad = (i: number) => String(i + 1).padStart(2, '0')
 /** «Основатель, …» → «основатель, …» для строки моно, как в CaseCard */
 const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
 
@@ -51,26 +50,83 @@ function Neighbor({ project, dir }: { project: Project; dir: 'prev' | 'next' }) 
 	)
 }
 
+/** Кейс без сюжета: обложка, подтверждённые цифры, «Коротко» в три колонки и стек чипами */
+function ProjectBrief({ project, metrics }: { project: Project; metrics: ProjectMetric[] }) {
+	return (
+		<>
+			<section className='section' id='metrics' aria-label='Обложка и результаты в цифрах'>
+				<div className='container'>
+					<motion.div
+						className='projectPage__cover'
+						initial={{ opacity: 0, scale: 0.98 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ duration: 0.6, ease: EASE_OUT }}
+					>
+						<img src={project.cover} alt={`Обложка проекта ${project.title}`} width={1680} height={720} fetchPriority='high' />
+					</motion.div>
+
+					{metrics.length > 0 && (
+						<Reveal as='ul' className='projectPage__metrics' style={{ '--count': metrics.length } as CSSProperties}>
+							{metrics.map(m => (
+								<li key={m.label}>
+									{/* У Stat нет префикса: с ним значение уходит строкой без счётчика */}
+									<Stat value={m.prefix ? `${m.prefix}${formatStat(m.value)}` : m.value} suffix={m.suffix} label={m.label} />
+								</li>
+							))}
+						</Reveal>
+					)}
+				</div>
+			</section>
+
+			<section className='section' id='brief'>
+				<div className='container'>
+					<SectionHead label='коротко' title={H2.brief} />
+					<ul className='projectPage__brief'>
+						{BRIEF.map(({ key, label }, i) => (
+							<Reveal as='li' key={key} index={i}>
+								<span className='projectPage__briefLabel'>{label}</span>
+								<p>{project[key]}</p>
+							</Reveal>
+						))}
+					</ul>
+				</div>
+			</section>
+
+			{project.stack.length > 0 && (
+				<section className='section' id='stack'>
+					<div className='container'>
+						<SectionHead label='техника' title={H2.stack} />
+						<Reveal as='ul' className='projectPage__stack' aria-label='Стек проекта'>
+							{project.stack.map(s => (
+								<Chip as='li' key={s}>
+									{s}
+								</Chip>
+							))}
+						</Reveal>
+					</div>
+				</section>
+			)}
+		</>
+	)
+}
+
 /**
- * Страница кейса (docs/design-spec.md §9; content.md §4.7): шапка с крошкой, фактами, ролью и кнопками → обложка на всю
- * ширину контейнера → счётчики (только подтверждённые) → «Коротко» в три колонки → скриншоты → аккордеон
- * «Как это устроено технически» (стек, что внутри, путь пользователя, этапы) → соседние кейсы
+ * Страница кейса (content.md §4.7): шапка с крошкой, фактами, ролью и кнопками → видео-рассказ `CaseVideo` (с 28.10.2026:
+ * главы слева, справа залипшее видео, которое прокрутка двигает кадр в кадр; цифры — в главе SEO, кнопки — в финале) →
+ * соседние кейсы. Без `video` — прежний сюжет `CaseStory` (оставлен для сравнения: ноутбук и телефон с экранами продукта),
+ * без `story` — обложка, цифры, «Коротко» и стек. Обложки, галереи и аккордеона техники с 22.10.2026 на странице нет
  */
 export default function ProjectPage() {
 	const { slug } = useParams()
 	const project = getProject(slug)
 	const { open } = useContactModal()
+	useDocumentMeta(project ? projectMeta(project) : null)
 
 	if (!project) return <NotFoundPage />
 
 	const { prev, next } = getAdjacentProjects(project.slug)
 	// Неподтверждённые показатели (hidden в projects.ts) остаются в данных, но на странице не выводятся
 	const metrics = project.metrics.filter(isPublic)
-	const hasStack = project.stack.length > 0
-	const hasFeatures = !!project.features?.length
-	const hasScheme = !!project.scheme?.length
-	const hasProcess = !!project.process?.length
-	const hasTech = hasStack || hasFeatures || hasScheme || hasProcess
 
 	const meta = (
 		<>
@@ -88,59 +144,6 @@ export default function ProjectPage() {
 			</span>
 			<span className='projectPage__role'>Моя роль: {lower(project.role)}.</span>
 		</>
-	)
-
-	const tech = (
-		<div className='projectPage__tech'>
-			{hasStack && (
-				<div className='projectPage__techBlock'>
-					<h3>Стек</h3>
-					<ul className='projectPage__stack' aria-label='Стек проекта'>
-						{project.stack.map(s => (
-							<Chip as='li' key={s}>
-								{s}
-							</Chip>
-						))}
-					</ul>
-				</div>
-			)}
-
-			{hasFeatures && (
-				<div className='projectPage__techBlock'>
-					<h3>Что внутри</h3>
-					<ul className='projectPage__features'>
-						{project.features!.map(f => (
-							<li key={f.title}>
-								<h4>{f.title}</h4>
-								<p>{f.text}</p>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
-
-			{hasScheme && (
-				<div className='projectPage__techBlock'>
-					<h3>Путь пользователя</h3>
-					<FlowScheme nodes={project.scheme!} />
-				</div>
-			)}
-
-			{hasProcess && (
-				<div className='projectPage__techBlock'>
-					<h3>Этапы работы</h3>
-					<ol className='projectPage__steps'>
-						{project.process!.map((step, i) => (
-							<li key={step.title}>
-								<span className='projectPage__stepNum'>{pad(i)}</span>
-								<h4>{step.title}</h4>
-								<p>{step.text}</p>
-							</li>
-						))}
-					</ol>
-				</div>
-			)}
-		</div>
 	)
 
 	return (
@@ -164,69 +167,12 @@ export default function ProjectPage() {
 				}
 			/>
 
-			<section className='section' id='metrics' aria-label='Обложка и результаты в цифрах'>
-				<div className='container'>
-					<motion.div
-						className='projectPage__cover'
-						initial={{ opacity: 0, scale: 0.98 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ duration: 0.6, ease: EASE_OUT }}
-					>
-						<img src={project.cover} alt={`Обложка проекта ${project.title}`} width={1680} height={720} fetchPriority='high' />
-					</motion.div>
-
-					{metrics.length > 0 && (
-						<Reveal as='ul' className='projectPage__metrics' style={{ '--count': metrics.length } as CSSProperties}>
-							{metrics.map(m => (
-								<li key={m.label}>
-									{/* У Stat нет префикса: с ним значение уходит строкой без счётчика */}
-									<Stat
-										value={m.prefix ? `${m.prefix}${formatStat(m.value)}` : m.value}
-										suffix={m.suffix}
-										label={m.label}
-									/>
-								</li>
-							))}
-						</Reveal>
-					)}
-				</div>
-			</section>
-
-			<section className='section' id='brief'>
-				<div className='container'>
-					<SectionHead label='коротко' title={H2.brief} />
-					<ul className='projectPage__brief'>
-						{BRIEF.map(({ key, label }, i) => (
-							<Reveal as='li' key={key} index={i}>
-								<span className='projectPage__briefLabel'>{label}</span>
-								<p>{project[key]}</p>
-							</Reveal>
-						))}
-					</ul>
-				</div>
-			</section>
-
-			{project.gallery.length > 0 && (
-				<section className='section' id='screens'>
-					<div className='container'>
-						<SectionHead label='скриншоты' title={H2.screens} />
-						<Reveal>
-							<Gallery images={project.gallery} title={project.title} />
-						</Reveal>
-					</div>
-				</section>
-			)}
-
-			{/* Техника вторична: стек, модули, путь пользователя и этапы — внутри закрытого аккордеона в конце кейса */}
-			{hasTech && (
-				<section className='section' id='tech'>
-					<div className='container'>
-						<SectionHead label='техника' title={H2.stack} />
-						<Reveal className='projectPage__accordion'>
-							<DimAccordion idPrefix='project' items={[{ id: 'tech', title: 'Как это устроено технически', content: tech }]} wide />
-						</Reveal>
-					</div>
-				</section>
+			{project.video ? (
+				<CaseVideo video={project.video} metrics={metrics} link={project.link} />
+			) : project.story ? (
+				<CaseStory story={project.story} metrics={metrics} stack={project.stack} />
+			) : (
+				<ProjectBrief project={project} metrics={metrics} />
 			)}
 
 			{(prev || next) && (
