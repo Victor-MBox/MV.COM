@@ -1,8 +1,11 @@
 import type { ReactNode } from 'react'
 import { NrGameCard, NrHeroActions, NrLogo, NrPlayerCard, NrVoiceBenefit } from './norandoms/elements'
+import { RgsCoin, RgsConsultant, RgsFlag, RgsGift, RgsLogo, RgsPanel, RgsReplica } from './rgs/elements'
 // Стили живого norandoms.team (собраны `node scripts/nr-product-css.mjs --cover`) и поправки под холст
 import './norandoms/nr-cover.css'
 import './norandoms/cover.scss'
+// Десктопные стили игры «ЖК Несчастье», перенесённые вручную
+import './rgs/cover.scss'
 
 /** Холсты сцены 16:10 в px продукта: элементы стоят в своих настоящих размерах, холст целиком масштабируется под сцену */
 export const PREVIEW_CANVAS = {
@@ -33,6 +36,20 @@ export const PREVIEW_KITS = {
 			game: <NrGameCard />,
 			player: <NrPlayerCard />,
 			actions: <NrHeroActions />,
+		},
+	},
+	// Игра «ЖК Несчастье» для Росгосстраха (ТЗ docs/rgs-case-page-spec.md §6): текст игры — Golos Text
+	rgs: {
+		className: 'rgs-cover',
+		fonts: 'family=Golos+Text:wght@400;500',
+		elements: {
+			flag: <RgsFlag />,
+			gift: <RgsGift />,
+			consultant: <RgsConsultant />,
+			replica: <RgsReplica />,
+			logo: <RgsLogo />,
+			panel: <RgsPanel />,
+			coin: <RgsCoin />,
 		},
 	},
 } satisfies Record<string, PreviewKit>

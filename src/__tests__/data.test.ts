@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PROJECTS, PROJECT_CATEGORIES, getAdjacentProjects, getProject } from '../data/projects'
+import { parseStat } from '../components/stat/formatStat'
 import { POSTS, formatDate, getPost } from '../data/posts'
 import { SERVICES } from '../data/services'
 import { CONTACTS_FAQ_KEYS, FAQ, HOME_FAQ_KEYS, getFaq } from '../data/faq'
@@ -15,7 +16,7 @@ describe('projects', () => {
 		PROJECTS.forEach(p => {
 			expect(p.cover).toBeTruthy()
 			expect(p.cover).not.toMatch(/picsum/)
-			expect(p.metrics.length).toBeGreaterThanOrEqual(4)
+			expect(p.metrics.length).toBeGreaterThanOrEqual(3)
 			;[p.task, p.solution, p.result].forEach(t => expect(t.length).toBeGreaterThan(40))
 			expect(p.categories.length).toBeGreaterThan(0)
 			p.categories.forEach(c => expect(PROJECT_CATEGORIES).toContain(c))
@@ -24,10 +25,23 @@ describe('projects', () => {
 		})
 	})
 
-	it('у главного кейса три факта для широкой карточки', () => {
-		PROJECTS.filter(p => p.featured).forEach(p => {
-			expect(p.highlights?.length).toBe(3)
+	it('у главного кейса три факта для широкой карточки, у остальных — не меньше двух; главный кейс один', () => {
+		expect(PROJECTS.filter(p => p.featured).length).toBe(1)
+		PROJECTS.forEach(p => {
+			if (p.featured) expect(p.highlights?.length).toBe(3)
+			else if (p.highlights) expect(p.highlights.length).toBeGreaterThanOrEqual(2)
 		})
+	})
+
+	it('числа в фактах карточки — те же значения, что в metrics (один факт — одно значение)', () => {
+		PROJECTS.forEach(p =>
+			(p.highlights ?? []).forEach(h => {
+				const fact = parseStat(h.value)
+				if (typeof fact.value === 'string') return // «Февраль 2026» — не показатель
+				const same = p.metrics.some(m => !m.prefix && m.value === fact.value && (m.suffix ?? '') === fact.suffix)
+				expect(same, `${p.slug}: ${h.value}`).toBe(true)
+			})
+		)
 	})
 
 	it('getProject находит проект и возвращает undefined для чужого slug', () => {
@@ -36,10 +50,13 @@ describe('projects', () => {
 		expect(getProject(undefined)).toBeUndefined()
 	})
 
-	it('соседние проекты идут по кругу, а при одном проекте не ссылаются на себя', () => {
+	it('соседние проекты идут по кругу, при одном проекте не ссылаются на себя, при двух — один сосед без дубля', () => {
 		const first = PROJECTS[0].slug
 		const last = PROJECTS[PROJECTS.length - 1].slug
-		if (PROJECTS.length > 1) {
+		if (PROJECTS.length === 2) {
+			expect(getAdjacentProjects(first)).toEqual({ prev: undefined, next: PROJECTS[1] })
+			expect(getAdjacentProjects(last)).toEqual({ prev: undefined, next: PROJECTS[0] })
+		} else if (PROJECTS.length > 2) {
 			expect(getAdjacentProjects(first).prev?.slug).toBe(last)
 			expect(getAdjacentProjects(last).next?.slug).toBe(first)
 		} else {
@@ -93,6 +110,36 @@ describe('кейс NoRandoms', () => {
 		const p = norandoms()
 		expect(p.story?.chapters.length).toBeGreaterThan(0)
 		expect(p.stack.length).toBeGreaterThan(5)
+	})
+})
+
+describe('кейс «ЖК Несчастье»', () => {
+	const rgs = () => {
+		const p = getProject('zhk-neschastye')
+		if (!p) throw new Error('кейс zhk-neschastye не найден')
+		return p
+	}
+
+	it('идёт вторым, не главный; есть видео-рассказ, живая обложка и картинка-обложка; ссылки на сайт и статуса нет', () => {
+		expect(PROJECTS[1].slug).toBe('zhk-neschastye')
+		const p = rgs()
+		expect(p.featured).toBeFalsy()
+		expect(p.video?.chapters.length).toBe(9)
+		expect(p.preview?.kit).toBe('rgs')
+		expect(p.cover).toMatch(/cover.*\.webp$/)
+		expect(p.link).toBeUndefined()
+		expect(p.status).toBeUndefined()
+	})
+
+	it('мета-строка карточки: год · срок · клиент; факты карточки — 300+ и 5', () => {
+		const p = rgs()
+		expect([p.year, p.duration.toLowerCase(), p.client.toLowerCase()].join(' · ')).toBe('2025 · около двух месяцев · росгосстрах')
+		expect(p.highlights?.map(h => h.value)).toEqual(['300+', '5'])
+	})
+
+	it('пример на странице услуги «Квизы и интерактивные проекты» — этот кейс по категории «Интерактив»', () => {
+		expect(rgs().categories).toContain('Интерактив')
+		expect(PROJECTS.filter(p => p.categories.includes('Интерактив')).map(p => p.slug)).toEqual(['zhk-neschastye'])
 	})
 })
 

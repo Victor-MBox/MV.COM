@@ -112,7 +112,8 @@ function ProjectBrief({ project, metrics }: { project: Project; metrics: Project
 
 /**
  * Страница кейса (content.md §4.7): шапка с крошкой, фактами, ролью и кнопками → видео-рассказ `CaseVideo` (с 28.10.2026:
- * главы слева, справа залипшее видео, которое прокрутка двигает кадр в кадр; цифры — в главе SEO, кнопки — в финале) →
+ * главы слева, справа залипшее видео, которое прокрутка двигает кадр в кадр; цифры — в главе со счётчиками: у NoRandoms SEO,
+ * у «ЖК Несчастье» финал; кнопки — в финале, «Открыть сайт» — только при `link`) →
  * соседние кейсы. Без `video` — прежний сюжет `CaseStory` (оставлен для сравнения: ноутбук и телефон с экранами продукта),
  * без `story` — обложка, цифры, «Коротко» и стек. Обложки, галереи и аккордеона техники с 22.10.2026 на странице нет
  */
@@ -168,7 +169,7 @@ export default function ProjectPage() {
 			/>
 
 			{project.video ? (
-				<CaseVideo video={project.video} metrics={metrics} link={project.link} />
+				<CaseVideo video={project.video} title={project.title} metrics={metrics} link={project.link} />
 			) : project.story ? (
 				<CaseStory story={project.story} metrics={metrics} stack={project.stack} />
 			) : (

@@ -1,31 +1,22 @@
-import timeline from '../resources/norandoms/video/timeline.json'
-import videoDesktop from '../resources/norandoms/video/norandoms-scroll.mp4'
-import videoLight from '../resources/norandoms/video/norandoms-scroll-light.mp4'
-import videoMobile from '../resources/norandoms/video/norandoms-scroll-mobile.mp4'
-import poster from '../resources/norandoms/video/poster.jpg'
 import type { MetricKey } from './projects'
 
 /**
- * Видео-рассказ страницы кейса NoRandoms (ТЗ `docs/norandoms-scroll-video-spec.md`, 28.10.2026). Ролик — готовый материал
- * владельца (`~/Desktop/gamer_social/norandoms-portfolio/out/`): 1080×1350, 30 к/с, 90 с, без звука и без текста в кадре —
- * объяснения живут только здесь. Файлы в `resources/norandoms/video/` скопированы без перекодирования.
+ * Видео-рассказ страницы кейса (ТЗ `docs/norandoms-scroll-video-spec.md`, 28.10.2026; обобщён для второго кейса —
+ * `docs/rgs-case-page-spec.md`, 29.10.2026): общие типы и сборка из `timeline.json` ролика. Данные проектов — по файлу
+ * на проект: `caseVideoNorandoms.ts`, `caseVideoRgs.ts`.
  *
- * Тайминги глав, ключевые кадры и моменты (`beats`) — из `timeline.json` ролика: импорт, а не перепечатка. Здесь только
- * тексты и привязка маркеров к моментам. Маркер описывает то, что в этот момент видно в кадре; его `beat` — секунда
- * момента из `timeline.json` (тест сверяет). Чисел в текстах глав нет — они в счётчиках SEO (значения из `metrics`
- * проекта) и в финале
+ * Ролик — готовый материал владельца без текста в кадре: объяснения живут только в данных. Тайминги глав, ключевые кадры
+ * и моменты (`beats`) — из `timeline.json` ролика: импорт, а не перепечатка. В данных проекта — только тексты и привязка
+ * маркеров к моментам. Маркер описывает то, что в этот момент видно в кадре; его `beat` — секунда момента из
+ * `timeline.json` (тест сверяет). Чисел в текстах глав нет — они в счётчиках (значения из `metrics` проекта) и в финале
  */
-
-/** Ключевые кадры глав: по одному на главу, путь — из `timeline.json` */
-const KEYFRAMES = import.meta.glob<string>('../resources/norandoms/video/keyframes/*.webp', { eager: true, import: 'default' })
-const keyframeUrl = (path: string) => KEYFRAMES[`../resources/norandoms/video/${path}`] ?? ''
 
 /** Маркер «что сейчас в кадре»: зажигается к секунде `beat` и гаснет при прокрутке назад */
 export type VideoMarker = { beat: number; text: string }
 
 /**
- * Счётчик главы SEO: показатель проекта по ключу (значение хранится только в `Project.metrics`) и отрезок видео
- * в секундах, на котором он считается от нуля до значения
+ * Счётчик главы со счётчиками (у NoRandoms — SEO, у «ЖК Несчастье» — финал): показатель проекта по ключу (значение
+ * хранится только в `Project.metrics`) и отрезок видео в секундах, на котором он считается от нуля до значения
  */
 export type VideoCounter = { metric: MetricKey; from: number; to: number }
 
@@ -41,7 +32,7 @@ export type VideoChapterCopy = {
 	counters?: VideoCounter[]
 	/** Подпись под счётчиками */
 	countersNote?: string
-	/** Финал: заголовок с датой запуска и кнопки «Открыть сайт ↗», «Обсудить похожий проект» */
+	/** Финал: кнопки «Открыть сайт ↗» (только при `link` проекта) и «Обсудить похожий проект» */
 	final?: boolean
 }
 
@@ -58,200 +49,77 @@ export type VideoChapter = VideoChapterCopy & {
 export type VideoSources = {
 	/** Основной файл: ключевой кадр раз в 0,5 с */
 	desktop: string
-	/** Облегчённый для медленной сети (2g/3g): ключевой кадр раз в 1 с */
+	/** Облегчённый для медленной сети (2g/3g): ключевой кадр реже */
 	light: string
 	/** 720×900 для экранов ≤992 px и режима экономии трафика */
 	mobile: string
 }
 
+/** Темп прокрутки: высота главы = длительность её отрезка × `desktop` (на ≤992 — × `mobile`) vh на секунду видео, в пределах `min`…`max` vh */
+export type VideoPace = { desktop: number; mobile: number; min: number; max: number }
+
 export type CaseVideo = {
 	/** Подпись видео для диктора (role="img"): в кадре только интерфейс, смысл — в тексте глав */
 	label: string
 	sources: VideoSources
-	/** Кадр с логотипом — до загрузки */
+	/** Кадр до загрузки */
 	poster: string
+	/** Фон карточки видео — цвет краёв ролика: без полос на скруглении, пока кадр грузится */
+	background: string
 	duration: number
 	fps: number
 	width: number
 	height: number
-	/**
-	 * Темп прокрутки: высота главы = длительность её отрезка × `desktop` (на ≤992 — × `mobile`) vh на секунду видео,
-	 * в пределах `min`…`max` vh. Подбирает владелец: 18 vh/с на десктопе ≈ 17 экранов прокрутки на весь ролик
-	 */
-	pace: { desktop: number; mobile: number; min: number; max: number }
+	/** Подбирает владелец: 18 vh/с на десктопе ≈ 17 экранов прокрутки на 90 с ролика */
+	pace: VideoPace
 	chapters: VideoChapter[]
 }
 
-/** Моменты ролика — для тестов: маркеры и отрезки счётчиков привязаны к ним */
-export const VIDEO_TIMELINE = timeline
-
-// TODO (владелец): заголовки и тексты глав — черновики ТЗ §7.2, проверенные по коду NoRandoms; утвердить
-const COPY: Record<string, VideoChapterCopy> = {
-	intro: {
-		label: 'о проекте',
-		title: 'NoRandoms — поиск тиммейтов и пати',
-		text: [
-			'Собственный продукт: спроектировал и сделал в одиночку — от идеи и интерфейса до серверов и продвижения. Игрок находит напарников под свой формат игры, собирает пати с чатом и голосом и не тратит вечер на случайных людей.',
-		],
-		// Окно сайта выезжает на 1,3 с. Стек показывается на странице один раз — здесь, в финале его нет
-		stack: {
-			items: ['Laravel 12', 'React 19 + TypeScript', 'Filament', 'Laravel Reverb', 'Jitsi', 'Telegram Bot API', 'Web Push / FCM'],
-			beat: 1.3,
-		},
-	},
-	profile: {
-		label: 'анкета',
-		title: 'Анкета вместо случайного поиска',
-		text: [
-			'После регистрации — короткий онбординг: игры, Steam, аватар и пара строк о себе. Затем анкета предпочтений: по ней строится весь подбор.',
-		],
-		// Пятый маркер черновика («первое действие: объявление или пати», 9,8 с) снят: в главе не больше четырёх.
-		// В маркере 11,3 с из черновика убрано «время» — было 82 знака при пределе 80
-		markers: [
-			{ beat: 5.55, text: 'Игры выбираются из каталога, у каждой своя страница' },
-			{ beat: 7.2, text: 'Steam подтягивает библиотеку и часы — ручного ввода нет' },
-			{ beat: 11.3, text: 'Микрофон, стиль, токсичность, отношение к ошибкам — параметры совместимости' },
-			{ beat: 14.2, text: 'Пустое поле значит «не важно», а не «не подходит»' },
-		],
-	},
-	teammates: {
-		label: 'подбор',
-		title: 'Подбор тиммейтов',
-		text: [
-			'Лента показывает тех, кто играет в те же игры и ищет того же. Онлайн-игроки — первыми, а статус из Steam сразу говорит, кто сейчас в игре.',
-		],
-		markers: [
-			{ beat: 14.8, text: 'На карточке — статус из Steam: «В игре: Counter-Strike 2»' },
-			{ beat: 16.55, text: 'Фильтры подставляются из анкеты, править — в одной панели' },
-			{ beat: 18.65, text: 'При наведении — сводка: возраст, часовой пояс, совместимость, общие игры' },
-		],
-	},
-	compat: {
-		label: 'совместимость',
-		title: 'Совместимость, которую можно проверить',
-		text: [
-			'Процент считается на сервере и раскладывается на причины: какие игры общие, во что оба играли последние две недели, где совпали ожидания от напарника и где конфликт.',
-		],
-		markers: [
-			{ beat: 22.3, text: 'Слабое совпадение показывается честно, без натяжек' },
-			{ beat: 24.9, text: 'Основа — пересечение библиотек Steam' },
-			{ beat: 26.8, text: 'Анкета и недавняя общая игра уточняют оценку, конфликты — снижают' },
-		],
-	},
-	party: {
-		label: 'пати',
-		title: 'Пати: состав, чат и голос',
-		text: [
-			'Комната под конкретную игру: создать за минуту, вступить в один клик. Состав и чат обновляются у всех участников без перезагрузки.',
-		],
-		markers: [
-			{ beat: 31.95, text: 'Вступление сразу меняет состав у всех — через WebSocket (Laravel Reverb)' },
-			{ beat: 33.3, text: 'Голос — Jitsi на своём сервере, в браузере, вход по персональному токену' },
-			{ beat: 35.35, text: 'Нет WebSocket — интерфейс сам переходит на опрос сервера' },
-		],
-	},
-	dm: {
-		label: 'сообщения',
-		title: 'Личные сообщения',
-		text: [
-			'Договориться о времени можно, не уходя с сайта: индикатор набора, статусы доставки и прочтения, счётчики непрочитанного.',
-		],
-		markers: [
-			{ beat: 39.1, text: '«Печатает…» видно даже в списке диалогов' },
-			{ beat: 40.25, text: 'Непрочитанное — бейджем в списке и в шапке' },
-			{ beat: 42.75, text: 'Собеседнику не на сайте предложат отвечать прямо из Telegram' },
-		],
-	},
-	notify: {
-		label: 'уведомления',
-		title: 'Одно событие — пять каналов',
-		// «Готовится к релизу» — один раз, в маркере про FCM (в черновике повторялось в абзаце)
-		text: [
-			'Приглашение в пати приходит туда, где его увидят: в центр уведомлений, браузерным пушем, в Telegram, письмом и в мобильное приложение. Какой канал задействовать, решает политика доставки.',
-		],
-		markers: [
-			{ beat: 47.75, text: 'Браузерный пуш — через Web Push' },
-			{ beat: 48.25, text: 'Telegram-бот с кнопкой «Открыть пати»' },
-			{ beat: 48.75, text: 'Письмо уходит, только если человека нет на сайте' },
-			{ beat: 49.25, text: 'Пуш в мобильное приложение — через FCM (приложение готовится к релизу)' },
-		],
-	},
-	lounge: {
-		label: 'гостиная',
-		title: 'Гостиная',
-		text: [
-			'Общий чат всего сайта. В комнате парят аватары тех, кто сейчас онлайн, а пати можно отправить прямо в чат карточкой с набором.',
-		],
-		markers: [
-			{ beat: 53.2, text: 'Аватары в сцене — все, кто сейчас на сайте' },
-			{ beat: 56.9, text: 'Пати в чате — карточкой с составом и кнопкой' },
-			{ beat: 58.15, text: 'Антиспам: пауза между сообщениями и защита от повторов' },
-			{ beat: 59.5, text: 'Мини-чат открывается с любой страницы' },
-		],
-	},
-	groups: {
-		label: 'группы',
-		title: 'Группы',
-		text: [
-			'Сообщества с подписками. У автора группы своя панель: посты в редакторе, обложки, закрепы, модерация комментариев и участников.',
-		],
-		markers: [
-			{ beat: 62.75, text: 'Публикация в один клик из панели автора' },
-			{ beat: 63.7, text: 'Подписчики получают оповещение по каналам, которые выбрали сами' },
-			{ beat: 65.85, text: 'У длинных постов своя типографика для чтения' },
-		],
-	},
-	moderation: {
-		label: 'модерация',
-		title: 'Модерация без ручной рутины',
-		text: [
-			'Мат маскируется ещё до того, как сообщение увидит собеседник. Нарушитель автоматически получает страйк, а у модератора под рукой ограничения и словарь.',
-		],
-		markers: [
-			{ beat: 71.05, text: 'Маскировка на сервере: в базу сообщение попадает уже очищенным' },
-			{ beat: 73.7, text: 'Ограничения на срок — например, мут на сутки' },
-			{ beat: 75.1, text: 'Словарь админ пополняет сам, без релиза' },
-		],
-	},
-	seo: {
-		label: 'seo',
-		title: 'SEO вместо рекламного бюджета',
-		text: [
-			'Под каждую игру и формат страница собирается из данных каталога и живой активности: кто играет, какие пати открыты, ответы на частые вопросы. Перелинковка и sitemap обновляются сами.',
-		],
-		// Отрезки — секунды ролика: мозаика страниц, часть загорается, поисковая выдача, график посещаемости.
-		// «91% в топ-10» скрыт в metrics до скриншотов Яндекс Вебмастера — счётчик не выводится, пока у показателя есть hidden
-		counters: [
-			{ metric: 'pages', from: 78.8, to: 81.4 },
-			{ metric: 'indexed', from: 81.0, to: 82.2 },
-			{ metric: 'top10', from: 82.5, to: 83.8 },
-			{ metric: 'visitors', from: 85.5, to: 87.0 },
-			{ metric: 'signups', from: 85.5, to: 87.0 },
-		],
-		countersNote: 'Данные на октябрь 2026',
-	},
-	outro: {
-		label: 'результат',
-		title: 'В продакшене с февраля 2026',
-		text: ['Сервис открыт для игроков, я продолжаю его развивать.'],
-		final: true,
-	},
+/** `timeline.json` ролика: размер и длительность, главы с моментами `beats` (поле `screen` — описание для разработчика) */
+export type VideoTimeline = {
+	video: { duration: number; fps: number; size: number[] }
+	chapters: { key: string; start: number; end: number; keyframe: string; beats: { t: number; screen?: string }[] }[]
 }
 
-export const NORANDOMS_VIDEO: CaseVideo = {
-	label: 'Видео: интерфейс NoRandoms — анкета, подбор тиммейтов, совместимость, пати, сообщения, уведомления, гостиная, группы, модерация и страницы для поиска',
-	sources: { desktop: videoDesktop, light: videoLight, mobile: videoMobile },
-	poster,
-	duration: timeline.video.duration,
-	fps: timeline.video.fps,
-	width: timeline.video.size[0],
-	height: timeline.video.size[1],
-	pace: { desktop: 18, mobile: 14, min: 100, max: 220 },
-	chapters: timeline.chapters.map(c => ({
-		key: c.key,
-		start: c.start,
-		end: c.end,
-		keyframe: keyframeUrl(c.keyframe),
-		...COPY[c.key],
-	})),
+type VideoInput = {
+	timeline: VideoTimeline
+	/** Тексты глав по `key` из `timeline.json` */
+	copy: Record<string, VideoChapterCopy>
+	sources: VideoSources
+	poster: string
+	/**
+	 * Ключевые кадры — результат `import.meta.glob` папки `keyframes/` проекта (глоб принимает только строковый литерал,
+	 * поэтому он у каждого файла данных свой); кадр главы ищется по пути из `timeline.json`
+	 */
+	keyframes: Record<string, string>
+	label: string
+	background: string
+	pace: VideoPace
+}
+
+/** Видео-рассказ из `timeline.json` ролика: главы и их отрезки — из файла, тексты — по `key`, кадры — по пути из файла */
+export function videoFromTimeline({ timeline, copy, sources, poster, keyframes, label, background, pace }: VideoInput): CaseVideo {
+	const frames = Object.entries(keyframes)
+	return {
+		label,
+		sources,
+		poster,
+		background,
+		duration: timeline.video.duration,
+		fps: timeline.video.fps,
+		width: timeline.video.size[0],
+		height: timeline.video.size[1],
+		pace,
+		chapters: timeline.chapters.map(c => {
+			const text = copy[c.key]
+			if (!text) throw new Error(`Нет текста главы «${c.key}» из timeline.json`)
+			return {
+				key: c.key,
+				start: c.start,
+				end: c.end,
+				keyframe: frames.find(([path]) => path.endsWith(`/${c.keyframe}`))?.[1] ?? '',
+				...text,
+			}
+		}),
+	}
 }

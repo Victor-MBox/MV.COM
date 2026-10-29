@@ -15,9 +15,11 @@ import './CaseVideo.scss'
 
 type Props = {
 	video: Video
-	/** Подтверждённые показатели проекта: из них счётчики главы SEO берут значения по ключу */
+	/** Название проекта — для подписи секции «Как устроен …» */
+	title: string
+	/** Подтверждённые показатели проекта: из них счётчики главы со счётчиками берут значения по ключу */
 	metrics: ProjectMetric[]
-	/** Адрес продукта для кнопки финала */
+	/** Адрес продукта для кнопки финала «Открыть сайт ↗»; без него в финале только «Обсудить похожий проект» */
 	link?: string
 }
 
@@ -64,14 +66,17 @@ const decodeValue = (s: string): number | StatRange => {
  * Видео-рассказ кейса (ТЗ docs/norandoms-scroll-video-spec.md): главы текстом слева, справа залипшее видео 4:5, которое
  * прокрутка двигает вперёд и назад кадр в кадр. Всё считается от одного времени сюжета t (секунды ролика) в одном
  * requestAnimationFrame-цикле: прокрутка → t (линия активации, доля главы, `timeAt`) → догон показанного времени →
- * кадр видео (`currentTime`, без очереди перемоток), активная глава, маркеры «что в кадре», счётчики SEO, подпись и полоса
+ * кадр видео (`currentTime`, без очереди перемоток), активная глава, маркеры «что в кадре», счётчики (у NoRandoms — в главе
+ * SEO, у «ЖК Несчастье» — в финале), подпись и полоса
  * прогресса. Высоту прокрутки задают пустые шаги `__ch`, а текст всех глав сложен в одну залипшую панель: на границе
  * главы прежний текст уходит и гаснет, новый проявляется построчно (CSS по классам is-past / is-active / is-future —
  * направление учитывается само), тексты не встречаются на экране. Состояние не проходит через React: цикл пишет классы,
  * CSS-переменные и текст сам, только при изменении. Видео никогда не играет само; грузится заранее, за полтора экрана до секции; до готовности кадра поверх —
- * ключевой кадр главы. reduced-motion и ошибка видео — ключевые кадры с кроссфейдом, маркеры и счётчики в итоге
+ * ключевой кадр главы. reduced-motion и ошибка видео — ключевые кадры с кроссфейдом, маркеры и счётчики в итоге.
+ * Проект задаёт только данные: ролик и тексты (`Project.video`), фон карточки видео (`video.background` — цвет краёв
+ * ролика), название для подписи секции и показатели для счётчиков
  */
-export default function CaseVideo({ video, metrics, link }: Props) {
+export default function CaseVideo({ video, title, metrics, link }: Props) {
 	const rootRef = useRef<HTMLElement>(null)
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const reduced = useMediaQuery(MQ.reduced)
@@ -107,6 +112,7 @@ export default function CaseVideo({ video, metrics, link }: Props) {
 				from: Number(c.dataset.from),
 				to: Number(c.dataset.to),
 				value: decodeValue(c.dataset.value ?? '0'),
+				prefix: c.dataset.prefix ?? '',
 				suffix: c.dataset.suffix ?? '',
 			})),
 		}))
@@ -203,7 +209,7 @@ export default function CaseVideo({ video, metrics, link }: Props) {
 				c.beats.forEach(b => setVar(b.node, '--on', reduced ? '1' : markerState(t, b.beat).toFixed(3)))
 				c.counters.forEach(cn => {
 					const v = reduced ? cn.value : countUp(t, cn, cn.value)
-					if (cn.num) setText(cn.num, `${formatStat(v)}${cn.suffix}`)
+					if (cn.num) setText(cn.num, `${cn.prefix}${formatStat(v)}${cn.suffix}`)
 					setVar(cn.node, '--on', reduced ? '1' : markerState(t, cn.from).toFixed(3))
 				})
 			})
@@ -328,6 +334,7 @@ export default function CaseVideo({ video, metrics, link }: Props) {
 	}, [])
 
 	const style = {
+		'--video-bg': video.background,
 		'--pace': `${video.pace.desktop}vh`,
 		'--pace-m': `${video.pace.mobile}vh`,
 		'--ch-min': `${video.pace.min}vh`,
@@ -335,7 +342,7 @@ export default function CaseVideo({ video, metrics, link }: Props) {
 	} as CSSProperties
 
 	return (
-		<section className='caseVideo' ref={rootRef} style={style} aria-label='Как устроен NoRandoms'>
+		<section className='caseVideo' ref={rootRef} style={style} aria-label={`Как устроен ${title}`}>
 			<div className='container caseVideo__grid'>
 				<div className='caseVideo__chapters'>
 					<div className='caseVideo__panel'>
@@ -381,9 +388,18 @@ export default function CaseVideo({ video, metrics, link }: Props) {
 											<div data-line='3'>
 												<ul className='caseVideo__counters' aria-label='Результаты в цифрах'>
 													{counters.map(({ m, from, to }) => {
-														const final = `${formatStat(m.value)}${m.suffix ?? ''}`
+														// Префикс «≈» — у «ЖК Несчастье»; у NoRandoms префиксов нет
+														const final = `${m.prefix ?? ''}${formatStat(m.value)}${m.suffix ?? ''}`
 														return (
-															<li key={m.label} data-counter='' data-from={from} data-to={to} data-value={encodeValue(m.value)} data-suffix={m.suffix ?? ''}>
+															<li
+																key={m.label}
+																data-counter=''
+																data-from={from}
+																data-to={to}
+																data-value={encodeValue(m.value)}
+																data-prefix={m.prefix ?? ''}
+																data-suffix={m.suffix ?? ''}
+															>
 																<span className='caseVideo__num' aria-hidden='true'>
 																	<span className='caseVideo__ghost'>{final}</span>
 																	<span className='caseVideo__live'>{final}</span>
