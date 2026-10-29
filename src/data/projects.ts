@@ -1,7 +1,9 @@
 import norandomsCover from '../resources/norandoms/cover.webp'
+import rgsCover from '../resources/rgs/cover.webp'
 import { NORANDOMS_STORY } from './caseStory'
 import type { CaseStory } from './caseStory'
-import { NORANDOMS_VIDEO } from './caseVideo'
+import { NORANDOMS_VIDEO } from './caseVideoNorandoms'
+import { RGS_VIDEO } from './caseVideoRgs'
 import type { CaseVideo } from './caseVideo'
 import type { StatRange } from '../components/stat/formatStat'
 import type { PreviewKitKey } from '../components/floatingPreview/kits'
@@ -12,8 +14,12 @@ import type { PreviewKitKey } from '../components/floatingPreview/kits'
  */
 type Unconfirmed = { hidden?: string }
 
-/** Ключи показателей NoRandoms: по ним счётчики видео-рассказа берут значения из `metrics` (data/caseVideo.ts) */
-export type MetricKey = 'pages' | 'indexed' | 'top10' | 'visitors' | 'signups'
+/** Ключи показателей NoRandoms: счётчики главы SEO видео-рассказа (data/caseVideoNorandoms.ts) */
+export type NorandomsMetricKey = 'pages' | 'indexed' | 'top10' | 'visitors' | 'signups'
+/** Ключи показателей «ЖК Несчастье»: счётчики финала видео-рассказа (data/caseVideoRgs.ts) */
+export type RgsMetricKey = 'states' | 'games' | 'minutes'
+/** По ключу счётчики видео-рассказа берут значения из `metrics` проекта: сами числа хранятся только там */
+export type MetricKey = NorandomsMetricKey | RgsMetricKey
 
 export type ProjectMetric = Unconfirmed & {
 	/** Ключ для ссылок из сюжета кейса: значение хранится только здесь */
@@ -89,7 +95,10 @@ export type Project = {
 	summary: string
 	/** Одна строка для карточки: что сделал → результат. Без чисел, числа — в highlights */
 	line: string
-	/** Три факта для широкой карточки главного кейса (главная, портфолио, «Обо мне») */
+	/**
+	 * Факты широкой карточки портфолио (на ней — первые два подтверждённых) и карточки работы в «Примерах» услуги
+	 * (индексы CASE_FACTS): у главного кейса три, у остальных — от двух. Числа — те же значения, что в `metrics` (тест сверяет)
+	 */
 	highlights?: ProjectFact[]
 	client: string
 	year: number
@@ -99,7 +108,10 @@ export type Project = {
 	categories: string[]
 	link?: string
 	cover: string
-	/** Интерактивная обложка карточки на главной (ТЗ от 22.10.2026); без неё карточка показывает `cover` */
+	/**
+	 * Интерактивная обложка широкой карточки на главной и в портфолио (ТЗ от 22.10.2026); без неё карточка показывает
+	 * `cover`. В портфолио широкими идут главный кейс и проекты с `preview` (29.10.2026)
+	 */
 	preview?: ProjectPreview
 	/**
 	 * Сюжет страницы кейса (22.10.2026): главы слева, залипшие ноутбук и телефон справа с экранами продукта — `CaseStory`.
@@ -200,6 +212,76 @@ export const PROJECTS: Project[] = [
 		video: NORANDOMS_VIDEO,
 		featured: true,
 	},
+	// Второй кейс (ТЗ docs/rgs-case-page-spec.md, материалы — docs/rgs-scroll-video-spec.md, 29.10.2026). Факты — только
+	// проверенные по коду игры (материалы §1.2, §1.3). `link` нет: game.rgs.ru не открывается, кнопки «Открыть сайт» нет;
+	// `status` нет — проект завершён
+	{
+		slug: 'zhk-neschastye',
+		title: 'ЖК Несчастье',
+		tagline: 'Браузерная игра о страховых рисках для сайта Росгосстраха: игрок помогает жильцам дома и получает промокод на страховку.',
+		kind: 'Промо-игра для сайта страховой компании',
+		summary:
+			'Игра для Росгосстраха: квартиры с бедами, поиск предметов, объяснения консультанта и промокод в финале. Разработал игру на React по макетам Figma — экраны, игровую логику и мобильную версию.',
+		line: 'Игра о страховых рисках по макетам Figma: сотни экранов, поиск предметов и промокод в финале',
+		// Те же значения, что в metrics (тест сверяет)
+		highlights: [
+			{ value: '300+', label: 'состояний экранов по макетам Figma' },
+			{ value: '5', label: 'игр — по одной на страховой риск' },
+		],
+		// TODO (владелец): клиент (напрямую или через студию), роль, срок и год — материалы §5, вопросы 1–3
+		client: 'Росгосстрах',
+		year: 2025,
+		role: 'Разработка игры на React по макетам Figma: экраны, игровая логика, мобильная версия',
+		duration: 'Около двух месяцев',
+		stack: ['React', 'React Router', 'Vite', 'SCSS', 'Lottie', 'framer-motion'],
+		categories: ['Интерактив', 'Веб-разработка'],
+		// Кадр сцены с консультантом 16:10 — «Примеры» услуги и соседние кейсы; на карточках главной и портфолио — живая сцена
+		cover: rgsCover,
+		preview: {
+			kit: 'rgs',
+			label: 'Интерфейс игры «ЖК Несчастье»: анимированный логотип Росгосстраха, флажок квартиры, подарок, консультант Росгосстраха с репликой «Случился перепад напряжения в электросети», панель «Помогите починить сгоревшую технику» с кнопкой «Помочь» и монетка-бонус',
+			// Композиция — макет docs/prototypes/rgs-cover/ (ТЗ §6.4) плюс логотип из шапки игры (правка владельца 29.10.2026):
+			// у картинок размер — width слоя, у вёрстки и логотипа — scale
+			layers: [
+				// Флажок квартиры со стартового экрана — дальний план, слева сверху
+				{ element: 'flag', name: 'Флажок квартиры', x: 34, y: 26, width: 113, depth: 0.15 },
+				{ element: 'gift', name: 'Подарок финала', x: 26, y: 214, width: 170, depth: 0.3, phone: { x: 22, y: 128, width: 100 } },
+				// Консультант по пояс: низ немного уходит за край холста — так задумано. На телефоне правее и чуть меньше макета
+				// (x 268, ширина 111): иначе крупная реплика закрыла бы лицо
+				{ element: 'consultant', name: 'Консультант Росгосстраха', x: 486, y: 14, width: 197, depth: 0.45, phone: { x: 294, y: 8, width: 100 } },
+				// Реплика консультанта — главная, хвост справа указывает на неё. На телефоне масштаб 0,78 вместо 0,7 макета: сцена
+				// на экране 375 px — около 290 px, и при 0,7 текст выходил 9 px (правило — не мельче 10 px)
+				{
+					element: 'replica',
+					name: 'Реплика консультанта',
+					x: 176,
+					y: 56,
+					scale: 0.82,
+					depth: 0.6,
+					main: true,
+					phone: { x: 8, y: 24, scale: 0.78 },
+				},
+				// Анимированный логотип из шапки игры (Lottie) — в свободном центре: между подарком и монеткой, над панелью;
+				// на телефоне — под репликой
+				{ element: 'logo', name: 'Анимированный логотип Росгосстраха', x: 196, y: 206, scale: 0.9, depth: 0.7, phone: { x: 134, y: 112, scale: 0.62 } },
+				// Панель экрана: на телефоне скрыта — при scale меньше 0,7 текст мельче 10 px
+				{ element: 'panel', name: 'Панель «Помогите починить сгоревшую технику»', x: 120, y: 324, scale: 0.72, depth: 0.8 },
+				// На телефоне ниже и правее макета (196, 156) — над ней встал логотип
+				{ element: 'coin', name: 'Монетка-бонус', x: 392, y: 196, width: 82, depth: 1, phone: { x: 210, y: 170, width: 69 } },
+			],
+		},
+		task: 'Росгосстраху нужна была браузерная игра для сайта: объяснить страховые риски через сюжет, а не через текст полиса, и в финале выдать игроку промокод на страховку. Макеты всех экранов были готовы в Figma — их нужно было превратить в рабочую игру для компьютера и телефона.',
+		solution:
+			'Разработал игру на React по макетам Figma: экраны-состояния, поиск предметов на иллюстрациях, реплики персонажей, справочные карточки страховой и финал с промокодом. Каждый экран описан объектом в конфиге, у телефона — свои вертикальные фоны и координаты горячих зон.',
+		result: 'Игрок проходит квартиры дома одну за другой, получает объяснения консультанта и справку Росгосстраха по каждому риску, а в финале — промокод на скидку. Вся логика игры работает в браузере, без серверной части.',
+		// TODO (владелец): числа со слов владельца 29.10.2026 — материалы §5, вопрос 4 («более 300, может 400»; считать ли бонусную игру)
+		metrics: [
+			{ key: 'states', label: 'состояний экранов по макетам Figma', value: 300, suffix: '+' },
+			{ key: 'games', label: 'игр — по одной на страховой риск', value: 5 },
+			{ key: 'minutes', label: 'минут на всё прохождение', value: 5, prefix: '≈' },
+		],
+		video: RGS_VIDEO,
+	},
 ]
 
 export const PROJECT_CATEGORIES = Array.from(
@@ -210,12 +292,14 @@ export function getProject(slug: string | undefined) {
 	return PROJECTS.find(p => p.slug === slug)
 }
 
-/** Соседние кейсы по кругу. Если проект один — оба undefined, чтобы не ссылаться на себя */
+/**
+ * Соседние кейсы по кругу. Если проект один — оба undefined, чтобы не ссылаться на себя; если их два — только `next`:
+ * «Предыдущий» и «Следующий» вели бы на один и тот же кейс
+ */
 export function getAdjacentProjects(slug: string) {
 	const i = PROJECTS.findIndex(p => p.slug === slug)
 	if (i === -1 || PROJECTS.length < 2) return { prev: undefined, next: undefined }
-	return {
-		prev: PROJECTS[(i - 1 + PROJECTS.length) % PROJECTS.length],
-		next: PROJECTS[(i + 1) % PROJECTS.length],
-	}
+	const next = PROJECTS[(i + 1) % PROJECTS.length]
+	const prev = PROJECTS[(i - 1 + PROJECTS.length) % PROJECTS.length]
+	return { prev: prev === next ? undefined : prev, next }
 }

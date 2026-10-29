@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import type { PreviewPlacement, ProjectPreview } from '../../data/projects'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
 import { PREVIEW_CANVAS, PREVIEW_KITS } from './kits'
+import type { PreviewKit } from './kits'
 import './FloatingPreview.scss'
 
 type Props = {
@@ -82,7 +83,7 @@ export default function FloatingPreview({ preview, className }: Props) {
 	const hoverable = useMediaQuery(MQ.hover)
 	const coarse = useMediaQuery(MQ.coarse)
 	const parallax = hoverable && !coarse && !reduced
-	const kit = PREVIEW_KITS[preview.kit]
+	const kit: PreviewKit = PREVIEW_KITS[preview.kit]
 	const canvas = PREVIEW_CANVAS[layout]
 
 	// Масштаб холста под ширину сцены и выбор раскладки — до отрисовки, без кадра в чужом масштабе
@@ -220,7 +221,7 @@ export default function FloatingPreview({ preview, className }: Props) {
 							<div className='floatingPreview__shift' data-depth={layer.depth}>
 								<div className='floatingPreview__float'>
 									<div className='floatingPreview__card'>
-										{kit.elements[layer.element as keyof typeof kit.elements]}
+										{kit.elements[layer.element]}
 									</div>
 								</div>
 							</div>

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { NORANDOMS_VIDEO, VIDEO_TIMELINE } from '../data/caseVideo'
+import type { CaseVideo, VideoTimeline } from '../data/caseVideo'
+import { NORANDOMS_TIMELINE, NORANDOMS_VIDEO } from '../data/caseVideoNorandoms'
+import { RGS_TIMELINE, RGS_VIDEO } from '../data/caseVideoRgs'
 import { PROJECTS, getProject, isPublic } from '../data/projects'
 import { PROOF } from '../data/home'
 import { NBSP, RANGE_DASH, formatStat, parseStat } from '../components/stat/formatStat'
@@ -18,38 +20,56 @@ import {
 	timeAt,
 } from '../components/caseVideo/videoMath'
 
+/** Видео-рассказы проектов и их timeline.json: общие проверки идут по каждому (новый проект с video — добавить сюда) */
+const CASES: { slug: string; video: CaseVideo; timeline: VideoTimeline }[] = [
+	{ slug: 'norandoms', video: NORANDOMS_VIDEO, timeline: NORANDOMS_TIMELINE },
+	{ slug: 'zhk-neschastye', video: RGS_VIDEO, timeline: RGS_TIMELINE },
+]
+
 const video = NORANDOMS_VIDEO
 const { chapters } = video
-const norandoms = () => {
-	const p = getProject('norandoms')
-	if (!p) throw new Error('кейс norandoms не найден')
+const project = (slug: string) => {
+	const p = getProject(slug)
+	if (!p) throw new Error(`кейс ${slug} не найден`)
 	return p
 }
+const norandoms = () => project('norandoms')
 /** Версии стека («Laravel 12», «React 19») и названия игр («Counter-Strike 2») числами не считаются (ТЗ §7.1) */
 const withoutVersions = (s: string) => s.replace(/(Laravel|React|PHP|Node|Counter-Strike)\s?\d+/g, '$1')
+/** Все тексты главы одной строкой */
+const chapterText = (c: CaseVideo['chapters'][number]) => [c.title, ...c.text, ...(c.markers ?? []).map(m => m.text)].join(' ')
 
-describe('видео-рассказ NoRandoms: данные', () => {
-	it('подключён к проекту и важнее старого сюжета; CaseStory остаётся в данных для сравнения', () => {
-		expect(norandoms().video).toBe(video)
-		expect(norandoms().story).toBeTruthy()
+it('общие проверки покрывают каждый проект с видео-рассказом', () => {
+	expect(PROJECTS.filter(p => p.video).map(p => p.slug)).toEqual(CASES.map(c => c.slug))
+})
+
+describe.each(CASES)('видео-рассказ $slug: данные', ({ slug, video, timeline }) => {
+	const { chapters } = video
+
+	it('подключён к проекту', () => {
+		expect(project(slug).video).toBe(video)
 	})
 
-	it('ролик и файлы: 90 с, 30 к/с, 4:5, три источника, постер и кадр у каждой главы', () => {
-		expect(video.duration).toBe(90)
-		expect(video.fps).toBe(30)
+	it('ролик и файлы: длительность и размер из timeline.json, 4:5, три источника, постер и кадр у каждой главы', () => {
+		expect(video.duration).toBe(timeline.video.duration)
+		expect(video.fps).toBe(timeline.video.fps)
+		expect([video.width, video.height]).toEqual(timeline.video.size)
 		expect(video.width / video.height).toBe(4 / 5)
-		expect(video.sources.desktop).toMatch(/norandoms-scroll\.mp4$/)
-		expect(video.sources.light).toMatch(/norandoms-scroll-light\.mp4$/)
-		expect(video.sources.mobile).toMatch(/norandoms-scroll-mobile\.mp4$/)
+		expect(video.sources.desktop).toMatch(/-scroll\.mp4$/)
+		expect(video.sources.light).toMatch(/-scroll-light\.mp4$/)
+		expect(video.sources.mobile).toMatch(/-scroll-mobile\.mp4$/)
 		expect(video.poster).toMatch(/poster\.jpg$/)
 		chapters.forEach((c, i) => expect(c.keyframe).toMatch(new RegExp(`${String(i + 1).padStart(2, '0')}-${c.key}\\.webp$`)))
 	})
 
+	it('фон карточки видео — цвет краёв ролика', () => {
+		expect(video.background).toMatch(/^#[0-9a-f]{6}$/i)
+	})
+
 	it('главы — из timeline.json, идут встык без дыр от 0 до конца ролика', () => {
-		expect(chapters.map(c => c.key)).toEqual(VIDEO_TIMELINE.chapters.map(c => c.key))
-		expect(chapters.length).toBe(12)
+		expect(chapters.map(c => c.key)).toEqual(timeline.chapters.map(c => c.key))
 		expect(chapters[0].start).toBe(0)
-		expect(chapters.at(-1)?.end).toBe(video.duration)
+		expect(chapters.at(-1)?.end).toBe(timeline.video.duration)
 		chapters.forEach((c, i) => {
 			expect(c.end).toBeGreaterThan(c.start)
 			if (i > 0) expect(c.start).toBe(chapters[i - 1].end)
@@ -70,7 +90,7 @@ describe('видео-рассказ NoRandoms: данные', () => {
 
 	it('маркеры: 2–4 на главу, до 80 знаков, beat — момент ролика внутри своей главы (по timeline.json)', () => {
 		chapters.forEach(c => {
-			const beats = VIDEO_TIMELINE.chapters.find(x => x.key === c.key)?.beats.map(b => b.t) ?? []
+			const beats = timeline.chapters.find(x => x.key === c.key)?.beats.map(b => b.t) ?? []
 			if (!c.markers) return
 			expect(c.markers.length).toBeGreaterThanOrEqual(2)
 			expect(c.markers.length).toBeLessThanOrEqual(4)
@@ -82,39 +102,69 @@ describe('видео-рассказ NoRandoms: данные', () => {
 				if (i > 0) expect(m.beat).toBeGreaterThan(c.markers![i - 1].beat)
 			})
 		})
-		// В главах 02–10 есть маркеры, у вступления — стек, у SEO — счётчики, у финала — кнопки
-		expect(chapters.slice(1, 10).every(c => c.markers?.length)).toBe(true)
-		expect(chapters[0].stack?.items.length).toBeGreaterThan(3)
-		expect(chapters[0].stack!.beat).toBeGreaterThanOrEqual(chapters[0].start)
-		expect(chapters.find(c => c.key === 'seo')?.counters?.length).toBeGreaterThan(0)
-		expect(chapters.filter(c => c.final).map(c => c.key)).toEqual(['outro'])
 	})
 
-	it('числа — только в счётчиках SEO и в финале: в заголовках, текстах и маркерах глав цифр нет', () => {
-		chapters
-			.filter(c => !c.final)
-			.forEach(c => {
-				;[c.title, ...c.text, ...(c.markers ?? []).map(m => m.text)].forEach(s => expect(withoutVersions(s)).not.toMatch(/\d/))
-			})
+	it('у вступления — стек чипами, финал — последняя глава', () => {
+		expect(chapters[0].stack?.items.length).toBeGreaterThan(3)
+		expect(chapters[0].stack!.beat).toBeGreaterThanOrEqual(chapters[0].start)
+		expect(chapters.filter(c => c.final).map(c => c.key)).toEqual(['outro'])
+		expect(chapters.at(-1)?.final).toBe(true)
+	})
+
+	it('числа — только в счётчиках и в финале: в заголовках, текстах и маркерах глав цифр нет', () => {
+		chapters.filter(c => !c.final).forEach(c => expect(withoutVersions(chapterText(c))).not.toMatch(/\d/))
+	})
+
+	it('счётчики: показатели проекта по ключу, без повторов, отрезки внутри своей главы', () => {
+		const metrics = project(slug).metrics
+		const counters = chapters.flatMap(c => (c.counters ?? []).map(cn => ({ cn, c })))
+		expect(counters.length).toBeGreaterThan(0)
+		expect(new Set(counters.map(({ cn }) => cn.metric)).size).toBe(counters.length)
+		counters.forEach(({ cn, c }) => {
+			expect(metrics.find(m => m.key === cn.metric)).toBeTruthy()
+			expect(cn.from).toBeGreaterThanOrEqual(c.start)
+			expect(cn.to).toBeLessThanOrEqual(c.end)
+			expect(cn.to).toBeGreaterThan(cn.from)
+		})
+	})
+
+	it('темп прокрутки: на телефоне медленнее, главы не короче экрана и не длиннее 2,2 экрана', () => {
+		expect(video.pace.mobile).toBeLessThan(video.pace.desktop)
+		expect(video.pace.min).toBe(100)
+		expect(video.pace.max).toBe(220)
+	})
+})
+
+describe('видео-рассказ NoRandoms: своё', () => {
+	it('важнее старого сюжета; CaseStory остаётся в данных для сравнения', () => {
+		expect(norandoms().story).toBeTruthy()
+	})
+
+	it('ролик: 90 с, 30 к/с, 12 глав, фон карточки — #06090c', () => {
+		expect(video.duration).toBe(90)
+		expect(video.fps).toBe(30)
+		expect(chapters.length).toBe(12)
+		expect(video.background).toBe('#06090c')
+		expect(video.sources.desktop).toMatch(/norandoms-scroll\.mp4$/)
+	})
+
+	it('в главах 02–10 есть маркеры, у SEO — счётчики, у финала — кнопки', () => {
+		expect(chapters.slice(1, 10).every(c => c.markers?.length)).toBe(true)
+		expect(chapters.find(c => c.key === 'seo')?.counters?.length).toBeGreaterThan(0)
+		expect(chapters.filter(c => c.counters).map(c => c.key)).toEqual(['seo'])
 	})
 
 	it('мобильное приложение упоминается один раз — в главе уведомлений, с оговоркой «готовится к релизу»', () => {
-		const all = chapters.flatMap(c => [c.key, [c.title, ...c.text, ...(c.markers ?? []).map(m => m.text)].join(' ')] as const)
-		const mentions = chapters.filter(c => /мобильн/i.test([c.title, ...c.text, ...(c.markers ?? []).map(m => m.text)].join(' ')))
+		const all = chapters.flatMap(c => [c.key, chapterText(c)] as const)
+		const mentions = chapters.filter(c => /мобильн/i.test(chapterText(c)))
 		expect(mentions.map(c => c.key)).toEqual(['notify'])
 		expect(all.join(' ').match(/готовится к релизу/g)?.length).toBe(1)
 		expect(all.join(' ')).not.toMatch(/реальн\w* пользовател/i) // на экранах — витринные данные
 	})
 
-	it('счётчики SEO: показатели проекта по ключу, отрезки внутри главы; 91% хранится, но скрыт', () => {
+	it('счётчики SEO: 91% хранится, но скрыт', () => {
 		const seo = chapters.find(c => c.key === 'seo')!
 		const metrics = norandoms().metrics
-		seo.counters!.forEach(cn => {
-			expect(metrics.find(m => m.key === cn.metric)).toBeTruthy()
-			expect(cn.from).toBeGreaterThanOrEqual(seo.start)
-			expect(cn.to).toBeLessThanOrEqual(seo.end)
-			expect(cn.to).toBeGreaterThan(cn.from)
-		})
 		const top10 = metrics.find(m => m.key === 'top10')!
 		expect(top10.value).toBe(91)
 		expect(isPublic(top10)).toBe(false)
@@ -123,11 +173,45 @@ describe('видео-рассказ NoRandoms: данные', () => {
 		expect(seo.counters!.filter(cn => metrics.some(m => m.key === cn.metric && isPublic(m))).length).toBe(4)
 	})
 
-	it('темп прокрутки: на десктопе ≈ 17 экранов на весь ролик, главы не короче экрана и не длиннее 2,2 экрана', () => {
+	it('темп прокрутки: на десктопе ≈ 17 экранов на весь ролик', () => {
 		const screens = chapters.reduce((s, c) => s + chapterHeight(c, video.pace.desktop, video.pace.min, video.pace.max), 0) / 100
 		expect(screens).toBeGreaterThan(15)
 		expect(screens).toBeLessThan(20)
-		expect(video.pace.mobile).toBeLessThan(video.pace.desktop)
+	})
+})
+
+describe('видео-рассказ «ЖК Несчастье»: своё', () => {
+	const rgs = () => project('zhk-neschastye')
+	const { chapters } = RGS_VIDEO
+
+	it('ролик: 57,6 с, 9 глав, фон карточки — цвет краёв ролика #2f4b5e', () => {
+		expect(RGS_VIDEO.duration).toBe(57.6)
+		expect(chapters.length).toBe(9)
+		expect(RGS_VIDEO.background).toBe('#2f4b5e')
+		expect(RGS_VIDEO.sources.desktop).toMatch(/rgs-scroll\.mp4$/)
+	})
+
+	it('кнопки «Открыть сайт» нет: у проекта нет link; в главах 02–08 есть маркеры', () => {
+		expect(rgs().link).toBeUndefined()
+		expect(chapters.slice(1, 8).every(c => c.markers?.length)).toBe(true)
+	})
+
+	it('счётчики — только в финале: 300+ состояний, 5 игр, ≈5 минут — значения из metrics', () => {
+		expect(chapters.filter(c => c.counters).map(c => c.key)).toEqual(['outro'])
+		const outro = chapters.at(-1)!
+		const shown = outro.counters!.map(cn => {
+			const m = rgs().metrics.find(x => x.key === cn.metric)!
+			expect(isPublic(m)).toBe(true)
+			return `${m.prefix ?? ''}${formatStat(m.value)}${m.suffix ?? ''}`
+		})
+		expect(shown).toEqual(['300+', '5', '≈5'])
+	})
+
+	it('в текстах нет того, чего нет в ролике и в игре: перетаскивания, бонусной игры, копирования промокода, сервера', () => {
+		const all = chapters.map(chapterText).join(' ')
+		expect(all).not.toMatch(/перетаск|бонусн\w* игр|скопир|сервер|CrossFade|preload|Lottie-логотип/i)
+		// Другие игры — только в тексте и со словами «в других играх» / «в полной версии», в маркерах их нет
+		chapters.flatMap(c => c.markers ?? []).forEach(m => expect(m.text).not.toMatch(/затоплен|пожар|краж|огнетушител/i))
 	})
 })
 

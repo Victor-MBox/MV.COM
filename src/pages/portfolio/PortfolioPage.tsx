@@ -4,6 +4,7 @@ import PageHead from '../../components/pageHead/PageHead'
 import CaseCard from '../../components/caseCard/CaseCard'
 import Reveal from '../../components/reveal/Reveal'
 import { PROJECTS, PROJECT_CATEGORIES } from '../../data/projects'
+import type { Project } from '../../data/projects'
 import { SITE_META } from '../../data/meta'
 import { useDocumentMeta } from '../../hooks/useDocumentMeta'
 import './PortfolioPage.scss'
@@ -19,9 +20,14 @@ const HEAD = {
 	lead: 'Что нужно было сделать, какие задачи я решал и что получилось в результате.',
 }
 
+/** Широкая карточка — у главного кейса и у проектов с живой обложкой (`preview`): узкая карточка обложку не показывает */
+const isWide = (p: Project) => !!p.featured || !!p.preview
+
 /**
- * Портфолио (docs/design-spec.md §9): шапка → фильтры-чипы (от восьми проектов) → главный кейс широкой карточкой →
- * сетка CaseCard в две колонки → CTA. Страница работает и с одним проектом, и с десятком
+ * Портфолио (docs/design-spec.md §9): шапка → фильтры-чипы (от восьми проектов) → широкие карточки (главный кейс первым,
+ * дальше проекты с живой обложкой в порядке PROJECTS — 29.10.2026, ТЗ docs/rgs-case-page-spec.md §7) → сетка CaseCard
+ * в две колонки для проектов без живой обложки. Под фильтром широких нет — все карточки сеткой. Страница работает и
+ * с одним проектом, и с десятком
  */
 export default function PortfolioPage() {
 	const [category, setCategory] = useState(ALL)
@@ -32,8 +38,8 @@ export default function PortfolioPage() {
 		() => (category === ALL ? PROJECTS : PROJECTS.filter(p => p.categories.includes(category))),
 		[category]
 	)
-	const featured = category === ALL ? projects.filter(p => p.featured) : []
-	const rest = projects.filter(p => !featured.includes(p))
+	const wide = category === ALL ? projects.filter(isWide).sort((a, b) => Number(!!b.featured) - Number(!!a.featured)) : []
+	const rest = projects.filter(p => !wide.includes(p))
 
 	return (
 		<div className='portfolioPage'>
@@ -62,9 +68,9 @@ export default function PortfolioPage() {
 						</ul>
 					)}
 
-					{featured.length > 0 && (
+					{wide.length > 0 && (
 						<div className='portfolioPage__featured'>
-							{featured.map((p, i) => (
+							{wide.map((p, i) => (
 								<Reveal key={p.slug} index={i}>
 									<CaseCard project={p} wide />
 								</Reveal>

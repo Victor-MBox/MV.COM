@@ -291,10 +291,11 @@ describe('offers', () => {
 		const context = getOffer('context')
 		expect(context?.faq.filter(f => /SMM/.test(f.q)).length).toBe(1)
 		expect(texts('mobile-apps').join('\n')).not.toMatch(/Swift|Kotlin|Flutter|React Native|App Store|Google Play|NoRandoms|установок/)
-		// Пример промо-игры — только интерфейс по готовому дизайну, без авторства всей игры
-		const example = getOffer('interactive')?.extras?.find(e => e.id === 'example')
-		expect(example?.title.text).toBe('Росгосстрах · ЖК Несчастье')
-		expect(example?.text).toBe('Образовательная промо-игра. Разработал пользовательский интерфейс на React по предоставленному дизайну.')
+		// Пример промо-игры — кейс «ЖК Несчастье» карточкой в «Примерах» (категория «Интерактив»), текстового примера нет:
+		// факт живёт в одном месте — в кейсе (29.10.2026)
+		expect(getOffer('interactive')?.categories).toEqual(['Интерактив'])
+		expect(getOffer('interactive')?.extras).toBeUndefined()
+		expect(texts('interactive').join('\n')).not.toMatch(/Росгосстрах|ЖК Несчастье/)
 		// SEO: не обещаем позиции и сроки, нейросети — задача внутри продвижения
 		expect(getOffer('seo')?.faq.find(f => /первые места/.test(f.q))?.a).toMatch(/^Нет\./)
 		expect(getOffer('seo')?.extras?.[0].note).toBe('Дополнительная задача в рамках продвижения; состав и стоимость — после оценки.')
