@@ -1,5 +1,6 @@
 import { activeChapter, clamp } from '../caseStory/storyMath'
 import type { ChapterRect } from '../caseStory/storyMath'
+import { NBSP as NB } from '../stat/formatStat'
 import type { StatRange } from '../stat/formatStat'
 
 /**
@@ -86,3 +87,34 @@ export function pickSource({ narrow, saveData, effectiveType }: { narrow: boolea
 	if (effectiveType && /^(slow-2g|2g|3g)$/.test(effectiveType)) return 'light'
 	return 'desktop'
 }
+
+// ---------- Загрузка ролика: прогресс и оставшееся время ----------
+
+/** Скорость загрузки, байт/с: скользящее среднее замеров — короткие рывки и паузы сети не дёргают оценку */
+export const nextSpeed = (prev: number, sample: number, k = 0.3) => (prev > 0 ? prev + (sample - prev) * k : sample)
+
+/** Сколько секунд осталось при текущей скорости; null — оценить пока нельзя (размер неизвестен или скорость ещё 0) */
+export const etaSeconds = (loaded: number, total: number, speed: number) =>
+	total > 0 && speed > 0 ? Math.max(0, total - loaded) / speed : null
+
+/**
+ * Оставшееся время по-русски: до минуты — целые секунды вверх («8 с»), дальше — минуты и секунды с шагом 10 с
+ * («1 мин 20 с», «3 мин»): частая смена секунд при долгой загрузке только раздражает
+ */
+export function formatEta(sec: number) {
+	const s = Math.max(1, Math.ceil(sec))
+	if (s < 60) return `${s}${NB}с`
+	const r = Math.ceil(s / 10) * 10
+	const m = Math.floor(r / 60)
+	const rest = r % 60
+	return rest ? `${m}${NB}мин ${rest}${NB}с` : `${m}${NB}мин`
+}
+
+/** Мегабайты с запятой: до 10 МБ — с десятыми («4,2»), дальше — целые («25») */
+export function formatMb(bytes: number) {
+	const mb = bytes / 1024 / 1024
+	return (mb < 10 ? (Math.floor(mb * 10) / 10).toFixed(1) : String(Math.floor(mb))).replace('.', ',')
+}
+
+/** Доля загрузки 0…1; при неизвестном размере — 0 (кольцо крутится без процентов) */
+export const loadShare = (loaded: number, total: number) => (total > 0 ? clamp(loaded / total) : 0)

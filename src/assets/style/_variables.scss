@@ -64,6 +64,8 @@
 	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.45); // §4.3 единственная тень — скриншоты кейса
 	--device-shadow: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.6)); // мокапы устройств на странице кейса (повторяет силуэт)
 	--video-ring: rgba(255, 255, 255, 0.08); // контур карточки видео кейса: в тёмной теме тёмный ролик иначе сливается с фоном
+	--stack-shadow: 0 -14px 32px -12px rgba(0, 0, 0, 0.75); // тень верхней кромки карточки кейса в стопке (CaseStack)
+	--stack-ring: rgba(255, 255, 255, 0.2); // кромка закрытой карточки в стопке: в тёмной теме край иначе сливается с фоном
 	--overlay: rgba(0, 0, 0, 0.6); // §6.13 оверлей модалки
 	--hero-line: rgba(255, 255, 255, 0.14); // сетка 60px в hero — видна только в круге прожектора
 	--hero-glow: rgba(255, 70, 37, 0.3); // пятно прожектора hero: акцент с альфой (макет «Hero 1b Прожектор»)
@@ -98,6 +100,8 @@ body.light {
 	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.18);
 	--device-shadow: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.24));
 	--video-ring: transparent;
+	--stack-shadow: 0 -14px 32px -14px rgba(0, 0, 0, 0.14);
+	--stack-ring: rgba(0, 0, 0, 0.12);
 	--overlay: rgba(0, 0, 0, 0.6);
 	--hero-line: rgba(0, 0, 0, 0.14);
 	--hero-glow: rgba(230, 62, 31, 0.22);
@@ -132,6 +136,8 @@ body.dark {
 	--shadow-cover: 0 24px 64px rgba(0, 0, 0, 0.45);
 	--device-shadow: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.6));
 	--video-ring: rgba(255, 255, 255, 0.08);
+	--stack-shadow: 0 -14px 32px -12px rgba(0, 0, 0, 0.75);
+	--stack-ring: rgba(255, 255, 255, 0.2);
 	--overlay: rgba(0, 0, 0, 0.6);
 	--hero-line: rgba(255, 255, 255, 0.14);
 	--hero-glow: rgba(255, 70, 37, 0.3);

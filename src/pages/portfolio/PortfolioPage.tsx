@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import PageHead from '../../components/pageHead/PageHead'
 import CaseCard from '../../components/caseCard/CaseCard'
-import Reveal from '../../components/reveal/Reveal'
+import CaseStack from '../../components/caseStack/CaseStack'
 import { PROJECTS, PROJECT_CATEGORIES } from '../../data/projects'
 import type { Project } from '../../data/projects'
 import { SITE_META } from '../../data/meta'
@@ -25,7 +25,8 @@ const isWide = (p: Project) => !!p.featured || !!p.preview
 
 /**
  * Портфолио (docs/design-spec.md §9): шапка → фильтры-чипы (от восьми проектов) → широкие карточки (главный кейс первым,
- * дальше проекты с живой обложкой в порядке PROJECTS — 29.10.2026, ТЗ docs/rgs-case-page-spec.md §7) → сетка CaseCard
+ * дальше проекты с живой обложкой в порядке PROJECTS — 29.10.2026, ТЗ docs/rgs-case-page-spec.md §7; с 30.10.2026 стопкой
+ * CaseStack: следующая наезжает на залипшую предыдущую) → сетка CaseCard
  * в две колонки для проектов без живой обложки. Под фильтром широких нет — все карточки сеткой. Страница работает и
  * с одним проектом, и с десятком
  */
@@ -69,13 +70,11 @@ export default function PortfolioPage() {
 					)}
 
 					{wide.length > 0 && (
-						<div className='portfolioPage__featured'>
-							{wide.map((p, i) => (
-								<Reveal key={p.slug} index={i}>
-									<CaseCard project={p} wide />
-								</Reveal>
+						<CaseStack className='portfolioPage__featured'>
+							{wide.map(p => (
+								<CaseCard key={p.slug} project={p} wide />
 							))}
-						</div>
+						</CaseStack>
 					)}
 
 					{rest.length > 0 && (
