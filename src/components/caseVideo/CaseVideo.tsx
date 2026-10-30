@@ -10,7 +10,23 @@ import { isPublic } from '../../data/projects'
 import type { ProjectMetric } from '../../data/projects'
 import type { CaseVideo as Video, VideoChapter } from '../../data/caseVideo'
 import { MQ, useMediaQuery } from '../../hooks/useMediaQuery'
-import { chapterAt, chapterProgress, copyShift, countUp, follow, frameTime, markerState, needsSeek, pickSource, timeAt } from './videoMath'
+import {
+	chapterAt,
+	chapterProgress,
+	copyShift,
+	countUp,
+	etaSeconds,
+	follow,
+	formatEta,
+	formatMb,
+	frameTime,
+	loadShare,
+	markerState,
+	needsSeek,
+	nextSpeed,
+	pickSource,
+	timeAt,
+} from './videoMath'
 import './CaseVideo.scss'
 
 type Props = {
@@ -32,6 +48,14 @@ const COPY_GAP = 16
 const CHIP_STEP = 0.15
 /** Подгрузка видео — когда до секции меньше полутора экранов */
 const PRELOAD_MARGIN = '150% 0px 150% 0px'
+/** Заглушка загрузки появляется, только если ролик не пришёл за это время (из кеша браузера — без мигания), мс */
+const LOADER_DELAY = 350
+/** Шаг обновления процентов и оставшегося времени, мс */
+const LOAD_PAINT_STEP = 250
+/** Оставшееся время показываем после стольких мс загрузки: первые замеры скорости ещё включают задержку сети */
+const ETA_AFTER = 700
+/** Событие на <video>: ролик не скачался — секция переходит на ключевые кадры */
+const FAIL_EVENT = 'casevideo:fail'
 
 type Connection = { saveData?: boolean; effectiveType?: string }
 
@@ -71,8 +95,14 @@ const decodeValue = (s: string): number | StatRange => {
  * прогресса. Высоту прокрутки задают пустые шаги `__ch`, а текст всех глав сложен в одну залипшую панель: на границе
  * главы прежний текст уходит и гаснет, новый проявляется построчно (CSS по классам is-past / is-active / is-future —
  * направление учитывается само), тексты не встречаются на экране. Состояние не проходит через React: цикл пишет классы,
- * CSS-переменные и текст сам, только при изменении. Видео никогда не играет само; грузится заранее, за полтора экрана до секции; до готовности кадра поверх —
- * ключевой кадр главы. reduced-motion и ошибка видео — ключевые кадры с кроссфейдом, маркеры и счётчики в итоге.
+ * CSS-переменные и текст сам, только при изменении. Видео никогда не играет само.
+ *
+ * Загрузка (30.10.2026, правка владельца: ролик подгружался кусками, при быстрой прокрутке кадр застывал без всякого
+ * знака): за полтора экрана до секции файл скачивается целиком через fetch и подставляется в <video> как blob — перемотка
+ * идёт из памяти и не ждёт сеть. Пока файл качается, на месте видео — ключевой кадр текущей главы под размытием и
+ * заглушка: кольцо с процентами, «осталось ≈ N с» по скорости загрузки и мегабайты (появляется через 350 мс — из кеша
+ * браузера ролик приходит без мигания). Прокрутка всё это время ведёт текст глав и меняет размытые кадры.
+ * reduced-motion и ошибка загрузки — ключевые кадры с кроссфейдом, маркеры и счётчики в итоге.
  * Проект задаёт только данные: ролик и тексты (`Project.video`), фон карточки видео (`video.background` — цвет краёв
  * ролика), название для подписи секции и показатели для счётчиков
  */
@@ -81,6 +111,8 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const reduced = useMediaQuery(MQ.reduced)
 	const stacked = useMediaQuery(MQ.tablet)
+	/** Ролик не скачался: эффект прокрутки при перезапуске (смена ширины) сразу идёт в режим ключевых кадров */
+	const failedRef = useRef(false)
 	const { open } = useContactModal()
 	const total = video.chapters.length
 
@@ -155,13 +187,16 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 		}
 
 		// Режим: видео или ключевые кадры (reduced-motion, ошибка видео)
-		let stillMode = reduced
+		let stillMode = reduced || failedRef.current
 		let ready = false
 		let wantStill = -1
 		root.classList.toggle('is-stills', stillMode)
 		root.classList.remove('is-ready')
 
-		/** Ключевой кадр главы i: грузится при первой надобности, сменяет прежний, когда загрузится (без пустого кадра) */
+		/**
+		 * Ключевой кадр главы i: грузится при первой надобности вместе с соседними (прокрутка во время загрузки ролика
+		 * сменяет их без задержки), сменяет прежний, когда загрузится (без пустого кадра)
+		 */
 		const showStill = (i: number) => {
 			wantStill = i
 			const load = (k: number) => {
@@ -169,10 +204,8 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 				if (img && !img.getAttribute('src') && img.dataset.src) img.src = img.dataset.src
 			}
 			load(i)
-			if (stillMode) {
-				load(i - 1)
-				load(i + 1)
-			}
+			load(i - 1)
+			load(i + 1)
 			const img = stills[i]
 			if (!img) return
 			const swap = () => {
@@ -255,24 +288,6 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 			schedule()
 		}
 
-		// Подгрузка видео заранее: выбор файла по ширине и сети, preload="auto" и load()
-		let io: IntersectionObserver | null = null
-		if (!stillMode && !el.getAttribute('src')) {
-			io = new IntersectionObserver(
-				entries => {
-					if (!entries.some(e => e.isIntersecting)) return
-					io?.disconnect()
-					const conn = (navigator as Navigator & { connection?: Connection }).connection
-					const key = pickSource({ narrow: window.matchMedia(MQ.tablet).matches, saveData: conn?.saveData, effectiveType: conn?.effectiveType })
-					el.preload = 'auto'
-					el.src = video.sources[key]
-					el.load()
-				},
-				{ rootMargin: PRELOAD_MARGIN }
-			)
-			io.observe(root)
-		}
-
 		// iOS Safari перерисовывает кадр после смены currentTime только у видео, которое хоть раз запускалось: один раз
 		// play() → pause() после canplay (без звука это разрешено без жеста)
 		let unlocked = false
@@ -286,11 +301,14 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 			}
 			schedule()
 		}
-		const onError = () => {
-			if (!el.getAttribute('src')) return
+		// Ошибка декодера (src есть) или загрузки (событие FAIL_EVENT) — ключевые кадры
+		const onFail = () => {
 			stillMode = true
 			root.classList.add('is-stills')
 			showStill(active < 0 ? 0 : active)
+		}
+		const onError = () => {
+			if (el.getAttribute('src')) onFail()
 		}
 
 		el.muted = true
@@ -300,6 +318,7 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 		el.addEventListener('canplay', onCanPlay)
 		el.addEventListener('seeked', schedule)
 		el.addEventListener('error', onError)
+		el.addEventListener(FAIL_EVENT, onFail)
 		const ro = new ResizeObserver(onResize)
 		ro.observe(root)
 		ro.observe(stage)
@@ -311,7 +330,6 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 
 		return () => {
 			cancelAnimationFrame(raf)
-			io?.disconnect()
 			ro.disconnect()
 			window.removeEventListener('scroll', schedule)
 			window.removeEventListener('resize', onResize)
@@ -320,18 +338,116 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 			el.removeEventListener('canplay', onCanPlay)
 			el.removeEventListener('seeked', schedule)
 			el.removeEventListener('error', onError)
+			el.removeEventListener(FAIL_EVENT, onFail)
 		}
 	}, [video, total, reduced, stacked])
 
-	// Уход со страницы: прервать загрузку ролика (иначе браузер докачивает десятки мегабайт в фоне)
+	// Загрузка ролика целиком: за полтора экрана до секции, файл — по ширине и сети. Отдельно от эффекта прокрутки: смена
+	// ширины (поворот телефона) перезапускает прокрутку, но не начатую загрузку
 	useEffect(() => {
+		const root = rootRef.current
 		const el = videoRef.current
-		return () => {
-			if (!el) return
-			el.removeAttribute('src')
-			el.load()
+		if (!root || !el || reduced || failedRef.current) return
+		const q = (sel: string) => root.querySelector<HTMLElement>(sel)
+		const pctNode = q('.caseVideo__loadPct')
+		const titleNode = q('.caseVideo__loadTitle')
+		const etaNode = q('.caseVideo__loadEta')
+		const sizeNode = q('.caseVideo__loadSize')
+		const setText = (node: HTMLElement | null, value: string) => {
+			if (node && node.textContent !== value) node.textContent = value
 		}
-	}, [])
+
+		const ctrl = new AbortController()
+		let objectUrl = ''
+		let showTimer = 0
+		let paintTimer = 0
+
+		const load = async () => {
+			const conn = (navigator as Navigator & { connection?: Connection }).connection
+			const key = pickSource({ narrow: window.matchMedia(MQ.tablet).matches, saveData: conn?.saveData, effectiveType: conn?.effectiveType })
+			const started = performance.now()
+			let loaded = 0
+			let size = 0
+			let speed = 0
+			let lastLoaded = 0
+			let lastAt = started
+
+			// Проценты, оставшееся время и мегабайты: по таймеру, а не на каждый кусок — пауза сети тоже снижает скорость
+			const paint = () => {
+				const now = performance.now()
+				if (now > lastAt) {
+					speed = nextSpeed(speed, ((loaded - lastLoaded) * 1000) / (now - lastAt))
+					lastLoaded = loaded
+					lastAt = now
+				}
+				const share = loadShare(loaded, size)
+				root.style.setProperty('--load', share.toFixed(3))
+				setText(pctNode, size ? `${Math.floor(share * 100)}%` : '')
+				const eta = now - started > ETA_AFTER ? etaSeconds(loaded, size, speed) : null
+				setText(etaNode, size ? (eta === null ? 'считаю время…' : `осталось ≈${NBSP}${formatEta(eta)}`) : `${formatMb(loaded)}${NBSP}МБ`)
+				setText(sizeNode, size ? `${formatMb(loaded)} из ${formatMb(size)}${NBSP}МБ` : '')
+			}
+
+			showTimer = window.setTimeout(() => root.classList.add('is-loading'), LOADER_DELAY)
+			try {
+				const res = await fetch(video.sources[key], { signal: ctrl.signal })
+				if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`)
+				size = Number(res.headers.get('Content-Length')) || 0
+				root.classList.toggle('is-unsized', !size)
+				paint()
+				paintTimer = window.setInterval(paint, LOAD_PAINT_STEP)
+				const reader = res.body.getReader()
+				const chunks: Uint8Array<ArrayBuffer>[] = []
+				for (;;) {
+					const { done, value } = await reader.read()
+					if (done) break
+					chunks.push(value)
+					loaded += value.byteLength
+				}
+				window.clearInterval(paintTimer)
+				// Кадр видео встанет на место после seeked — до этого заглушка показывает, что всё скачано
+				paint()
+				root.style.setProperty('--load', '1')
+				setText(pctNode, '100%')
+				setText(titleNode, 'Видео готово')
+				setText(etaNode, '')
+				objectUrl = URL.createObjectURL(new Blob(chunks, { type: res.headers.get('Content-Type') || 'video/mp4' }))
+				el.preload = 'auto'
+				el.src = objectUrl
+				el.load()
+			} catch {
+				if (ctrl.signal.aborted) return
+				failedRef.current = true
+				el.dispatchEvent(new Event(FAIL_EVENT))
+			} finally {
+				window.clearInterval(paintTimer)
+			}
+		}
+
+		const io = new IntersectionObserver(
+			entries => {
+				if (!entries.some(e => e.isIntersecting)) return
+				io.disconnect()
+				void load()
+			},
+			{ rootMargin: PRELOAD_MARGIN }
+		)
+		io.observe(root)
+
+		// Уход со страницы: прервать загрузку (иначе браузер докачивает десятки мегабайт в фоне) и освободить память ролика
+		return () => {
+			io.disconnect()
+			ctrl.abort()
+			window.clearTimeout(showTimer)
+			window.clearInterval(paintTimer)
+			root.classList.remove('is-loading', 'is-unsized')
+			if (el.getAttribute('src')) {
+				el.removeAttribute('src')
+				el.load()
+			}
+			if (objectUrl) URL.revokeObjectURL(objectUrl)
+		}
+	}, [video, reduced])
 
 	const style = {
 		'--video-bg': video.background,
@@ -470,6 +586,19 @@ export default function CaseVideo({ video, title, metrics, link }: Props) {
 											draggable={false}
 										/>
 									))}
+								</div>
+								{/* Заглушка загрузки: видна, пока ролик качается (is-loading), гаснет, когда кадр видео готов */}
+								<div className='caseVideo__loader' aria-hidden='true'>
+									<span className='caseVideo__ring'>
+										<svg viewBox='0 0 64 64'>
+											<circle className='caseVideo__ringTrack' cx='32' cy='32' r='28' pathLength={100} />
+											<circle className='caseVideo__ringBar' cx='32' cy='32' r='28' pathLength={100} />
+										</svg>
+										<b className='caseVideo__loadPct'>0%</b>
+									</span>
+									<span className='caseVideo__loadTitle'>Видео загружается</span>
+									<span className='caseVideo__loadEta'>считаю время…</span>
+									<span className='caseVideo__loadSize' />
 								</div>
 							</div>
 							<p className='caseVideo__caption' aria-hidden='true'>

@@ -1,0 +1,66 @@
+// Карточки кейсов стопкой (CaseStack): ячейки залипают (sticky), каждая следующая ложится на предыдущую.
+// Скрипт ставит класс is-stacked, `top` и высоту ячеек, --stack-card-h (общая высота карточек), --stack-dwell (сколько
+// стопка держится, когда последняя карточка легла) и --cover у карточки (0…1 — насколько её закрыла следующая).
+// Анимируются только scale и opacity
+.caseStack {
+	&__item + &__item {
+		margin-top: 24px;
+	}
+
+	&__card {
+		position: relative;
+		border-radius: var(--radius-card);
+		transform-origin: 50% 0;
+		scale: calc(1 - 0.05 * var(--cover, 0));
+
+		// Закрытая карточка уходит в фон: темнеет к цвету страницы и получает тонкую кромку — край стопки над верхней
+		// карточкой виден и в тёмной теме
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: 1;
+			border-radius: inherit;
+			background: color-mix(in srgb, var(--bg) 50%, transparent);
+			box-shadow: inset 0 0 0 1px var(--stack-ring);
+			opacity: var(--cover, 0);
+			pointer-events: none;
+		}
+	}
+
+	&.is-stacked {
+		// Запас прокрутки под стопкой: последняя карточка легла — стопка ещё стоит, потом уходит целиком
+		&::after {
+			content: '';
+			display: block;
+			height: var(--stack-dwell, 0px);
+		}
+	}
+
+	&.is-stacked &__item {
+		position: sticky;
+	}
+
+	// Карточки одной высоты: нижняя не торчит из-под верхней. Широкая карточка — содержимое по центру, на ≤992 — сверху
+	&.is-stacked &__card > * {
+		min-height: var(--stack-card-h);
+		align-content: center;
+	}
+
+	// Кромка верхней карточки отбрасывает тень на ту, что под ней
+	&.is-stacked &__item + &__item &__card {
+		box-shadow: var(--stack-shadow);
+	}
+
+	@media (max-width: 992px) {
+		&.is-stacked &__card > * {
+			align-content: start;
+		}
+	}
+
+	@media (max-width: 768px) {
+		&__item + &__item {
+			margin-top: 16px;
+		}
+	}
+}

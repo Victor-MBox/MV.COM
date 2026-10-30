@@ -340,6 +340,151 @@
 		}
 	}
 
+	// ---------- Загрузка ролика: кадр главы под размытием и заглушка с кольцом, процентами и оставшимся временем ----------
+	// Класс is-loading ставит скрипт, если ролик не пришёл за 350 мс; заглушка гаснет вместе с ключевыми кадрами, когда
+	// кадр видео готов (is-ready), и не показывается в режиме ключевых кадров (is-stills). Поверх тёмного ролика в обеих
+	// темах — поэтому текст светлый без токенов темы
+	&__video,
+	&__stills {
+		transition:
+			opacity 200ms var(--ease-out),
+			filter 600ms var(--ease-out),
+			scale 600ms var(--ease-out);
+	}
+
+	&.is-loading:not(.is-ready, .is-stills) &__video,
+	&.is-loading:not(.is-ready, .is-stills) &__stills {
+		filter: blur(14px) saturate(0.8);
+		scale: 1.06; // края размытия не просвечивают фоном карточки
+	}
+
+	&__loader {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 6px;
+		// В верхней трети кадра: на первом экране страницы видна только верхняя половина видео
+		padding: max(24px, 16%) 24px 24px;
+		border-radius: inherit;
+		background: radial-gradient(90% 60% at 50% 28%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.2));
+		color: #fefefe;
+		text-align: center;
+		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 400ms var(--ease-out),
+			visibility 0s linear 400ms;
+
+		// Блик проходит по кадру: заглушка «живая», даже когда сеть встала и проценты не меняются
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.07) 50%, transparent 65%);
+			background-size: 250% 100%;
+			animation: caseVideoSweep 2.2s linear infinite;
+		}
+	}
+
+	&.is-loading:not(.is-ready, .is-stills) &__loader {
+		opacity: 1;
+		visibility: visible;
+		transition: opacity 300ms var(--ease-out);
+	}
+
+	&__ring {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 72px;
+		height: 72px;
+		margin-bottom: 10px;
+
+		svg {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			rotate: -90deg; // дуга растёт от верхней точки по часовой
+			overflow: visible;
+		}
+
+		circle {
+			fill: none;
+			stroke-width: 3;
+		}
+	}
+
+	&__ringTrack {
+		stroke: rgba(255, 255, 255, 0.16);
+	}
+
+	&__ringBar {
+		stroke: var(--accent);
+		stroke-linecap: round;
+		stroke-dasharray: 100;
+		stroke-dashoffset: calc(100 - 100 * var(--load, 0));
+		filter: drop-shadow(0 0 6px var(--accent));
+		transition: stroke-dashoffset 300ms linear;
+	}
+
+	// Размер файла неизвестен (нет Content-Length): кольцо крутится коротким отрезком без процентов
+	&.is-unsized &__ringBar {
+		stroke-dasharray: 22 78;
+		stroke-dashoffset: 0;
+		transform-origin: 50% 50%;
+		animation: caseVideoSpin 1.1s linear infinite;
+	}
+
+	&__loadPct {
+		position: relative;
+		font-family: var(--font-mono);
+		font-weight: 400;
+		font-size: 15px;
+		line-height: 1;
+		letter-spacing: 0;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__loadTitle {
+		position: relative;
+		font-family: var(--font-title);
+		font-weight: 500;
+		font-size: 17px;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
+	}
+
+	&__loadEta,
+	&__loadSize {
+		position: relative;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.4;
+		letter-spacing: 0;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__loadEta {
+		min-height: 1.4em;
+		color: rgba(255, 255, 255, 0.86);
+	}
+
+	&__loadSize {
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.56);
+
+		&:empty {
+			display: none;
+		}
+	}
+
 	&__caption {
 		display: flex;
 		gap: 8px;
@@ -545,6 +690,34 @@
 		&__markers li {
 			font-size: 14px;
 		}
+
+		// Кадр видео на телефоне ~240×300: кольцо меньше, без строки мегабайт
+		&__loader {
+			gap: 4px;
+			padding: max(16px, 14%) 16px 16px;
+		}
+
+		&__ring {
+			width: 56px;
+			height: 56px;
+			margin-bottom: 6px;
+		}
+
+		&__loadPct {
+			font-size: 13px;
+		}
+
+		&__loadTitle {
+			font-size: 15px;
+		}
+
+		&__loadEta {
+			font-size: 12px;
+		}
+
+		&__loadSize {
+			display: none;
+		}
 	}
 
 	// Без анимаций: ключевые кадры сменяются кроссфейдом 200 мс — это не движение, глобальное правило его не гасит
@@ -553,5 +726,21 @@
 		&__still {
 			transition-duration: 200ms !important;
 		}
+	}
+}
+
+@keyframes caseVideoSweep {
+	from {
+		background-position: 125% 0;
+	}
+
+	to {
+		background-position: -125% 0;
+	}
+}
+
+@keyframes caseVideoSpin {
+	to {
+		rotate: 360deg;
 	}
 }

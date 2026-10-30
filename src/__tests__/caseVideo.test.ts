@@ -12,10 +12,15 @@ import {
 	copyShift,
 	countAt,
 	countUp,
+	etaSeconds,
 	follow,
+	formatEta,
+	formatMb,
 	frameTime,
+	loadShare,
 	markerState,
 	needsSeek,
+	nextSpeed,
 	pickSource,
 	timeAt,
 } from '../components/caseVideo/videoMath'
@@ -340,5 +345,37 @@ describe('видео-рассказ: математика', () => {
 		expect(pickSource({ narrow: false, effectiveType: 'slow-2g' })).toBe('light')
 		expect(pickSource({ narrow: false, effectiveType: '4g' })).toBe('desktop')
 		expect(pickSource({ narrow: false })).toBe('desktop')
+	})
+})
+
+describe('видео-рассказ: загрузка ролика', () => {
+	it('скорость — скользящее среднее: первый замер берётся как есть, рывок сглаживается', () => {
+		expect(nextSpeed(0, 1000)).toBe(1000)
+		expect(nextSpeed(1000, 2000)).toBeCloseTo(1300, 6)
+		expect(nextSpeed(1000, 0)).toBeCloseTo(700, 6)
+	})
+
+	it('оставшееся время: без размера или скорости — нет оценки, иначе остаток ÷ скорость', () => {
+		expect(etaSeconds(10, 0, 100)).toBeNull()
+		expect(etaSeconds(10, 100, 0)).toBeNull()
+		expect(etaSeconds(40, 100, 20)).toBe(3)
+		expect(etaSeconds(120, 100, 20)).toBe(0)
+	})
+
+	it('время по-русски: секунды вверх до минуты, дальше минуты с шагом 10 с; число не отрывается от единицы', () => {
+		expect(formatEta(0.2)).toBe(`1${NBSP}с`)
+		expect(formatEta(7.1)).toBe(`8${NBSP}с`)
+		expect(formatEta(59)).toBe(`59${NBSP}с`)
+		expect(formatEta(60)).toBe(`1${NBSP}мин`)
+		expect(formatEta(73)).toBe(`1${NBSP}мин 20${NBSP}с`)
+		expect(formatEta(179)).toBe(`3${NBSP}мин`)
+	})
+
+	it('мегабайты: до 10 — с десятыми через запятую, дальше целые; доля — в пределах 0…1', () => {
+		expect(formatMb(4.27 * 1024 * 1024)).toBe('4,2')
+		expect(formatMb(25.5 * 1024 * 1024)).toBe('25')
+		expect(loadShare(5, 0)).toBe(0)
+		expect(loadShare(5, 10)).toBe(0.5)
+		expect(loadShare(12, 10)).toBe(1)
 	})
 })
